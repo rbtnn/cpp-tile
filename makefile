@@ -10,6 +10,7 @@ CC = g++.exe
 all: build
 
 ${EXECNAME}: ${SRC}
+	@mkdir ${BIN_DIR}
 	${CC} ${SRC} ${CFLAGS} -o ${EXECNAME}
 
 build: ${EXECNAME}
@@ -18,7 +19,8 @@ run: ${EXECNAME}
 	${EXECNAME}
 
 clean:
-	rm -f ${LOG} ${EXECNAME}
+	rm -f ${LOG}
+	rm -rf ${BIN_DIR}
 
 .PHONY: all clean
 
