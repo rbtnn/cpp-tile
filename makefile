@@ -10,7 +10,6 @@ CC = g++.exe
 all: build
 
 ${EXECNAME}: ${SRC}
-	@mkdir ${BIN_DIR}
 	${CC} ${SRC} ${CFLAGS} -o ${EXECNAME}
 
 build: ${EXECNAME}
