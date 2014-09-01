@@ -23,7 +23,35 @@ This is Tiling Window Manager for MS Windows.
 You can edit `bin/tile.ini`, and customize this.
 
 
-# LICENSE
+## LAYOUTS
+
+### arrange
+
+    +-------------------------+--------+
+    |                         |        |
+    |                         +--------+
+    |                         |        |
+    |      MASTER EREA        +--------+
+    |                         |        |
+    |                         +--------+
+    |                         |        |
+    |                         |...     |
+    +-------------------------+--------+
+
+### arrange\_maximal
+
+    +----------------------------------+
+    |                                  |
+    |                                  |
+    |                                  |
+    |          MASTER EREA             |
+    |                                  |
+    |                                  |
+    |                                  |
+    |                                  |
+    +----------------------------------+
+
+## LICENSE
 
 Distributed under MIT License. See LICENSE.txt
 

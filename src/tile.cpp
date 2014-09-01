@@ -26,7 +26,7 @@
 #include <time.h>
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK StatusLineWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK scan(HWND, LPARAM);
 
@@ -36,24 +36,8 @@ BOOL CALLBACK scan(HWND, LPARAM);
 // http://msdn.microsoft.com/ja-jp/library/cc411006.aspx
 
 namespace Tile{
-  void die(std::string const& msg) {
-    std::cout << msg << std::endl;
-    ::exit(EXIT_FAILURE);
-  }
-  RECT get_window_area(){
-    RECT wa;
-    HWND const hwnd = ::FindWindow("Shell_TrayWnd", NULL);
-    if (hwnd && ::IsWindowVisible(hwnd)) {
-      ::SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
-    }
-    else {
-      wa.left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
-      wa.top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
-      wa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-      wa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
-    }
-    return wa;
-  }
+  void die(std::string const& msg);
+  RECT get_window_area();
 
   class Key{
     private:
@@ -160,7 +144,7 @@ namespace Tile{
         WNDCLASSEX winClass;
         winClass.cbSize = sizeof(::WNDCLASSEX);
         winClass.style = 0;
-        winClass.lpfnWndProc = WndProc;
+        winClass.lpfnWndProc = MainWndProc;
         winClass.cbClsExtra = 0;
         winClass.cbWndExtra = 0;
         winClass.hInstance = m_hInstance;
@@ -480,7 +464,7 @@ namespace Tile{
         long const width = rect.right - rect.left;
         return width;
       }
-      long get_statusline_height() const{
+      static long get_statusline_height(){
         return 40;
       }
       std::string get_layout_name(){
@@ -495,95 +479,28 @@ namespace Tile{
         ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
       }
   };
+
+  void die(std::string const& msg) {
+    std::cout << msg << std::endl;
+    ::exit(EXIT_FAILURE);
+  }
+  RECT get_window_area(){
+    RECT wa;
+    HWND const hwnd = ::FindWindow("Shell_TrayWnd", NULL);
+    if (hwnd && ::IsWindowVisible(hwnd)) {
+      ::SystemParametersInfo(SPI_GETWORKAREA, 0, &wa, 0);
+    }
+    else {
+      wa.left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+      wa.top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
+      wa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+      wa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    }
+    wa.top += TilingWindowManager::get_statusline_height();
+    return wa;
+  }
 }
 std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
-
-void arrange_test(std::deque<HWND> const& hwnds_){
-  RECT rect = Tile::get_window_area();
-  rect.top += g_p_tile_window_manager->get_statusline_height();
-  long const width = rect.right - rect.left;
-  long const height = rect.bottom - rect.top;
-
-  if(0 < hwnds_.size()){
-    ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
-    ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left            , rect.top             , width / 2, height    , SWP_NOACTIVATE);
-  }
-
-  if(1 < hwnds_.size()){
-    ::ShowWindow(hwnds_.at(1), SW_SHOWNORMAL);
-    ::SetWindowPos(hwnds_.at(1), HWND_TOP, rect.left + width / 2, rect.top             , width / 2, height / 2, SWP_NOACTIVATE);
-  }
-  for(unsigned int i = 2; i < hwnds_.size() - 1; i++){
-    ::ShowWindow(hwnds_.at(i), SW_SHOWNORMAL);
-    ::SetWindowPos(hwnds_.at(i), HWND_TOP, rect.left + width / 2, rect.top + height / 2, width / 2, height / 2, SWP_NOACTIVATE);
-  }
-
-  // long const small_height = height / (hwnds_.size() - 2);
-  // for(unsigned int i = 1; i < hwnds_.size() - 1; i++){
-  //   ::ShowWindow(hwnds_.at(i), SW_SHOWNORMAL);
-  //   ::SetWindowPos(hwnds_.at(i), HWND_TOP, rect.left + width / 2, rect.top + small_height * (i - 1),
-  //       width / 2, small_height, SWP_NOACTIVATE);
-  // }
-}
-void arrange(std::deque<HWND> const& hwnds_){
-  RECT rect = Tile::get_window_area();
-  rect.top += g_p_tile_window_manager->get_statusline_height();
-  long const width = rect.right - rect.left;
-  long const height = rect.bottom - rect.top;
-
-  switch(hwnds_.size()){
-    case 1:
-      if(0 < hwnds_.size()){
-        ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
-      }
-      break;
-    case 2:
-      if(1 < hwnds_.size()){
-        ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left            , rect.top, width / 2, height, SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(1), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(1), HWND_TOP, rect.left + width / 2, rect.top, width / 2, height, SWP_NOACTIVATE);
-      }
-      break;
-    case 3:
-      if(2 < hwnds_.size()){
-        ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left            , rect.top             , width / 2, height    , SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(1), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(1), HWND_TOP, rect.left + width / 2, rect.top             , width / 2, height / 2, SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(2), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(2), HWND_TOP, rect.left + width / 2, rect.top + height / 2, width / 2, height / 2, SWP_NOACTIVATE);
-      }
-      break;
-    default:
-      if(3 < hwnds_.size()){
-        ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left            , rect.top             , width / 2, height / 2, SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(1), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(1), HWND_TOP, rect.left + width / 2, rect.top             , width / 2, height / 2, SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(2), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(2), HWND_TOP, rect.left            , rect.top + height / 2, width / 2, height / 2, SWP_NOACTIVATE);
-        ::ShowWindow(hwnds_.at(3), SW_SHOWNORMAL);
-        ::SetWindowPos(hwnds_.at(3), HWND_TOP, rect.left + width / 2, rect.top + height / 2, width / 2, height / 2, SWP_NOACTIVATE);
-      }
-      break;
-  }
-}
-void arrange_maximal(std::deque<HWND> const& hwnds_){
-  RECT rect = Tile::get_window_area();
-  rect.top += g_p_tile_window_manager->get_statusline_height();
-  long const width = rect.right - rect.left;
-  long const height = rect.bottom - rect.top;
-  HWND const foreground_hwnd = ::GetForegroundWindow();
-  for(auto hwnd : hwnds_){
-    ::SetWindowPos((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
-  }
-}
-
-void keyevent_run_gvim(){
-  ::ShellExecute(NULL, NULL, "C:\\vim\\src\\gvim.exe", "", NULL, SW_SHOWDEFAULT);
-}
 
 bool exist_file(std::string const path){
   WIN32_FIND_DATA findData;
@@ -596,10 +513,52 @@ bool exist_file(std::string const path){
     return false;
   }
 }
+void keyevent_run_gvim(){
+  ::ShellExecute(NULL, NULL, "C:\\vim\\src\\gvim.exe", "", NULL, SW_SHOWDEFAULT);
+}
+void resize_window(RECT const& window_area_, HWND const& hwnd_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
+  ::ShowWindow(hwnd_, SW_SHOWNORMAL);
+  ::SetWindowPos(hwnd_, HWND_TOP,
+      window_area_.left + left_,
+      window_area_.top + top_,
+      width_,
+      height_,
+      SWP_NOACTIVATE);
+  // std::cout << "hwnd:" << hwnd_
+  //   << ", left:" << left_
+  //   << ", top:" << top_
+  //   << ", width:" << width_
+  //   << ", height:" << height_
+  //   << std::endl;
+}
+
+void arrange(std::deque<HWND> const& hwnds_){
+  RECT window_area = Tile::get_window_area();
+  long const width = window_area.right - window_area.left;
+  long const height = window_area.bottom - window_area.top;
+  long const split_size = 3;
+  long sub_height = (2 < hwnds_.size()) ? (height / (hwnds_.size() - 1)) : height;
+  for(unsigned int i = 0; i < hwnds_.size(); i++){
+    resize_window(window_area, hwnds_.at(i),
+        ((i == 0) ? 0                                                      : width / split_size * 2),
+        ((i == 0) ? 0                                                      : sub_height * (i - 1)),
+        ((i == 0) ? ( hwnds_.size() == 1 ? width : width / split_size * 2) : width / split_size),
+        ((i == 0) ? height                                                 : sub_height));
+  }
+}
+void arrange_maximal(std::deque<HWND> const& hwnds_){
+  RECT window_area = Tile::get_window_area();
+  long const width = window_area.right - window_area.left;
+  long const height = window_area.bottom - window_area.top;
+  HWND const foreground_hwnd = ::GetForegroundWindow();
+  for(auto hwnd : hwnds_){
+    resize_window(window_area, ((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), 0, 0, width, height);
+  }
+}
 
 int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLine_, int nShowCmd_){
 #ifdef DEBUG
-  bool const use_console = true;
+  bool const use_console = false;
   if(use_console){
     ::AllocConsole();
     ::freopen("CONOUT$", "w", stdout);
@@ -617,7 +576,6 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", {
           Tile::Layout("arrange", arrange),
           Tile::Layout("arrange_maximal", arrange_maximal),
-          Tile::Layout("arrange_test", arrange),
           }));
     std::string const path = g_p_tile_window_manager->get_inifile_path();
     if(exist_file(path)){
@@ -638,21 +596,22 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
 
   return 0;
 }
-LRESULT CALLBACK WndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
-  if(g_p_tile_window_manager != nullptr){
-    g_p_tile_window_manager->redraw_statusline();
-    switch (msg_) {
-      case WM_CLOSE:
-      case WM_DESTROY:
-        ::PostQuitMessage(0);
-        break;
+LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
+  switch (msg_) {
+    case WM_CLOSE:
+    case WM_DESTROY:
+      ::PostQuitMessage(0);
+      return 0;
 
-      case WM_HOTKEY:
+    case WM_HOTKEY:
+      if(g_p_tile_window_manager != nullptr){
         g_p_tile_window_manager->call_key_method(wParam_);
         g_p_tile_window_manager->arrange();
-        break;
+      }
+      break;
 
-      default:
+    default:
+      if(g_p_tile_window_manager != nullptr){
         switch(wParam_ & 0x7fff){
           case HSHELL_WINDOWCREATED:
             g_p_tile_window_manager->manage((HWND)lParam_);
@@ -668,21 +627,24 @@ LRESULT CALLBACK WndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
             g_p_tile_window_manager->manage((HWND)lParam_);
             g_p_tile_window_manager->arrange();
             break;
-
         }
-    }
+      }
   }
   return ::DefWindowProc(hwnd_,msg_, wParam_, lParam_);
 }
 LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
-  if(g_p_tile_window_manager != nullptr){
-    switch (msg_) {
-      case WM_DESTROY:
-        ::PostQuitMessage(0);
-        return 0;
-      case WM_CREATE:
-      case WM_TIMER:
-      case WM_PAINT:
+  switch (msg_) {
+    case WM_DESTROY:
+      ::PostQuitMessage(0);
+      break;
+
+    case WM_CREATE:
+      ::SetTimer(hwnd_, 1, 1000, NULL);
+      break;
+
+    case WM_TIMER:
+    case WM_PAINT:
+      if(g_p_tile_window_manager != nullptr){
         PAINTSTRUCT ps;
         ::BeginPaint(hwnd_, &ps);
         HDC hdc = ::GetWindowDC(hwnd_);
@@ -702,12 +664,20 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         ::GetClassName(::GetForegroundWindow(), buffer, sizeof(buffer) / sizeof(char));
         std::string const classname = std::string(buffer);
 
-        ::DrawText(hdc, ("<" + g_p_tile_window_manager->get_layout_name() + ">[" + classname + "] " + windowtext).c_str(),
-            -1, &rect, DT_LEFT | DT_WORDBREAK);
+        SYSTEMTIME stTime;
+        ::GetLocalTime(&stTime);
+
+        std::stringstream ss;
+        ss << "[" << stTime.wYear << "/" << stTime.wMonth << "/" << stTime.wDay
+          << " " << stTime.wHour << ":" << stTime.wMinute << ":" << stTime.wSecond << "]"
+          << "[" << g_p_tile_window_manager->get_layout_name() << "]"
+          << "[" << classname << "] " << windowtext;
+
+        ::DrawText(hdc, ss.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
         ::ReleaseDC(hwnd_, hdc);
         ::EndPaint(hwnd_, &ps);
-        break;
-    }
+      }
+      break;
   }
   return ::DefWindowProc(hwnd_, msg_, wParam_, lParam_);
 }
