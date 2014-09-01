@@ -498,6 +498,33 @@ namespace Tile{
 }
 std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
 
+void arrange_test(std::deque<HWND> const& hwnds_){
+  RECT rect = Tile::get_window_area();
+  rect.top += g_p_tile_window_manager->get_statusline_height();
+  long const width = rect.right - rect.left;
+  long const height = rect.bottom - rect.top;
+
+  if(0 < hwnds_.size()){
+    ::ShowWindow(hwnds_.at(0), SW_SHOWNORMAL);
+    ::SetWindowPos(hwnds_.at(0), HWND_TOP, rect.left            , rect.top             , width / 2, height    , SWP_NOACTIVATE);
+  }
+
+  if(1 < hwnds_.size()){
+    ::ShowWindow(hwnds_.at(1), SW_SHOWNORMAL);
+    ::SetWindowPos(hwnds_.at(1), HWND_TOP, rect.left + width / 2, rect.top             , width / 2, height / 2, SWP_NOACTIVATE);
+  }
+  for(unsigned int i = 2; i < hwnds_.size() - 1; i++){
+    ::ShowWindow(hwnds_.at(i), SW_SHOWNORMAL);
+    ::SetWindowPos(hwnds_.at(i), HWND_TOP, rect.left + width / 2, rect.top + height / 2, width / 2, height / 2, SWP_NOACTIVATE);
+  }
+
+  // long const small_height = height / (hwnds_.size() - 2);
+  // for(unsigned int i = 1; i < hwnds_.size() - 1; i++){
+  //   ::ShowWindow(hwnds_.at(i), SW_SHOWNORMAL);
+  //   ::SetWindowPos(hwnds_.at(i), HWND_TOP, rect.left + width / 2, rect.top + small_height * (i - 1),
+  //       width / 2, small_height, SWP_NOACTIVATE);
+  // }
+}
 void arrange(std::deque<HWND> const& hwnds_){
   RECT rect = Tile::get_window_area();
   rect.top += g_p_tile_window_manager->get_statusline_height();
@@ -590,6 +617,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", {
           Tile::Layout("arrange", arrange),
           Tile::Layout("arrange_maximal", arrange_maximal),
+          Tile::Layout("arrange_test", arrange),
           }));
     std::string const path = g_p_tile_window_manager->get_inifile_path();
     if(exist_file(path)){
@@ -621,6 +649,7 @@ LRESULT CALLBACK WndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
 
       case WM_HOTKEY:
         g_p_tile_window_manager->call_key_method(wParam_);
+        g_p_tile_window_manager->arrange();
         break;
 
       default:
