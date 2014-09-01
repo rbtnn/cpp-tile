@@ -28,6 +28,7 @@
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int);
 LRESULT CALLBACK MainWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK StatusLineWndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK BorderWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK scan(HWND, LPARAM);
 
 // RegisterHotKey function
@@ -87,6 +88,11 @@ namespace Tile{
       std::string m_main_class_name;
       HWND m_statusline_hwnd;
       std::string m_statusline_class_name;
+      HWND m_border_left_hwnd;
+      HWND m_border_right_hwnd;
+      HWND m_border_top_hwnd;
+      HWND m_border_bottom_hwnd;
+      std::string m_border_class_name;
 
       UINT m_shellhookid;
 
@@ -156,7 +162,7 @@ namespace Tile{
         winClass.lpszClassName = m_main_class_name.c_str();
         ATOM atom = ::RegisterClassEx(&winClass);
         if (!atom){
-          Tile::die("Error registering window class(2)");
+          Tile::die("Error registering window class(main)");
         }
 
         m_main_hwnd = ::CreateWindowEx(0,
@@ -164,9 +170,8 @@ namespace Tile{
             0, 0, 0, 0, 0, NULL, NULL,
             m_hInstance, NULL);
         if (!m_main_hwnd){
-          Tile::die("Error creating window(2)");
+          Tile::die("Error creating window(main)");
         }
-
       }
       void init_statusline(){
         WNDCLASSEX winClass;
@@ -192,7 +197,59 @@ namespace Tile{
             WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE, 0, 0, get_statusline_width(), get_statusline_height(), NULL, NULL,
             m_hInstance, NULL);
         if (!m_statusline_hwnd){
-          Tile::die("Error creating window(2)");
+          Tile::die("Error creating window(statusline)");
+        }
+      }
+      void init_border(){
+        WNDCLASSEX winClass;
+        winClass.cbSize = sizeof(::WNDCLASSEX);
+        winClass.style = 0;
+        winClass.lpfnWndProc = BorderWndProc;
+        winClass.cbClsExtra = 0;
+        winClass.cbWndExtra = 0;
+        winClass.hInstance = m_hInstance;
+        winClass.hIcon = NULL;
+        winClass.hIconSm = NULL;
+        winClass.hCursor = NULL;
+        winClass.hbrBackground = NULL;
+        winClass.lpszMenuName = NULL;
+        winClass.lpszClassName = m_border_class_name.c_str();
+        ATOM atom = ::RegisterClassEx(&winClass);
+        if (!atom){
+          Tile::die("Error registering window class(border)");
+        }
+
+        m_border_left_hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW,
+            m_border_class_name.c_str(), m_border_class_name.c_str(),
+            WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
+            0, 0, 0, 0, NULL, NULL,
+            m_hInstance, NULL);
+        if (!m_border_left_hwnd){
+          Tile::die("Error creating window(border)");
+        }
+        m_border_right_hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW,
+            m_border_class_name.c_str(), m_border_class_name.c_str(),
+            WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
+            0, 0, 0, 0, NULL, NULL,
+            m_hInstance, NULL);
+        if (!m_border_right_hwnd){
+          Tile::die("Error creating window(border)");
+        }
+        m_border_top_hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW,
+            m_border_class_name.c_str(), m_border_class_name.c_str(),
+            WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
+            0, 0, 0, 0, NULL, NULL,
+            m_hInstance, NULL);
+        if (!m_border_top_hwnd){
+          Tile::die("Error creating window(border)");
+        }
+        m_border_bottom_hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW,
+            m_border_class_name.c_str(), m_border_class_name.c_str(),
+            WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE,
+            0, 0, 0, 0, NULL, NULL,
+            m_hInstance, NULL);
+        if (!m_border_bottom_hwnd){
+          Tile::die("Error creating window(border)");
         }
       }
 
@@ -271,6 +328,8 @@ namespace Tile{
         init_main();
         m_statusline_class_name = "TileStatusLine";
         init_statusline();
+        m_border_class_name = "TileBorder";
+        init_border();
 
         m_shellhookid = ::RegisterWindowMessage("SHELLHOOK");
       }
@@ -283,6 +342,18 @@ namespace Tile{
         }
         if (!m_statusline_hwnd){
           ::DestroyWindow(m_statusline_hwnd);
+        }
+        if (!m_border_left_hwnd){
+          ::DestroyWindow(m_border_left_hwnd);
+        }
+        if (!m_border_right_hwnd){
+          ::DestroyWindow(m_border_right_hwnd);
+        }
+        if (!m_border_top_hwnd){
+          ::DestroyWindow(m_border_top_hwnd);
+        }
+        if (!m_border_bottom_hwnd){
+          ::DestroyWindow(m_border_bottom_hwnd);
         }
         if (!m_hInstance){
           ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
@@ -314,6 +385,30 @@ namespace Tile{
       void arrange(){
         if(m_layout_it != std::end(m_layouts)){
           m_layout_it->arrange(m_managed_hwnds);
+        }
+        if(is_manageable(::GetForegroundWindow())){
+          unsigned int n = 5;
+          RECT rect;
+          ::GetWindowRect(::GetForegroundWindow(), &rect);
+          ::SetWindowPos(m_border_left_hwnd, HWND_TOPMOST,
+              rect.left, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
+          ::SetWindowPos(m_border_right_hwnd, HWND_TOPMOST,
+              rect.right - n, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
+          ::SetWindowPos(m_border_top_hwnd, HWND_TOPMOST,
+              rect.left, rect.top, rect.right - rect.left, n, SWP_NOACTIVATE);
+          ::SetWindowPos(m_border_bottom_hwnd, HWND_TOPMOST,
+              rect.left, rect.bottom - n, rect.right - rect.left, n, SWP_NOACTIVATE);
+
+          ::ShowWindow(m_border_top_hwnd, SW_SHOWNORMAL);
+          ::ShowWindow(m_border_bottom_hwnd, SW_SHOWNORMAL);
+          ::ShowWindow(m_border_left_hwnd, SW_SHOWNORMAL);
+          ::ShowWindow(m_border_right_hwnd, SW_SHOWNORMAL);
+        }
+        else{
+          ::ShowWindow(m_border_top_hwnd, SW_HIDE);
+          ::ShowWindow(m_border_bottom_hwnd, SW_HIDE);
+          ::ShowWindow(m_border_left_hwnd, SW_HIDE);
+          ::ShowWindow(m_border_right_hwnd, SW_HIDE);
         }
       }
       void next_layout(){
@@ -396,10 +491,13 @@ namespace Tile{
         }
       }
 
+      bool is_managed(HWND hwnd_){
+        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
+        return (it != m_managed_hwnds.end());
+      }
       void manage(HWND hwnd_){
         if(is_manageable(hwnd_)){
-          auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-          if(it == m_managed_hwnds.end()){
+          if(!is_managed(hwnd_)){
             RECT rect;
             ::GetWindowRect(hwnd_, &rect);
             m_managed_hwnds.push_back(hwnd_);
@@ -677,6 +775,30 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         ::ReleaseDC(hwnd_, hdc);
         ::EndPaint(hwnd_, &ps);
       }
+      break;
+  }
+  return ::DefWindowProc(hwnd_, msg_, wParam_, lParam_);
+}
+LRESULT CALLBACK BorderWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
+  switch (msg_) {
+    case WM_DESTROY:
+      ::PostQuitMessage(0);
+      break;
+
+    case WM_CREATE:
+      ::SetTimer(hwnd_, 1, 1000, NULL);
+      break;
+
+    case WM_PAINT:
+      PAINTSTRUCT ps;
+      ::BeginPaint(hwnd_, &ps);
+      RECT rect;
+      ::GetClientRect(hwnd_, &rect);
+      HDC hdc = ::GetWindowDC(hwnd_);
+      HBRUSH hbrush = ::CreateSolidBrush(RGB(255, 0, 0));
+      ::FillRect(hdc , &rect, hbrush);
+      ::ReleaseDC(hwnd_, hdc);
+      ::EndPaint(hwnd_, &ps);
       break;
   }
   return ::DefWindowProc(hwnd_, msg_, wParam_, lParam_);
