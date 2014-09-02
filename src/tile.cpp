@@ -6,7 +6,7 @@
 #include <winuser.h>
 #include <shellapi.h>
 
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 #  include <cstdio>
@@ -82,12 +82,95 @@ namespace Tile{
   };
   class Workspace{
     private:
+      std::string m_workspace_name;
+
+      std::deque<HWND> m_managed_hwnds;
+      std::map<HWND, RECT> m_managed_hwnd_to_rect;
+      std::map<HWND, LONG> m_managed_hwnd_to_style;
+
+      void set_style(HWND hwnd_, std::vector<std::string> classnames_){
+        char buffer[256];
+        LONG const style = ::GetWindowLong(hwnd_, GWL_STYLE);
+        ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
+        bool b = true;
+        for(auto classname : classnames_){
+          if(std::string(buffer) == classname){
+            b = false;
+          }
+        }
+        if(b){
+          ::SetWindowLong(hwnd_, GWL_STYLE, style ^ WS_CAPTION ^ WS_THICKFRAME );
+        }
+      }
+
     public:
+      Workspace(std::string workspace_name_): m_workspace_name(workspace_name_){
+      }
+
+      unsigned int size(){
+        return m_managed_hwnds.size();
+      }
+      HWND at(unsigned int i){
+        return m_managed_hwnds.at(i);
+      }
+
+      std::deque<HWND>::iterator begin(){
+        return std::begin(m_managed_hwnds);
+      }
+      std::deque<HWND>::iterator end(){
+        return std::begin(m_managed_hwnds);
+      }
+      std::deque<HWND>::reverse_iterator rbegin(){
+        return m_managed_hwnds.rbegin();
+      }
+      std::deque<HWND>::reverse_iterator rend(){
+        return m_managed_hwnds.rend();
+      }
+
+      bool is_managed(HWND hwnd_){
+        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
+        return (it != std::end(m_managed_hwnds));
+      }
+      void manage(HWND hwnd_, std::vector<std::string> classnames_){
+        if(!is_managed(hwnd_)){
+          RECT rect;
+          ::GetWindowRect(hwnd_, &rect);
+          m_managed_hwnds.push_front(hwnd_);
+          m_managed_hwnd_to_rect.insert(std::map<HWND, RECT>::value_type(hwnd_, rect));
+          m_managed_hwnd_to_style.insert(std::map<HWND, LONG>::value_type(hwnd_, ::GetWindowLong(hwnd_, GWL_STYLE)));
+          set_style(hwnd_, classnames_);
+        }
+      }
+      void unmanage(HWND const hwnd_){
+        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
+        if(it != std::end(m_managed_hwnds)){
+          m_managed_hwnds.erase(it);
+          RECT const rect = m_managed_hwnd_to_rect[hwnd_];
+          LONG const width = rect.right - rect.left;
+          LONG const height = rect.bottom - rect.top;
+          ::SetWindowPos(hwnd_, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
+          ::SetWindowLong(hwnd_, GWL_STYLE, m_managed_hwnd_to_style[hwnd_]);
+        }
+      }
+      void hide(HWND const hwnd_){
+        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
+        if(it != std::end(m_managed_hwnds)){
+          ::ShowWindow(hwnd_, SW_HIDE);
+        }
+      }
+
+      std::deque<HWND> const& get_managed_hwnds(){
+        return m_managed_hwnds;
+      }
+
+      std::string get_workspace_name() const{
+        return m_workspace_name;
+      }
   };
   class TilingWindowManager{
     private:
       HINSTANCE m_hInstance;
-
+      UINT m_shellhookid;
       HWND m_main_hwnd;
       std::string m_main_class_name;
       HWND m_statusline_hwnd;
@@ -98,15 +181,13 @@ namespace Tile{
       HWND m_border_bottom_hwnd;
       std::string m_border_class_name;
 
-      UINT m_shellhookid;
+      std::vector<std::shared_ptr<Key> > m_keys;
+
+      std::vector<Tile::Workspace> m_workspaces;
+      std::vector<Tile::Workspace>::iterator m_workspace_it;
 
       std::vector<Tile::Layout> m_layouts;
       std::vector<Tile::Layout>::iterator m_layout_it;
-
-      std::vector<std::shared_ptr<Key> > m_keys;
-      std::deque<HWND> m_managed_hwnds;
-      std::map<HWND, RECT> m_managed_hwnd_to_rect;
-      std::map<HWND, LONG> m_managed_hwnd_to_style;
 
       std::vector<std::string> split(const std::string& input_, char delimiter_){
         std::istringstream stream(input_);
@@ -296,22 +377,6 @@ namespace Tile{
 
         return false;
       }
-      void set_style(HWND hwnd_){
-        if(is_manageable(hwnd_)){
-          char buffer[256];
-          LONG const style = ::GetWindowLong(hwnd_, GWL_STYLE);
-          ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
-          bool b = true;
-          for(auto classname : get_config_settings_not_apply_style_to_classnames()){
-            if(std::string(buffer) == classname){
-              b = false;
-            }
-          }
-          if(b){
-            ::SetWindowLong(hwnd_, GWL_STYLE, style ^ WS_CAPTION ^ WS_THICKFRAME );
-          }
-        }
-      }
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
         unsigned long const MODKEY = MOD_ALT | MOD_CONTROL;
         std::map<std::string, std::string> m = get_config_keys();
@@ -325,6 +390,13 @@ namespace Tile{
     public:
       TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_){
         m_hInstance = hInstance_;
+
+        m_workspaces = {
+          Tile::Workspace("1"),
+          Tile::Workspace("2"),
+        };
+        m_workspace_it = std::begin(m_workspaces);
+
         m_layouts = layouts_;
         m_layout_it = std::begin(m_layouts);
 
@@ -338,8 +410,10 @@ namespace Tile{
         m_shellhookid = ::RegisterWindowMessage("SHELLHOOK");
       }
       ~TilingWindowManager(){
-        for(auto hwnd : m_managed_hwnds){
-          unmanage(hwnd);
+        for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+          for(auto hwnd : it->get_managed_hwnds()){
+            it->unmanage(hwnd);
+          }
         }
         if (!m_main_hwnd){
           ::DestroyWindow(m_main_hwnd);
@@ -363,6 +437,50 @@ namespace Tile{
           ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
           ::UnregisterClass(m_main_class_name.c_str(), m_hInstance);
         }
+      }
+
+      UINT const start(){
+        typedef BOOL (* RegisterShellHookWindowProc) (HWND);
+        RegisterShellHookWindowProc RegisterShellHookWindow \
+          = (RegisterShellHookWindowProc) ::GetProcAddress( ::GetModuleHandle("USER32.DLL"), "RegisterShellHookWindow");
+        if (!RegisterShellHookWindow){
+          Tile::die("Could not find RegisterShellHookWindow");
+        }
+
+        ::EnumWindows(scan, 0);
+
+        RegisterShellHookWindow(m_main_hwnd);
+
+        regist_key("focus_window_to_master", &TilingWindowManager::focus_window_to_master);
+        regist_key("next_focus", &TilingWindowManager::next_focus);
+        regist_key("next_layout", &TilingWindowManager::next_layout);
+        regist_key("prev_focus", &TilingWindowManager::prev_focus);
+        regist_key("exit_tile", &TilingWindowManager::exit_tile);
+        regist_key("kill_client", &TilingWindowManager::kill_client);
+        regist_key("run_shell", &TilingWindowManager::run_shell);
+        regist_key("workspace_1", &TilingWindowManager::workspace_1);
+        regist_key("workspace_2", &TilingWindowManager::workspace_2);
+
+        arrange();
+
+        ::MSG msg;
+        while (::GetMessage(&msg, NULL, 0, 0) > 0){
+          ::TranslateMessage(&msg);
+          ::DispatchMessage(&msg);
+        }
+
+        ::DeregisterShellHookWindow(m_main_hwnd);
+
+        return msg.wParam;
+      }
+
+      void manage(HWND hwnd_){
+        if(is_manageable(hwnd_)){
+          m_workspace_it->manage(hwnd_, get_config_settings_not_apply_style_to_classnames());
+        }
+      }
+      void unmanage(HWND hwnd_){
+        m_workspace_it->unmanage(hwnd_);
       }
 
       std::string get_inifile_path(){
@@ -389,14 +507,9 @@ namespace Tile{
         HWND const foreground_hwnd = ::GetForegroundWindow();
         ::PostMessage(foreground_hwnd, WM_CLOSE, 0, 0);
       }
-      void cleanup_dead_hwnd(){
-        // TODO
-      }
       void arrange(){
         if(m_layout_it != std::end(m_layouts)){
-          cleanup_dead_hwnd();
-          print_managed_windows();
-          m_layout_it->arrange(m_managed_hwnds);
+          m_layout_it->arrange(m_workspace_it->get_managed_hwnds());
         }
         if(is_manageable(::GetForegroundWindow())){
           unsigned int n = 5;
@@ -430,31 +543,12 @@ namespace Tile{
         }
         arrange();
       }
-      void print_managed_windows(){
-        HWND const active_hwnd = ::GetActiveWindow();
-        HWND const foreground_hwnd = ::GetForegroundWindow();
-        char buffer[256];
-        for(unsigned int i = 0; i < m_managed_hwnds.size(); i++){
-          auto hwnd = m_managed_hwnds.at(i);
-          ::GetWindowText(hwnd, buffer, sizeof(buffer) / sizeof(char));
-          std::cout << "No:" << i << std::endl;
-          std::cout << "Hwnd:" << hwnd << std::endl;
-          std::cout << "Title:" << buffer << std::endl;
-          ::GetClassName(hwnd, buffer, sizeof(buffer) / sizeof(char));
-          std::cout << "ClassName:" << buffer << std::endl;
-          std::cout << "Active:" << (hwnd == active_hwnd) << std::endl;
-          std::cout << "Foreground:" << (hwnd == foreground_hwnd) << std::endl;
-          std::cout << "Style:" << m_managed_hwnd_to_style[hwnd] << std::endl;
-          std::cout << std::endl;
-        }
-        std::cout << std::endl;
-      }
       void next_focus(){
         bool is_next_focus = false;
         HWND const foreground_hwnd = ::GetForegroundWindow();
-        if(0 < m_managed_hwnds.size()){
-          ::SetForegroundWindow(m_managed_hwnds.at(0));
-          for(auto hwnd : m_managed_hwnds){
+        if(0 < m_workspace_it->size()){
+          ::SetForegroundWindow(m_workspace_it->at(0));
+          for(auto hwnd : m_workspace_it->get_managed_hwnds()){
             if(foreground_hwnd == hwnd){
               is_next_focus = true;
             }
@@ -470,9 +564,9 @@ namespace Tile{
       void prev_focus(){
         bool is_next_focus = false;
         HWND const foreground_hwnd = ::GetForegroundWindow();
-        if(0 < m_managed_hwnds.size()){
-          ::SetForegroundWindow(m_managed_hwnds.at(m_managed_hwnds.size() - 1));
-          for(auto it = m_managed_hwnds.rbegin(); it < m_managed_hwnds.rend(); it++){
+        if(0 < m_workspace_it->size()){
+          ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->size() - 1));
+          for(auto it = m_workspace_it->rbegin(); it < m_workspace_it->rend(); it++){
             if(foreground_hwnd == *it){
               is_next_focus = true;
             }
@@ -485,79 +579,58 @@ namespace Tile{
           }
         }
       }
+      void workspace_1(){
+        workspace_of(0);
+      }
+      void workspace_2(){
+        workspace_of(1);
+      }
       void focus_window_to_master(){
         HWND const foreground_hwnd = ::GetForegroundWindow();
-        if(0 < m_managed_hwnds.size()){
-          for(auto it = std::begin(m_managed_hwnds); it < std::end(m_managed_hwnds); it++){
-            if(foreground_hwnd == *it){
-              m_managed_hwnds.erase(it);
-              break;
-            }
-          }
-          m_managed_hwnds.push_front(foreground_hwnd);
+        if(0 < m_workspace_it->size()){
+          m_workspace_it->unmanage(foreground_hwnd);
+          m_workspace_it->manage(foreground_hwnd, get_config_settings_not_apply_style_to_classnames());
           arrange();
         }
       }
 
-      bool is_managed(HWND hwnd_){
-        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-        return (it != m_managed_hwnds.end());
-      }
-      void manage(HWND hwnd_){
-        if(is_manageable(hwnd_)){
-          if(!is_managed(hwnd_)){
-            RECT rect;
-            ::GetWindowRect(hwnd_, &rect);
-            m_managed_hwnds.push_back(hwnd_);
-            m_managed_hwnd_to_rect.insert(std::map<HWND, RECT>::value_type(hwnd_, rect));
-            m_managed_hwnd_to_style.insert(std::map<HWND, LONG>::value_type(hwnd_, ::GetWindowLong(hwnd_, GWL_STYLE)));
-            set_style(hwnd_);
+      // void print_managed_windows(){
+      //   HWND const active_hwnd = ::GetActiveWindow();
+      //   HWND const foreground_hwnd = ::GetForegroundWindow();
+      //   char buffer[256];
+      //   for(unsigned int i = 0; i < m_workspace_it->size(); i++){
+      //     auto hwnd = m_workspace_it->at(i);
+      //     ::GetWindowText(hwnd, buffer, sizeof(buffer) / sizeof(char));
+      //     std::cout << "No:" << i << std::endl;
+      //     std::cout << "Hwnd:" << hwnd << std::endl;
+      //     std::cout << "Title:" << buffer << std::endl;
+      //     ::GetClassName(hwnd, buffer, sizeof(buffer) / sizeof(char));
+      //     std::cout << "ClassName:" << buffer << std::endl;
+      //     std::cout << "Active:" << (hwnd == active_hwnd) << std::endl;
+      //     std::cout << "Foreground:" << (hwnd == foreground_hwnd) << std::endl;
+      //     std::cout << "Style:" << m_managed_hwnd_to_style[hwnd] << std::endl;
+      //     std::cout << std::endl;
+      //   }
+      //   std::cout << std::endl;
+      // }
+
+      void workspace_of(unsigned int const i){
+        unsigned int n = 0;
+        if(i < m_workspaces.size()){
+          for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+            if(n == i){
+              if(m_workspace_it != it){
+                for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+                  m_workspace_it->hide(hwnd);
+                }
+                m_workspace_it = it;
+              }
+              arrange();
+              break;
+            }
+            n++;
           }
         }
-      }
-      void unmanage(HWND const hwnd_){
-        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-        if(it != m_managed_hwnds.end()){
-          m_managed_hwnds.erase(it);
-          RECT const rect = m_managed_hwnd_to_rect[hwnd_];
-          LONG const width = rect.right - rect.left;
-          LONG const height = rect.bottom - rect.top;
-          ::SetWindowPos(hwnd_, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
-          ::SetWindowLong(hwnd_, GWL_STYLE, m_managed_hwnd_to_style[hwnd_]);
-        }
-      }
-      UINT const start(){
-        typedef BOOL (* RegisterShellHookWindowProc) (HWND);
-        RegisterShellHookWindowProc RegisterShellHookWindow \
-          = (RegisterShellHookWindowProc) ::GetProcAddress( ::GetModuleHandle("USER32.DLL"), "RegisterShellHookWindow");
-        if (!RegisterShellHookWindow){
-          Tile::die("Could not find RegisterShellHookWindow");
-        }
-
-        ::EnumWindows(scan, 0);
-
-        RegisterShellHookWindow(m_main_hwnd);
-
-        regist_key("focus_window_to_master", &TilingWindowManager::focus_window_to_master);
-        regist_key("next_focus", &TilingWindowManager::next_focus);
-        regist_key("next_layout", &TilingWindowManager::next_layout);
-        regist_key("prev_focus", &TilingWindowManager::prev_focus);
-        regist_key("print_managed_windows", &TilingWindowManager::print_managed_windows);
-        regist_key("exit_tile", &TilingWindowManager::exit_tile);
-        regist_key("kill_client", &TilingWindowManager::kill_client);
-        regist_key("run_shell", &TilingWindowManager::run_shell);
-
-        arrange();
-
-        ::MSG msg;
-        while (::GetMessage(&msg, NULL, 0, 0) > 0){
-          ::TranslateMessage(&msg);
-          ::DispatchMessage(&msg);
-        }
-
-        ::DeregisterShellHookWindow(m_main_hwnd);
-
-        return msg.wParam;
       }
       void call_key_method(UINT const& i_) const{
         for(auto key : m_keys){
@@ -574,6 +647,9 @@ namespace Tile{
       static long get_statusline_height(){
         return 40;
       }
+      void redraw_statusline(){
+        ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
+      }
       std::string get_layout_name(){
         if(0 < m_layouts.size()){
           return m_layout_it->get_layout_name();
@@ -582,8 +658,8 @@ namespace Tile{
           return "";
         }
       }
-      void redraw_statusline(){
-        ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
+      std::string get_workspace_name() const{
+        return m_workspace_it->get_workspace_name();
       }
   };
 
@@ -774,6 +850,7 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         std::stringstream ss;
         ss << "[" << stTime.wYear << "/" << stTime.wMonth << "/" << stTime.wDay
           << " " << stTime.wHour << ":" << stTime.wMinute << ":" << stTime.wSecond << "]"
+          << "[" << g_p_tile_window_manager->get_workspace_name() << "]"
           << "[" << g_p_tile_window_manager->get_layout_name() << "]"
           << "[" << classname << "] " << windowtext;
 
