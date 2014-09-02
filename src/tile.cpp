@@ -6,7 +6,7 @@
 #include <winuser.h>
 #include <shellapi.h>
 
-// #define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #  include <cstdio>
@@ -382,8 +382,13 @@ namespace Tile{
         HWND const foreground_hwnd = ::GetForegroundWindow();
         ::PostMessage(foreground_hwnd, WM_CLOSE, 0, 0);
       }
+      void cleanup_dead_hwnd(){
+        // TODO
+      }
       void arrange(){
         if(m_layout_it != std::end(m_layouts)){
+          cleanup_dead_hwnd();
+          print_managed_windows();
           m_layout_it->arrange(m_managed_hwnds);
         }
         if(is_manageable(::GetForegroundWindow())){
@@ -422,8 +427,10 @@ namespace Tile{
         HWND const active_hwnd = ::GetActiveWindow();
         HWND const foreground_hwnd = ::GetForegroundWindow();
         char buffer[256];
-        for(auto hwnd : m_managed_hwnds){
+        for(unsigned int i = 0; i < m_managed_hwnds.size(); i++){
+          auto hwnd = m_managed_hwnds.at(i);
           ::GetWindowText(hwnd, buffer, sizeof(buffer) / sizeof(char));
+          std::cout << "No:" << i << std::endl;
           std::cout << "Hwnd:" << hwnd << std::endl;
           std::cout << "Title:" << buffer << std::endl;
           ::GetClassName(hwnd, buffer, sizeof(buffer) / sizeof(char));
@@ -431,15 +438,9 @@ namespace Tile{
           std::cout << "Active:" << (hwnd == active_hwnd) << std::endl;
           std::cout << "Foreground:" << (hwnd == foreground_hwnd) << std::endl;
           std::cout << "Style:" << m_managed_hwnd_to_style[hwnd] << std::endl;
-
-          // HWND const parent = ::GetParent(hwnd_);
-          // HWND const owner = ::GetWindow(hwnd_, GW_OWNER);
-          // std::cout << "ParentHwnd:" << parent << std::endl;
-          // std::cout << "OwnerHwnd:" << owner << std::endl;
-          // std::cout << "IsWindow:" << ::IsWindow(hwnd_) << std::endl;
-          // std::cout << "Visible:" << ::IsWindowVisible(hwnd_) << std::endl;
           std::cout << std::endl;
         }
+        std::cout << std::endl;
       }
       void next_focus(){
         bool is_next_focus = false;
