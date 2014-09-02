@@ -28,6 +28,13 @@ You can edit `bin/tile.ini` and customize this.
     | Alt + Ctrl + Enter | run `powershell.exe`.          | run_shell                   |
     | Alt + Ctrl + 1     | go to workspace 1.             | workspace_1                 |
     | Alt + Ctrl + 2     | go to workspace 2.             | workspace_2                 |
+    | Alt + Ctrl + 3     | go to workspace 3.             | workspace_3                 |
+    | Alt + Ctrl + 4     | go to workspace 4.             | workspace_4                 |
+    | Alt + Ctrl + 5     | go to workspace 5.             | workspace_5                 |
+    | Alt + Ctrl + 6     | go to workspace 6.             | workspace_6                 |
+    | Alt + Ctrl + 7     | go to workspace 7.             | workspace_7                 |
+    | Alt + Ctrl + 8     | go to workspace 8.             | workspace_8                 |
+    | Alt + Ctrl + 9     | go to workspace 9.             | workspace_9                 |
     +--------------------+--------------------------------+-----------------------------+
 
 

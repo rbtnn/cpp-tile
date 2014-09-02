@@ -442,6 +442,13 @@ namespace Tile{
         m_workspaces = {
           Tile::Workspace("1"),
           Tile::Workspace("2"),
+          Tile::Workspace("3"),
+          Tile::Workspace("4"),
+          Tile::Workspace("5"),
+          Tile::Workspace("6"),
+          Tile::Workspace("7"),
+          Tile::Workspace("8"),
+          Tile::Workspace("9"),
         };
         m_workspace_it = std::begin(m_workspaces);
 
@@ -508,6 +515,13 @@ namespace Tile{
         regist_key("run_shell", &TilingWindowManager::run_shell);
         regist_key("workspace_1", &TilingWindowManager::workspace_1);
         regist_key("workspace_2", &TilingWindowManager::workspace_2);
+        regist_key("workspace_3", &TilingWindowManager::workspace_3);
+        regist_key("workspace_4", &TilingWindowManager::workspace_4);
+        regist_key("workspace_5", &TilingWindowManager::workspace_5);
+        regist_key("workspace_6", &TilingWindowManager::workspace_6);
+        regist_key("workspace_7", &TilingWindowManager::workspace_7);
+        regist_key("workspace_8", &TilingWindowManager::workspace_8);
+        regist_key("workspace_9", &TilingWindowManager::workspace_9);
 
         arrange();
 
@@ -618,6 +632,27 @@ namespace Tile{
       }
       void workspace_2(){
         workspace_of(1);
+      }
+      void workspace_3(){
+        workspace_of(2);
+      }
+      void workspace_4(){
+        workspace_of(3);
+      }
+      void workspace_5(){
+        workspace_of(4);
+      }
+      void workspace_6(){
+        workspace_of(5);
+      }
+      void workspace_7(){
+        workspace_of(6);
+      }
+      void workspace_8(){
+        workspace_of(7);
+      }
+      void workspace_9(){
+        workspace_of(8);
       }
       void focus_window_to_master(){
         HWND const foreground_hwnd = ::GetForegroundWindow();
