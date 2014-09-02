@@ -795,6 +795,36 @@ void arrange(std::deque<HWND> const& hwnds_){
         ((i == 0) ? height                                                 : sub_height));
   }
 }
+void arrange_twin(std::deque<HWND> const& hwnds_){
+  RECT window_area = Tile::get_window_area();
+  long const width = window_area.right - window_area.left;
+  long const height = window_area.bottom - window_area.top;
+  if(0 == hwnds_.size()){
+    // nop
+  }
+  else if(1 == hwnds_.size()){
+    resize_window(window_area, hwnds_.at(0), 0, 0, width, height);
+  }
+  else if(2 == hwnds_.size()){
+    resize_window(window_area, hwnds_.at(0), 0, 0, width / 2        , height);
+    resize_window(window_area, hwnds_.at(1), width / 2, 0, width / 2, height);
+  }
+  else{
+    long const n = hwnds_.size() - 2;
+    long const sub_width = width / n;
+
+    resize_window(window_area, hwnds_.at(0), 0        , 0, width / 2, height / 4 * 3);
+    resize_window(window_area, hwnds_.at(1), width / 2, 0, width / 2, height / 4 * 3);
+
+    for(unsigned int i = 2; i < hwnds_.size(); i++){
+      resize_window(window_area, hwnds_.at(i),
+          (sub_width * (i - 2)),
+          (height / 4 * 3),
+          (sub_width),
+          (height / 4 * 1));
+    }
+  }
+}
 void arrange_maximal(std::deque<HWND> const& hwnds_){
   RECT window_area = Tile::get_window_area();
   long const width = window_area.right - window_area.left;
@@ -826,6 +856,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
 
     g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", {
           Tile::Layout("arrange", arrange),
+          Tile::Layout("arrange_twin", arrange_twin),
           Tile::Layout("arrange_maximal", arrange_maximal),
           }, configreader));
 
@@ -890,7 +921,7 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
       break;
 
     case WM_CREATE:
-      ::SetTimer(hwnd_, 1, 1000, NULL);
+      ::SetTimer(hwnd_, 1, 500, NULL);
       break;
 
     case WM_TIMER:
