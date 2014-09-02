@@ -40,6 +40,92 @@ namespace Tile{
   void die(std::string const& msg);
   RECT get_window_area();
 
+  class ConfigReader{
+    private:
+      std::vector<std::string> m_ignore_classnames;
+      std::vector<std::string> m_not_apply_style_to_classnames;
+      std::map<std::string, std::string> m_keys;
+      std::string m_inifile_path;
+
+      std::vector<std::string> split(const std::string& input_, char delimiter_){
+        std::istringstream stream(input_);
+        std::string field;
+        std::vector<std::string> result;
+        while (std::getline(stream, field, delimiter_)) {
+          result.push_back(field);
+        }
+        return result;
+      }
+      std::vector<std::string> get_config_settings_ignore_classnames(){
+        char buffer[1024];
+        ::GetPrivateProfileString("settings", "IGNORE_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
+        return split(std::string(buffer), ',');
+      }
+      std::vector<std::string> get_config_settings_not_apply_style_to_classnames(){
+        char buffer[1024];
+        ::GetPrivateProfileString("settings", "NOT_APPLY_STYLE_TO_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
+        return split(std::string(buffer), ',');
+      }
+      std::map<std::string, std::string> get_config_keys(){
+        std::map<std::string, std::string> m;
+        char buffer[1024];
+        ::GetPrivateProfileSection("keys", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
+        std::string line = "";
+        for(unsigned int i=0; i < (sizeof(buffer) / sizeof(char)) - 1; i++){
+          if(buffer[i] == '\0'){
+            auto xs = split(line, '=');
+            line = "";
+            if(1 < xs.size()){
+              m.insert(std::map<std::string, std::string>::value_type(xs.at(0), xs.at(1)));
+            }
+            if(buffer[i + 1] == '\0'){
+              break;
+            }
+          }
+          else{
+            line += buffer[i];
+          }
+        }
+        return m;
+      }
+      std::string get_inifile_path(){
+        char szFileName[1024];
+        ::GetModuleFileName( NULL, szFileName, MAX_PATH);
+        std::string str = std::string(szFileName);
+        std::string::size_type pos = str.find(".exe", 0);
+        if(pos != std::string::npos){
+          str.replace(pos, 4, ".ini");
+        }
+        else{
+          str = "";
+        }
+        return str;
+      }
+
+    public:
+      ConfigReader(){
+        reload();
+      }
+
+      void reload(){
+        m_ignore_classnames = get_config_settings_ignore_classnames();
+        m_not_apply_style_to_classnames = get_config_settings_not_apply_style_to_classnames();
+        m_keys = get_config_keys();
+        m_inifile_path = get_inifile_path();
+      }
+      std::vector<std::string> const& get_ignore_classnames() const{
+        return m_ignore_classnames;
+      }
+      std::vector<std::string> const& get_not_apply_style_to_classnames() const{
+        return m_not_apply_style_to_classnames;
+      }
+      std::map<std::string, std::string> const& get_keys() const{
+        return m_keys;
+      }
+      std::string const& get_inipath() const{
+        return m_inifile_path;
+      }
+  };
   class Key{
     private:
       UINT const m_mod;
@@ -181,6 +267,8 @@ namespace Tile{
       HWND m_border_bottom_hwnd;
       std::string m_border_class_name;
 
+      std::shared_ptr<ConfigReader> m_config;
+
       std::vector<std::shared_ptr<Key> > m_keys;
 
       std::vector<Tile::Workspace> m_workspaces;
@@ -188,48 +276,6 @@ namespace Tile{
 
       std::vector<Tile::Layout> m_layouts;
       std::vector<Tile::Layout>::iterator m_layout_it;
-
-      std::vector<std::string> split(const std::string& input_, char delimiter_){
-        std::istringstream stream(input_);
-        std::string field;
-        std::vector<std::string> result;
-        while (std::getline(stream, field, delimiter_)) {
-          result.push_back(field);
-        }
-        return result;
-      }
-      std::vector<std::string> get_config_settings_ignore_classnames(){
-        char buffer[1024];
-        ::GetPrivateProfileString("settings", "IGNORE_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
-        return split(std::string(buffer), ',');
-      }
-      std::vector<std::string> get_config_settings_not_apply_style_to_classnames(){
-        char buffer[1024];
-        ::GetPrivateProfileString("settings", "NOT_APPLY_STYLE_TO_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
-        return split(std::string(buffer), ',');
-      }
-      std::map<std::string, std::string> get_config_keys(){
-        std::map<std::string, std::string> m;
-        char buffer[1024];
-        ::GetPrivateProfileSection("keys", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
-        std::string line = "";
-        for(unsigned int i=0; i < (sizeof(buffer) / sizeof(char)) - 1; i++){
-          if(buffer[i] == '\0'){
-            auto xs = split(line, '=');
-            line = "";
-            if(1 < xs.size()){
-              m.insert(std::map<std::string, std::string>::value_type(xs.at(0), xs.at(1)));
-            }
-            if(buffer[i + 1] == '\0'){
-              break;
-            }
-          }
-          else{
-            line += buffer[i];
-          }
-        }
-        return m;
-      }
 
       void init_main(){
         WNDCLASSEX winClass;
@@ -353,7 +399,7 @@ namespace Tile{
         char buffer[256];
         ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
 
-        for(auto classname : get_config_settings_ignore_classnames()){
+        for(auto classname : m_config->get_ignore_classnames()){
           if(std::string(buffer) == classname){ return false; }
         }
         if(std::string(buffer) == m_statusline_class_name){ return false; }
@@ -379,7 +425,7 @@ namespace Tile{
       }
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
         unsigned long const MODKEY = MOD_ALT | MOD_CONTROL;
-        std::map<std::string, std::string> m = get_config_keys();
+        std::map<std::string, std::string> m = m_config->get_keys();
         auto it = m.find(key);
         if(it != std::end(m)){
           unsigned int const n = std::atoi(m[key].c_str());
@@ -388,8 +434,10 @@ namespace Tile{
       }
 
     public:
-      TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_){
+      TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_, std::shared_ptr<ConfigReader> config_){
         m_hInstance = hInstance_;
+
+        m_config = config_;
 
         m_workspaces = {
           Tile::Workspace("1"),
@@ -476,25 +524,11 @@ namespace Tile{
 
       void manage(HWND hwnd_){
         if(is_manageable(hwnd_)){
-          m_workspace_it->manage(hwnd_, get_config_settings_not_apply_style_to_classnames());
+          m_workspace_it->manage(hwnd_, m_config->get_not_apply_style_to_classnames());
         }
       }
       void unmanage(HWND hwnd_){
         m_workspace_it->unmanage(hwnd_);
-      }
-
-      std::string get_inifile_path(){
-        char szFileName[1024];
-        ::GetModuleFileName( NULL, szFileName, MAX_PATH);
-        std::string str = std::string(szFileName);
-        std::string::size_type pos = str.find(".exe", 0);
-        if(pos != std::string::npos){
-          str.replace(pos, 4, ".ini");
-        }
-        else{
-          str = "";
-        }
-        return str;
       }
 
       void run_shell(){
@@ -589,7 +623,7 @@ namespace Tile{
         HWND const foreground_hwnd = ::GetForegroundWindow();
         if(0 < m_workspace_it->size()){
           m_workspace_it->unmanage(foreground_hwnd);
-          m_workspace_it->manage(foreground_hwnd, get_config_settings_not_apply_style_to_classnames());
+          m_workspace_it->manage(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
           arrange();
         }
       }
@@ -753,16 +787,18 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     ::MessageBox(NULL, "Multiplex starting is not permitted.", "Error", MB_ICONERROR);
   }
   else{
+    std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader);
+
     g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", {
           Tile::Layout("arrange", arrange),
           Tile::Layout("arrange_maximal", arrange_maximal),
-          }));
-    std::string const path = g_p_tile_window_manager->get_inifile_path();
-    if(exist_file(path)){
+          }, configreader));
+
+    if(exist_file(configreader->get_inipath())){
       g_p_tile_window_manager->start();
     }
     else{
-      ::MessageBox(NULL, ("'" + path + "' does not exist.").c_str(), "Error", MB_ICONERROR);
+      ::MessageBox(NULL, ("'" + configreader->get_inipath() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
     }
   }
 
