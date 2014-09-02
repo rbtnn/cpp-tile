@@ -80,6 +80,10 @@ namespace Tile{
         m_f(hwnds_);
       }
   };
+  class Workspace{
+    private:
+    public:
+  };
   class TilingWindowManager{
     private:
       HINSTANCE m_hInstance;
@@ -375,6 +379,9 @@ namespace Tile{
         return str;
       }
 
+      void run_shell(){
+        ::ShellExecute(NULL, NULL, "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "", NULL, SW_SHOWDEFAULT);
+      }
       void exit_tile(){
         ::PostMessage(m_main_hwnd, WM_CLOSE, 0, 0);
       }
@@ -538,6 +545,7 @@ namespace Tile{
         regist_key("print_managed_windows", &TilingWindowManager::print_managed_windows);
         regist_key("exit_tile", &TilingWindowManager::exit_tile);
         regist_key("kill_client", &TilingWindowManager::kill_client);
+        regist_key("run_shell", &TilingWindowManager::run_shell);
 
         arrange();
 
@@ -611,9 +619,6 @@ bool exist_file(std::string const path){
   else{
     return false;
   }
-}
-void keyevent_run_gvim(){
-  ::ShellExecute(NULL, NULL, "C:\\vim\\src\\gvim.exe", "", NULL, SW_SHOWDEFAULT);
 }
 void resize_window(RECT const& window_area_, HWND const& hwnd_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
   ::ShowWindow(hwnd_, SW_SHOWNORMAL);

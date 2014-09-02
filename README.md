@@ -11,6 +11,8 @@ This is Tiling Window Manager for MS Windows.
 
 ## USAGE
 
+> bin/tile.exe
+
     +--------------------+--------------------------------+
     | Alt + Ctrl + M     | active window to master erea.  |
     | Alt + Ctrl + Q     | exit tile.exe.                 |
@@ -18,6 +20,7 @@ This is Tiling Window Manager for MS Windows.
     | Alt + Ctrl + K     | focus to a previous window.    |
     | Alt + Ctrl + J     | focus to a next window.        |
     | Alt + Ctrl + Space | change layout method.          |
+    | Alt + Ctrl + Enter | run `powershell.exe`.          |
     +--------------------+--------------------------------+
 
 You can edit `bin/tile.ini`, and customize this.
