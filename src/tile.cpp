@@ -238,14 +238,8 @@ namespace Tile{
           ::SetWindowLong(hwnd_, GWL_STYLE, m_managed_hwnd_to_style[hwnd_]);
         }
       }
-      void hide(HWND const hwnd_){
-        auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-        if(it != std::end(m_managed_hwnds)){
-          ::ShowWindow(hwnd_, SW_HIDE);
-        }
-      }
 
-      std::deque<HWND> const& get_managed_hwnds(){
+      std::deque<HWND> const& get_managed_hwnds() const{
         return m_managed_hwnds;
       }
 
@@ -424,11 +418,22 @@ namespace Tile{
         return false;
       }
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
-        unsigned long const MODKEY = MOD_ALT | MOD_CONTROL;
         std::map<std::string, std::string> m = m_config->get_keys();
         auto it = m.find(key);
         if(it != std::end(m)){
-          unsigned int const n = std::atoi(m[key].c_str());
+          unsigned long MODKEY = MOD_ALT | MOD_CONTROL;
+          unsigned char n = std::atoi(m[key].c_str());
+          switch(n){
+            case '!': n = '1'; MODKEY |= MOD_SHIFT; break;
+            case '@': n = '2'; MODKEY |= MOD_SHIFT; break;
+            case '#': n = '3'; MODKEY |= MOD_SHIFT; break;
+            case '$': n = '4'; MODKEY |= MOD_SHIFT; break;
+            case '%': n = '5'; MODKEY |= MOD_SHIFT; break;
+            case '^': n = '6'; MODKEY |= MOD_SHIFT; break;
+            case '&': n = '7'; MODKEY |= MOD_SHIFT; break;
+            case '*': n = '8'; MODKEY |= MOD_SHIFT; break;
+            case '(': n = '9'; MODKEY |= MOD_SHIFT; break;
+          }
           m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, MODKEY, n, std::bind(f_, this))));
         }
       }
@@ -468,6 +473,7 @@ namespace Tile{
         for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
           for(auto hwnd : it->get_managed_hwnds()){
             it->unmanage(hwnd);
+            ::ShowWindow(hwnd, SW_SHOWNORMAL);
           }
         }
         if (!m_main_hwnd){
@@ -522,6 +528,15 @@ namespace Tile{
         regist_key("workspace_7", &TilingWindowManager::workspace_7);
         regist_key("workspace_8", &TilingWindowManager::workspace_8);
         regist_key("workspace_9", &TilingWindowManager::workspace_9);
+        regist_key("move_to_workspace_1", &TilingWindowManager::move_to_workspace_1);
+        regist_key("move_to_workspace_2", &TilingWindowManager::move_to_workspace_2);
+        regist_key("move_to_workspace_3", &TilingWindowManager::move_to_workspace_3);
+        regist_key("move_to_workspace_4", &TilingWindowManager::move_to_workspace_4);
+        regist_key("move_to_workspace_5", &TilingWindowManager::move_to_workspace_5);
+        regist_key("move_to_workspace_6", &TilingWindowManager::move_to_workspace_6);
+        regist_key("move_to_workspace_7", &TilingWindowManager::move_to_workspace_7);
+        regist_key("move_to_workspace_8", &TilingWindowManager::move_to_workspace_8);
+        regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace_9);
 
         arrange();
 
@@ -558,6 +573,11 @@ namespace Tile{
       void arrange(){
         if(m_layout_it != std::end(m_layouts)){
           m_layout_it->arrange(m_workspace_it->get_managed_hwnds());
+        }
+        for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+          if(!is_manageable(hwnd)){
+            m_workspace_it->unmanage(hwnd);
+          }
         }
         if(is_manageable(::GetForegroundWindow())){
           unsigned int n = 5;
@@ -627,6 +647,33 @@ namespace Tile{
           }
         }
       }
+      void move_to_workspace_1(){
+        move_to_workspace_of(0);
+      }
+      void move_to_workspace_2(){
+        move_to_workspace_of(1);
+      }
+      void move_to_workspace_3(){
+        move_to_workspace_of(2);
+      }
+      void move_to_workspace_4(){
+        move_to_workspace_of(3);
+      }
+      void move_to_workspace_5(){
+        move_to_workspace_of(4);
+      }
+      void move_to_workspace_6(){
+        move_to_workspace_of(5);
+      }
+      void move_to_workspace_7(){
+        move_to_workspace_of(6);
+      }
+      void move_to_workspace_8(){
+        move_to_workspace_of(7);
+      }
+      void move_to_workspace_9(){
+        move_to_workspace_of(8);
+      }
       void workspace_1(){
         workspace_of(0);
       }
@@ -663,26 +710,23 @@ namespace Tile{
         }
       }
 
-      // void print_managed_windows(){
-      //   HWND const active_hwnd = ::GetActiveWindow();
-      //   HWND const foreground_hwnd = ::GetForegroundWindow();
-      //   char buffer[256];
-      //   for(unsigned int i = 0; i < m_workspace_it->size(); i++){
-      //     auto hwnd = m_workspace_it->at(i);
-      //     ::GetWindowText(hwnd, buffer, sizeof(buffer) / sizeof(char));
-      //     std::cout << "No:" << i << std::endl;
-      //     std::cout << "Hwnd:" << hwnd << std::endl;
-      //     std::cout << "Title:" << buffer << std::endl;
-      //     ::GetClassName(hwnd, buffer, sizeof(buffer) / sizeof(char));
-      //     std::cout << "ClassName:" << buffer << std::endl;
-      //     std::cout << "Active:" << (hwnd == active_hwnd) << std::endl;
-      //     std::cout << "Foreground:" << (hwnd == foreground_hwnd) << std::endl;
-      //     std::cout << "Style:" << m_managed_hwnd_to_style[hwnd] << std::endl;
-      //     std::cout << std::endl;
-      //   }
-      //   std::cout << std::endl;
-      // }
-
+      void move_to_workspace_of(unsigned int const i){
+        HWND const hwnd = ::GetForegroundWindow();
+        if(is_manageable(hwnd)){
+          unsigned int n = 0;
+          for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+            if(n == i && it != m_workspace_it){
+              m_workspace_it->unmanage(hwnd);
+              it->manage(hwnd, m_config->get_not_apply_style_to_classnames());
+              arrange();
+              ::ShowWindow(hwnd, SW_HIDE);
+              ::SetForegroundWindow(::FindWindow("Progman", NULL));
+              break;
+            }
+            n++;
+          }
+        }
+      }
       void workspace_of(unsigned int const i){
         unsigned int n = 0;
         if(i < m_workspaces.size()){
@@ -690,7 +734,7 @@ namespace Tile{
             if(n == i){
               if(m_workspace_it != it){
                 for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-                  m_workspace_it->hide(hwnd);
+                  ::ShowWindow(hwnd, SW_HIDE);
                 }
                 m_workspace_it = it;
               }
@@ -701,6 +745,7 @@ namespace Tile{
           }
         }
       }
+
       void call_key_method(UINT const& i_) const{
         for(auto key : m_keys){
           if(key->hash() == i_){
