@@ -580,7 +580,7 @@ namespace Tile{
           }
         }
         if(is_manageable(::GetForegroundWindow())){
-          unsigned int n = 5;
+          unsigned int n = 3;
           RECT rect;
           ::GetWindowRect(::GetForegroundWindow(), &rect);
           ::SetWindowPos(m_border_left_hwnd, HWND_TOPMOST,
