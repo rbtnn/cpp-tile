@@ -173,6 +173,7 @@ namespace Tile{
       std::deque<HWND> m_managed_hwnds;
       std::map<HWND, RECT> m_managed_hwnd_to_rect;
       std::map<HWND, LONG> m_managed_hwnd_to_style;
+      std::map<HWND, LONG> m_managed_hwnd_to_exstyle;
 
       void set_style(HWND hwnd_, std::vector<std::string> classnames_){
         char buffer[256];
@@ -224,7 +225,11 @@ namespace Tile{
           m_managed_hwnds.push_front(hwnd_);
           m_managed_hwnd_to_rect.insert(std::map<HWND, RECT>::value_type(hwnd_, rect));
           m_managed_hwnd_to_style.insert(std::map<HWND, LONG>::value_type(hwnd_, ::GetWindowLong(hwnd_, GWL_STYLE)));
+          m_managed_hwnd_to_exstyle.insert(std::map<HWND, LONG>::value_type(hwnd_, ::GetWindowLong(hwnd_, GWL_EXSTYLE)));
           set_style(hwnd_, classnames_);
+
+          ::SetWindowLong(hwnd_, GWL_EXSTYLE, m_managed_hwnd_to_exstyle[hwnd_] | WS_EX_LAYERED );
+          ::SetLayeredWindowAttributes(hwnd_, 0, 200, LWA_ALPHA);
         }
       }
       void unmanage(HWND const hwnd_){
@@ -236,6 +241,7 @@ namespace Tile{
           LONG const height = rect.bottom - rect.top;
           ::SetWindowPos(hwnd_, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
           ::SetWindowLong(hwnd_, GWL_STYLE, m_managed_hwnd_to_style[hwnd_]);
+          ::SetWindowLong(hwnd_, GWL_EXSTYLE, m_managed_hwnd_to_exstyle[hwnd_]);
         }
       }
 
