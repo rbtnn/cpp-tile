@@ -228,8 +228,8 @@ namespace Tile{
           m_managed_hwnd_to_exstyle.insert(std::map<HWND, LONG>::value_type(hwnd_, ::GetWindowLong(hwnd_, GWL_EXSTYLE)));
           set_style(hwnd_, classnames_);
 
-          ::SetWindowLong(hwnd_, GWL_EXSTYLE, m_managed_hwnd_to_exstyle[hwnd_] | WS_EX_LAYERED );
-          ::SetLayeredWindowAttributes(hwnd_, 0, 200, LWA_ALPHA);
+          // ::SetWindowLong(hwnd_, GWL_EXSTYLE, m_managed_hwnd_to_exstyle[hwnd_] | WS_EX_LAYERED );
+          // ::SetLayeredWindowAttributes(hwnd_, 0, 200, LWA_ALPHA);
         }
       }
       void unmanage(HWND const hwnd_){
