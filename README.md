@@ -24,6 +24,7 @@ You can edit `bin/tile.ini` and customize this.
     | Alt + Ctrl + C     | kill a active window.                | kill_client                 |
     | Alt + Ctrl + K     | focus to a previous window.          | prev_focus                  |
     | Alt + Ctrl + J     | focus to a next window.              | next_focus                  |
+    | Alt + Ctrl + R     | rescan processes.                    | rescan                      |
     | Alt + Ctrl + Space | change layout method.                | next_layout                 |
     | Alt + Ctrl + Enter | run `powershell.exe`.                | run_shell                   |
     | Alt + Ctrl + 1     | go to workspace 1.                   | workspace_1                 |

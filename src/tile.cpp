@@ -443,6 +443,14 @@ namespace Tile{
           m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, MODKEY, n, std::bind(f_, this))));
         }
       }
+      void unmanage_all(){
+        for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+          for(auto hwnd : it->get_managed_hwnds()){
+            it->unmanage(hwnd);
+            ::ShowWindow(hwnd, SW_SHOWNORMAL);
+          }
+        }
+      }
 
     public:
       TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_, std::shared_ptr<ConfigReader> config_){
@@ -476,12 +484,7 @@ namespace Tile{
         m_shellhookid = ::RegisterWindowMessage("SHELLHOOK");
       }
       ~TilingWindowManager(){
-        for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-          for(auto hwnd : it->get_managed_hwnds()){
-            it->unmanage(hwnd);
-            ::ShowWindow(hwnd, SW_SHOWNORMAL);
-          }
-        }
+        unmanage_all();
         if (!m_main_hwnd){
           ::DestroyWindow(m_main_hwnd);
         }
@@ -514,16 +517,24 @@ namespace Tile{
           Tile::die("Could not find RegisterShellHookWindow");
         }
 
-        ::EnumWindows(scan, 0);
-
         RegisterShellHookWindow(m_main_hwnd);
 
+        regist_key("exit_tile", &TilingWindowManager::exit_tile);
         regist_key("focus_window_to_master", &TilingWindowManager::focus_window_to_master);
+        regist_key("kill_client", &TilingWindowManager::kill_client);
+        regist_key("move_to_workspace_1", &TilingWindowManager::move_to_workspace_1);
+        regist_key("move_to_workspace_2", &TilingWindowManager::move_to_workspace_2);
+        regist_key("move_to_workspace_3", &TilingWindowManager::move_to_workspace_3);
+        regist_key("move_to_workspace_4", &TilingWindowManager::move_to_workspace_4);
+        regist_key("move_to_workspace_5", &TilingWindowManager::move_to_workspace_5);
+        regist_key("move_to_workspace_6", &TilingWindowManager::move_to_workspace_6);
+        regist_key("move_to_workspace_7", &TilingWindowManager::move_to_workspace_7);
+        regist_key("move_to_workspace_8", &TilingWindowManager::move_to_workspace_8);
+        regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace_9);
         regist_key("next_focus", &TilingWindowManager::next_focus);
         regist_key("next_layout", &TilingWindowManager::next_layout);
         regist_key("prev_focus", &TilingWindowManager::prev_focus);
-        regist_key("exit_tile", &TilingWindowManager::exit_tile);
-        regist_key("kill_client", &TilingWindowManager::kill_client);
+        regist_key("rescan", &TilingWindowManager::rescan);
         regist_key("run_shell", &TilingWindowManager::run_shell);
         regist_key("workspace_1", &TilingWindowManager::workspace_1);
         regist_key("workspace_2", &TilingWindowManager::workspace_2);
@@ -534,16 +545,8 @@ namespace Tile{
         regist_key("workspace_7", &TilingWindowManager::workspace_7);
         regist_key("workspace_8", &TilingWindowManager::workspace_8);
         regist_key("workspace_9", &TilingWindowManager::workspace_9);
-        regist_key("move_to_workspace_1", &TilingWindowManager::move_to_workspace_1);
-        regist_key("move_to_workspace_2", &TilingWindowManager::move_to_workspace_2);
-        regist_key("move_to_workspace_3", &TilingWindowManager::move_to_workspace_3);
-        regist_key("move_to_workspace_4", &TilingWindowManager::move_to_workspace_4);
-        regist_key("move_to_workspace_5", &TilingWindowManager::move_to_workspace_5);
-        regist_key("move_to_workspace_6", &TilingWindowManager::move_to_workspace_6);
-        regist_key("move_to_workspace_7", &TilingWindowManager::move_to_workspace_7);
-        regist_key("move_to_workspace_8", &TilingWindowManager::move_to_workspace_8);
-        regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace_9);
 
+        ::EnumWindows(scan, 0);
         arrange();
 
         ::MSG msg;
@@ -566,6 +569,11 @@ namespace Tile{
         m_workspace_it->unmanage(hwnd_);
       }
 
+      void rescan(){
+        unmanage_all();
+        ::EnumWindows(scan, 0);
+        arrange();
+      }
       void run_shell(){
         ::ShellExecute(NULL, NULL, "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "", NULL, SW_SHOWDEFAULT);
       }
