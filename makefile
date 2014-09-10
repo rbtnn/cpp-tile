@@ -2,17 +2,20 @@
 BIN_DIR = ./bin
 SRC_DIR = ./src
 EXECNAME = ${BIN_DIR}/tile.exe
-SRC = ${SRC_DIR}/tile.cpp
+DLLNAME = ${BIN_DIR}/test.dll
+SRC = 
 LOG = ./log.txt
-CFLAGS = -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing -s -mwindows
 CC = g++.exe
 
 all: build
 
-${EXECNAME}: ${SRC}
-	${CC} ${SRC} ${CFLAGS} -o ${EXECNAME}
+${EXECNAME}: ${SRC_DIR}/tile.cpp
+	${CC} $< -o $@ -mwindows -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing -s
 
-build: ${EXECNAME}
+${DLLNAME}: ${SRC_DIR}/test.cpp
+	${CC} $< -o $@ -mwindows -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing -shared -Wl,--add-stdcall-alias
+
+build: ${EXECNAME} ${DLLNAME}
 
 run: ${EXECNAME}
 	${EXECNAME}

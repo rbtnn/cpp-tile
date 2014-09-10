@@ -31,11 +31,6 @@ LRESULT CALLBACK StatusLineWndProc(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK BorderWndProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK scan(HWND, LPARAM);
 
-// RegisterHotKey function
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
-// RegisterHotKey
-// http://msdn.microsoft.com/ja-jp/library/cc411006.aspx
-
 namespace Tile{
   void die(std::string const& msg);
   RECT get_window_area();
@@ -218,6 +213,11 @@ namespace Tile{
         auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
         return (it != std::end(m_managed_hwnds));
       }
+
+      void remanage(HWND hwnd_, std::vector<std::string> classnames_){
+        unmanage(hwnd_);
+        manage(hwnd_, classnames_);
+      }
       void manage(HWND hwnd_, std::vector<std::string> classnames_){
         if(!is_managed(hwnd_)){
           RECT rect;
@@ -320,7 +320,7 @@ namespace Tile{
         winClass.lpszClassName = m_statusline_class_name.c_str();
         ATOM atom = ::RegisterClassEx(&winClass);
         if(!atom){
-          Tile::die("Error registering window class(1)");
+          Tile::die("Error registering window class(statusline)");
         }
 
         m_statusline_hwnd = ::CreateWindowEx(WS_EX_TOOLWINDOW,
@@ -392,17 +392,15 @@ namespace Tile{
         HWND const parent = ::GetParent(hwnd_);
         int const style = ::GetWindowLong(hwnd_, GWL_STYLE);
         int const exstyle = ::GetWindowLong(hwnd_, GWL_EXSTYLE);
-        bool const pok = (parent != 0 && is_manageable(parent));
+        bool const pok = (parent != 0 && is_manageable_arrange(parent));
         bool const istool = exstyle & WS_EX_TOOLWINDOW;
         bool const isapp = exstyle & WS_EX_APPWINDOW;
 
         char buffer[256];
         ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
-
-        for(auto classname : m_config->get_ignore_classnames()){
-          if(std::string(buffer) == classname){ return false; }
+        if(std::string(buffer) == m_statusline_class_name){
+          return false;
         }
-        if(std::string(buffer) == m_statusline_class_name){ return false; }
 
         if (::GetWindowTextLength(hwnd_) == 0) {
           return false;
@@ -422,6 +420,19 @@ namespace Tile{
         }
 
         return false;
+      }
+      bool is_manageable_focus(HWND const hwnd_){
+        return is_manageable(hwnd_);
+      }
+      bool is_manageable_arrange(HWND const hwnd_){
+        char buffer[256];
+        ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
+        for(auto classname : m_config->get_ignore_classnames()){
+          if(std::string(buffer) == classname){
+            return false;
+          }
+        }
+        return is_manageable(hwnd_);
       }
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
         std::map<std::string, std::string> m = m_config->get_keys();
@@ -504,8 +515,9 @@ namespace Tile{
           ::DestroyWindow(m_border_bottom_hwnd);
         }
         if (!m_hInstance){
-          ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
           ::UnregisterClass(m_main_class_name.c_str(), m_hInstance);
+          ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
+          ::UnregisterClass(m_border_class_name.c_str(), m_hInstance);
         }
       }
 
@@ -533,7 +545,7 @@ namespace Tile{
         regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace_9);
         regist_key("next_focus", &TilingWindowManager::next_focus);
         regist_key("next_layout", &TilingWindowManager::next_layout);
-        regist_key("prev_focus", &TilingWindowManager::prev_focus);
+        regist_key("previous_focus", &TilingWindowManager::previous_focus);
         regist_key("rescan", &TilingWindowManager::rescan);
         regist_key("run_shell", &TilingWindowManager::run_shell);
         regist_key("workspace_1", &TilingWindowManager::workspace_1);
@@ -561,7 +573,18 @@ namespace Tile{
       }
 
       void manage(HWND hwnd_){
-        if(is_manageable(hwnd_)){
+        if(is_manageable_arrange(hwnd_) || is_manageable_focus(hwnd_)){
+
+#ifdef DEBUG
+          HWND const parent = ::GetParent(hwnd_);
+          char buffer[256];
+          ::GetClassName(hwnd_, buffer, sizeof(buffer) / sizeof(char));
+          std::cout << "hwnd:" << hwnd_ << std::endl;
+          std::cout << "parent:" << parent << std::endl;
+          std::cout << "classname:" << buffer << std::endl;
+          std::cout << std::endl;
+#endif
+
           m_workspace_it->manage(hwnd_, m_config->get_not_apply_style_to_classnames());
         }
       }
@@ -586,14 +609,15 @@ namespace Tile{
       }
       void arrange(){
         if(m_layout_it != std::end(m_layouts)){
-          m_layout_it->arrange(m_workspace_it->get_managed_hwnds());
-        }
-        for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-          if(!is_manageable(hwnd)){
-            m_workspace_it->unmanage(hwnd);
+          std::deque<HWND> hwnds;
+          for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+            if(is_manageable_arrange(hwnd)){
+              hwnds.push_back(hwnd);
+            }
           }
+          m_layout_it->arrange(hwnds);
         }
-        if(is_manageable(::GetForegroundWindow())){
+        if(is_manageable_arrange(::GetForegroundWindow()) || is_manageable_focus(::GetForegroundWindow())){
           unsigned int n = 3;
           RECT rect;
           ::GetWindowRect(::GetForegroundWindow(), &rect);
@@ -643,7 +667,7 @@ namespace Tile{
           }
         }
       }
-      void prev_focus(){
+      void previous_focus(){
         bool is_next_focus = false;
         HWND const foreground_hwnd = ::GetForegroundWindow();
         if(0 < m_workspace_it->size()){
@@ -718,15 +742,14 @@ namespace Tile{
       void focus_window_to_master(){
         HWND const foreground_hwnd = ::GetForegroundWindow();
         if(0 < m_workspace_it->size()){
-          m_workspace_it->unmanage(foreground_hwnd);
-          m_workspace_it->manage(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
+          m_workspace_it->remanage(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
           arrange();
         }
       }
 
       void move_to_workspace_of(unsigned int const i){
         HWND const hwnd = ::GetForegroundWindow();
-        if(is_manageable(hwnd)){
+        if(is_manageable_arrange(hwnd) || is_manageable_focus(hwnd)){
           unsigned int n = 0;
           for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
             if(n == i && it != m_workspace_it){
@@ -751,8 +774,11 @@ namespace Tile{
                   ::ShowWindow(hwnd, SW_HIDE);
                 }
                 m_workspace_it = it;
+                for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+                  m_workspace_it->remanage(hwnd, m_config->get_not_apply_style_to_classnames());
+                }
+                arrange();
               }
-              arrange();
               break;
             }
             n++;
@@ -788,6 +814,9 @@ namespace Tile{
       }
       std::string get_workspace_name() const{
         return m_workspace_it->get_workspace_name();
+      }
+      long get_managed_window_size() const{
+        return m_workspace_it->size();
       }
   };
 
@@ -896,7 +925,7 @@ void arrange_maximal(std::deque<HWND> const& hwnds_){
 
 int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLine_, int nShowCmd_){
 #ifdef DEBUG
-  bool const use_console = false;
+  bool const use_console = true;
   if(use_console){
     ::AllocConsole();
     ::freopen("CONOUT$", "w", stdout);
@@ -906,6 +935,16 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     ::freopen("./log.txt", "w", stdout);
   }
 #endif
+  // HMODULE h = ::LoadLibrary("test.dll");
+  // if(h == NULL){
+  //   ::MessageBox(NULL, "null", "", MB_OK);
+  // }
+  // else{
+  //   typedef int (*TFUNC)(int);
+  //   TFUNC DllFunction = (TFUNC)::GetProcAddress(h, "MyFunction");
+  //   DllFunction(12);
+  //   ::FreeLibrary(h);
+  // }
 
   if(::FindWindow("Tile", NULL) != NULL){
     ::MessageBox(NULL, "Multiplex starting is not permitted.", "Error", MB_ICONERROR);
@@ -1012,6 +1051,7 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         ss << "[" << stTime.wYear << "/" << stTime.wMonth << "/" << stTime.wDay
           << " " << stTime.wHour << ":" << stTime.wMinute << ":" << stTime.wSecond << "]"
           << "[" << g_p_tile_window_manager->get_workspace_name() << "]"
+          << "[" << g_p_tile_window_manager->get_managed_window_size() << "]"
           << "[" << g_p_tile_window_manager->get_layout_name() << "]"
           << "[" << classname << "] " << windowtext;
 

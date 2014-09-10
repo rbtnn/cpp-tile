@@ -22,7 +22,7 @@ You can edit `bin/tile.ini` and customize this.
     | Alt + Ctrl + M     | active window to master erea.        | focus_window_to_master      |
     | Alt + Ctrl + Q     | exit tile.exe.                       | exit_tile                   |
     | Alt + Ctrl + C     | kill a active window.                | kill_client                 |
-    | Alt + Ctrl + K     | focus to a previous window.          | prev_focus                  |
+    | Alt + Ctrl + K     | focus to a previous window.          | previous_focus              |
     | Alt + Ctrl + J     | focus to a next window.              | next_focus                  |
     | Alt + Ctrl + R     | rescan processes.                    | rescan                      |
     | Alt + Ctrl + Space | change layout method.                | next_layout                 |
