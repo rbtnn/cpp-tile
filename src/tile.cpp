@@ -287,7 +287,7 @@ namespace Tile{
         winClass.hInstance = m_hInstance;
         winClass.hIcon = NULL;
         winClass.hIconSm = NULL;
-        winClass.hCursor = NULL;
+        winClass.hCursor = ::LoadCursor(NULL , IDC_ARROW);
         winClass.hbrBackground = NULL;
         winClass.lpszMenuName = NULL;
         winClass.lpszClassName = m_main_class_name.c_str();
@@ -314,7 +314,7 @@ namespace Tile{
         winClass.hInstance = m_hInstance;
         winClass.hIcon = NULL;
         winClass.hIconSm = NULL;
-        winClass.hCursor = NULL;
+        winClass.hCursor = ::LoadCursor(NULL , IDC_ARROW);
         winClass.hbrBackground = NULL;
         winClass.lpszMenuName = NULL;
         winClass.lpszClassName = m_statusline_class_name.c_str();
@@ -341,7 +341,7 @@ namespace Tile{
         winClass.hInstance = m_hInstance;
         winClass.hIcon = NULL;
         winClass.hIconSm = NULL;
-        winClass.hCursor = NULL;
+        winClass.hCursor = ::LoadCursor(NULL , IDC_ARROW);
         winClass.hbrBackground = NULL;
         winClass.lpszMenuName = NULL;
         winClass.lpszClassName = m_border_class_name.c_str();
