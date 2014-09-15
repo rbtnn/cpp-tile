@@ -2,8 +2,8 @@
 let s:is_windows = has('win95') || has('win16') || has('win32') || has('win64')
 if s:is_windows
   let s:repo_dir = fnamemodify(expand('<sfile>'), ":h:h")
-  let s:tile_bin_path = s:repo_dir . '/bin/tile.exe'
-  let s:tile_ini_path = s:repo_dir . '/bin/tile.ini'
+  let s:tile_bin_path = s:repo_dir . '/tile.exe'
+  let s:tile_ini_path = s:repo_dir . '/tile.ini'
 
   function! s:tile()
     if filereadable(s:tile_bin_path)

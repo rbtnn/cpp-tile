@@ -1,28 +1,42 @@
 
-BIN_DIR = ./bin
 SRC_DIR = ./src
-EXECNAME = ${BIN_DIR}/tile.exe
-DLLNAME = ${BIN_DIR}/test.dll
-SRC = 
 LOG = ./log.txt
 CC = g++.exe
 
-all: build
+.PHONY: run all clean
 
-${EXECNAME}: ${SRC_DIR}/tile.cpp
-	${CC} $< -o $@ -mwindows -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing -s
+all: tile.exe test.dll
 
-${DLLNAME}: ${SRC_DIR}/test.cpp
-	${CC} $< -o $@ -mwindows -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing -shared -Wl,--add-stdcall-alias
-
-build: ${EXECNAME} ${DLLNAME}
-
-run: ${EXECNAME}
-	${EXECNAME}
+run: tile.exe test.dll
+	tile.exe
 
 clean:
 	rm -f ${LOG}
-	rm -rf ${BIN_DIR}
+	rm -f main.o
+	rm -f tile.o
+	rm -f common_functions.o
+	rm -f tile.exe
+	rm -f test.o
+	rm -f test.dll
 
-.PHONY: all clean
+HEADERS= ${SRC_DIR}/tile.h ${SRC_DIR}/common_functions.h ${SRC_DIR}/common_headers.h ${SRC_DIR}/wndproc_functions.h
+
+main.o: ${SRC_DIR}/main.cpp ${HEADERS}
+	${CC} -c $^ -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing
+
+tile.o: ${SRC_DIR}/tile.cpp ${SRC_DIR}/common_functions.h
+	${CC} -c $^ -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing
+
+common_functions.o: ${SRC_DIR}/common_functions.cpp ${SRC_DIR}/common_functions.h
+	${CC} -c $^ -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing
+
+tile.exe: common_functions.o tile.o main.o
+	${CC} $^ -o $@ -mwindows -s
+
+
+test.o: ${SRC_DIR}/test.cpp ${SRC_DIR}/common_functions.h
+	${CC} -c $^ -std=c++0x -pedantic -Wall -Os -fno-strict-aliasing
+
+test.dll: test.o
+	${CC} $^ -o $@ -mwindows -shared -Wl,--add-stdcall-alias
 
