@@ -11,10 +11,10 @@ This is Tiling Window Manager for MS Windows.
 
 ## USAGE
 
-> bin/tile.exe
+> tile.exe
 
 Default key mappings of `tile.exe` is written in following figure.
-You can edit `bin/tile.ini` and customize this.
+You can edit `tile.ini` and customize this.
 
     +--------------------+--------------------------------------+-----------------------------+
     | KeyStroke          | Description                          | keyname of tile.ini         |

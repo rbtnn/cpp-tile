@@ -2,7 +2,8 @@
 #include "./common_headers.h"
 #include "./common_functions.h"
 #include "./wndproc_functions.h"
-#include "./tile.h"
+#include "./tile/TilingWindowManager.h"
+#include "./tile/Layout.h"
 
 std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
 
