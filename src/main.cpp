@@ -7,57 +7,48 @@
 
 std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
 
-void arrange(std::deque<HWND> const& hwnds_){
-  RECT window_area = get_window_area();
-  long const width = window_area.right - window_area.left;
-  long const height = window_area.bottom - window_area.top;
+void arrange(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   long const split_size = 3;
-  long sub_height = (2 < hwnds_.size()) ? (height / (hwnds_.size() - 1)) : height;
+  long sub_height = (2 < hwnds_.size()) ? (height_ / (hwnds_.size() - 1)) : height_;
   for(unsigned int i = 0; i < hwnds_.size(); i++){
     resize_window(hwnds_.at(i), HWND_TOP,
-        ((i == 0) ? 0                                                      : width / split_size * 2),
+        ((i == 0) ? 0                                                      : width_ / split_size * 2),
         ((i == 0) ? 0                                                      : sub_height * (i - 1)),
-        ((i == 0) ? ( hwnds_.size() == 1 ? width : width / split_size * 2) : width / split_size),
-        ((i == 0) ? height                                                 : sub_height));
+        ((i == 0) ? ( hwnds_.size() == 1 ? width_ : width_ / split_size * 2) : width_ / split_size),
+        ((i == 0) ? height_                                                 : sub_height));
   }
 }
-void arrange_twin(std::deque<HWND> const& hwnds_){
-  RECT window_area = get_window_area();
-  long const width = window_area.right - window_area.left;
-  long const height = window_area.bottom - window_area.top;
+void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   if(0 == hwnds_.size()){
     // nop
   }
   else if(1 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width, height);
+    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width_, height_);
   }
   else if(2 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width / 2        , height);
-    resize_window(hwnds_.at(1), HWND_TOP, width / 2, 0, width / 2, height);
+    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width_ / 2        , height_);
+    resize_window(hwnds_.at(1), HWND_TOP, width_ / 2, 0, width_ / 2, height_);
   }
   else{
     long const n = hwnds_.size() - 2;
-    long const sub_width = width / n;
+    long const sub_width = width_ / n;
 
-    resize_window(hwnds_.at(0), HWND_TOP, 0        , 0, width / 2, height / 4 * 3);
-    resize_window(hwnds_.at(1), HWND_TOP, width / 2, 0, width / 2, height / 4 * 3);
+    resize_window(hwnds_.at(0), HWND_TOP, 0        , 0, width_ / 2, height_ / 4 * 3);
+    resize_window(hwnds_.at(1), HWND_TOP, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
 
     for(unsigned int i = 2; i < hwnds_.size(); i++){
       resize_window(hwnds_.at(i), HWND_TOP,
           (sub_width * (i - 2)),
-          (height / 4 * 3),
+          (height_ / 4 * 3),
           (sub_width),
-          (height / 4 * 1));
+          (height_ / 4 * 1));
     }
   }
 }
-void arrange_maximal(std::deque<HWND> const& hwnds_){
-  RECT window_area = get_window_area();
-  long const width = window_area.right - window_area.left;
-  long const height = window_area.bottom - window_area.top;
+void arrange_maximal(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   HWND const foreground_hwnd = ::GetForegroundWindow();
   for(auto hwnd : hwnds_){
-    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, 0, 0, width, height);
+    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, 0, 0, width_, height_);
   }
 }
 
@@ -124,7 +115,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lPara
     case WM_HOTKEY:
       if(g_p_tile_window_manager != nullptr){
         g_p_tile_window_manager->call_key_method(wParam_);
-        g_p_tile_window_manager->arrange();
       }
       break;
 
@@ -176,8 +166,9 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         ::SetTextColor(hdc, RGB(0xff, 0xff, 0xff));
         ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
 
-        std::string const classname = get_classname(hwnd_);
-        std::string const windowtext = get_windowtext(hwnd_);
+        HWND const foreground_hwnd = ::GetForegroundWindow();
+        std::string const classname = get_classname(foreground_hwnd);
+        std::string const windowtext = get_windowtext(foreground_hwnd);
 
         SYSTEMTIME stTime;
         ::GetLocalTime(&stTime);

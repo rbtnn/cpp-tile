@@ -234,7 +234,7 @@ namespace Tile{
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->size()){
-      m_workspace_it->remanage(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
+      m_workspace_it->remanage(foreground_hwnd);
       arrange();
     }
   }
@@ -266,7 +266,7 @@ namespace Tile{
             }
             m_workspace_it = it;
             for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              m_workspace_it->remanage(hwnd, m_config->get_not_apply_style_to_classnames());
+              m_workspace_it->remanage(hwnd);
             }
             arrange();
           }

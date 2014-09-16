@@ -6,7 +6,7 @@
 #include <winuser.h>
 #include <shellapi.h>
 
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 #  include <cstdio>
