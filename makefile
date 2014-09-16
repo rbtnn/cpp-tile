@@ -7,7 +7,7 @@ COMMON_HEADERS = ${SRC_DIR}/common_headers.h ${SRC_DIR}/common_functions.h ${SRC
 
 .PHONY: run all clean clean_objects clean_modules clean_log
 
-all: tile.exe test.dll clean_objects
+all: tile.exe test.dll
 
 run: tile.exe test.dll
 	tile.exe

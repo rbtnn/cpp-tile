@@ -77,19 +77,42 @@ bool exist_file(std::string const path){
     return false;
   }
 }
-void resize_window(RECT const& window_area_, HWND const& hwnd_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
+void resize_window(HWND const& hwnd_, HWND const& hWndInsertAfter_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
+  RECT const window_area = get_window_area();
   ::ShowWindow(hwnd_, SW_SHOWNORMAL);
-  ::SetWindowPos(hwnd_, HWND_TOP,
-      window_area_.left + left_,
-      window_area_.top + top_,
-      width_,
-      height_,
-      SWP_NOACTIVATE);
-  // std::cout << "hwnd:" << hwnd_
-  //   << ", left:" << left_
-  //   << ", top:" << top_
-  //   << ", width:" << width_
-  //   << ", height:" << height_
-  //   << std::endl;
+
+  RECT rect;
+  ::GetWindowRect(hwnd_, &rect);
+  bool const b = static_cast<unsigned int>(rect.right - rect.left) == width_
+              && static_cast<unsigned int>(rect.bottom - rect.top) == height_
+              && static_cast<unsigned int>(rect.top) == (get_statusline_height() + top_)
+              && static_cast<unsigned int>(rect.left) == left_;
+  if(!b){
+    ::SetWindowPos(hwnd_, hWndInsertAfter_,
+        window_area.left + left_,
+        window_area.top + top_,
+        width_,
+        height_,
+        SWP_NOACTIVATE);
+  }
+
+#ifdef DEBUG
+  std::cout << "[resize_window]" << std::endl
+    << ", w.left:" << window_area.left
+    << ", w.top:" << window_area.top
+    << ", left:" << left_
+    << ", top:" << top_
+    << ", width:" << width_
+    << ", height:" << height_
+    << std::endl
+    << ", left:" << rect.left
+    << ", top:" << rect.top
+    << ", right:" << rect.right
+    << ", bottom:" << rect.bottom
+    << std::endl
+    << b
+    << std::endl
+    << std::endl;
+#endif
 }
 

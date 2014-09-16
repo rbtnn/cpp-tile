@@ -14,7 +14,7 @@ void arrange(std::deque<HWND> const& hwnds_){
   long const split_size = 3;
   long sub_height = (2 < hwnds_.size()) ? (height / (hwnds_.size() - 1)) : height;
   for(unsigned int i = 0; i < hwnds_.size(); i++){
-    resize_window(window_area, hwnds_.at(i),
+    resize_window(hwnds_.at(i), HWND_TOP,
         ((i == 0) ? 0                                                      : width / split_size * 2),
         ((i == 0) ? 0                                                      : sub_height * (i - 1)),
         ((i == 0) ? ( hwnds_.size() == 1 ? width : width / split_size * 2) : width / split_size),
@@ -29,21 +29,21 @@ void arrange_twin(std::deque<HWND> const& hwnds_){
     // nop
   }
   else if(1 == hwnds_.size()){
-    resize_window(window_area, hwnds_.at(0), 0, 0, width, height);
+    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width, height);
   }
   else if(2 == hwnds_.size()){
-    resize_window(window_area, hwnds_.at(0), 0, 0, width / 2        , height);
-    resize_window(window_area, hwnds_.at(1), width / 2, 0, width / 2, height);
+    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width / 2        , height);
+    resize_window(hwnds_.at(1), HWND_TOP, width / 2, 0, width / 2, height);
   }
   else{
     long const n = hwnds_.size() - 2;
     long const sub_width = width / n;
 
-    resize_window(window_area, hwnds_.at(0), 0        , 0, width / 2, height / 4 * 3);
-    resize_window(window_area, hwnds_.at(1), width / 2, 0, width / 2, height / 4 * 3);
+    resize_window(hwnds_.at(0), HWND_TOP, 0        , 0, width / 2, height / 4 * 3);
+    resize_window(hwnds_.at(1), HWND_TOP, width / 2, 0, width / 2, height / 4 * 3);
 
     for(unsigned int i = 2; i < hwnds_.size(); i++){
-      resize_window(window_area, hwnds_.at(i),
+      resize_window(hwnds_.at(i), HWND_TOP,
           (sub_width * (i - 2)),
           (height / 4 * 3),
           (sub_width),
@@ -57,7 +57,7 @@ void arrange_maximal(std::deque<HWND> const& hwnds_){
   long const height = window_area.bottom - window_area.top;
   HWND const foreground_hwnd = ::GetForegroundWindow();
   for(auto hwnd : hwnds_){
-    resize_window(window_area, ((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), 0, 0, width, height);
+    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, 0, 0, width, height);
   }
 }
 

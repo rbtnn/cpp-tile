@@ -423,6 +423,8 @@ namespace Tile{
 #ifdef DEBUG
       HWND const parent = ::GetParent(hwnd_);
       std::string const classname = get_classname(hwnd_);
+
+      std::cout << "[TilingWindowManager::manage]" << std::endl;
       std::cout << "hwnd:" << hwnd_ << std::endl;
       std::cout << "parent:" << parent << std::endl;
       std::cout << "classname:" << classname << std::endl;
