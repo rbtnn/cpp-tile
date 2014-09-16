@@ -39,8 +39,7 @@ namespace Tile{
       void init_statusline();
       void init_border();
       bool is_manageable(HWND const hwnd_);
-      bool is_manageable_focus(HWND const hwnd_);
-      bool is_manageable_arrange(HWND const hwnd_);
+      bool is_unmanageable(HWND const hwnd_);
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)());
       void unmanage_all();
       void rescan();

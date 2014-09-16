@@ -51,13 +51,18 @@ namespace Tile{
     HWND const parent = ::GetParent(hwnd_);
     int const style = ::GetWindowLong(hwnd_, GWL_STYLE);
     int const exstyle = ::GetWindowLong(hwnd_, GWL_EXSTYLE);
-    bool const pok = (parent != 0 && is_manageable_arrange(parent));
+    bool const pok = (parent != 0 && is_manageable(parent));
     bool const istool = exstyle & WS_EX_TOOLWINDOW;
     bool const isapp = exstyle & WS_EX_APPWINDOW;
 
     std::string const classname = get_classname(hwnd_);
     if(classname == m_statusline_class_name){
       return false;
+    }
+    for(auto c : m_config->get_ignore_classnames()){
+      if(classname == c){
+        return false;
+      }
     }
 
     if (::GetWindowTextLength(hwnd_) == 0) {
@@ -79,17 +84,8 @@ namespace Tile{
 
     return false;
   }
-  bool TilingWindowManager::is_manageable_focus(HWND const hwnd_){
-    return is_manageable(hwnd_);
-  }
-  bool TilingWindowManager::is_manageable_arrange(HWND const hwnd_){
-    std::string const classname = get_classname(hwnd_);
-    for(auto c : m_config->get_ignore_classnames()){
-      if(classname == c){
-        return false;
-      }
-    }
-    return is_manageable(hwnd_);
+  bool TilingWindowManager::is_unmanageable(HWND const hwnd_){
+    return !is_manageable(hwnd_);
   }
   void TilingWindowManager::regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
     std::map<std::string, std::string> m = m_config->get_keys();
@@ -145,6 +141,10 @@ namespace Tile{
     bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->size()){
+#ifdef DEBUG
+      std::cout << "[TilingWindowManager::next_focus]" << std::endl;
+      std::cout << m_workspace_it->size() << std::endl;
+#endif
       ::SetForegroundWindow(m_workspace_it->at(0));
       for(auto hwnd : m_workspace_it->get_managed_hwnds()){
         if(foreground_hwnd == hwnd){
@@ -163,6 +163,10 @@ namespace Tile{
     bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->size()){
+#ifdef DEBUG
+      std::cout << "[TilingWindowManager::previous_focus]" << std::endl;
+      std::cout << m_workspace_it->size() << std::endl;
+#endif
       ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->size() - 1));
       for(auto it = m_workspace_it->rbegin(); it < m_workspace_it->rend(); it++){
         if(foreground_hwnd == *it){
@@ -240,7 +244,7 @@ namespace Tile{
   }
   void TilingWindowManager::move_to_workspace_of(unsigned int const i){
     HWND const hwnd = ::GetForegroundWindow();
-    if(is_manageable_arrange(hwnd) || is_manageable_focus(hwnd)){
+    if(is_manageable(hwnd) || is_unmanageable(hwnd)){
       unsigned int n = 0;
       for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
         if(n == i && it != m_workspace_it){
@@ -269,10 +273,19 @@ namespace Tile{
               m_workspace_it->remanage(hwnd);
             }
             arrange();
+            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+              ::ShowWindow(hwnd, SW_SHOWNORMAL);
+            }
           }
           break;
         }
         n++;
+      }
+      if(0 < m_workspace_it->size()){
+        ::SetForegroundWindow(m_workspace_it->at(0));
+      }
+      else{
+        ::SetForegroundWindow(::FindWindow("Progman", NULL));
       }
     }
   }
@@ -386,13 +399,13 @@ namespace Tile{
     if(m_layout_it != std::end(m_layouts)){
       std::deque<HWND> hwnds;
       for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-        if(is_manageable_arrange(hwnd)){
+        if(is_manageable(hwnd)){
           hwnds.push_back(hwnd);
         }
       }
       m_layout_it->arrange(hwnds);
     }
-    if(is_manageable_arrange(::GetForegroundWindow()) || is_manageable_focus(::GetForegroundWindow())){
+    if(is_manageable(::GetForegroundWindow()) || is_unmanageable(::GetForegroundWindow())){
       unsigned int n = 3;
       RECT rect;
       ::GetWindowRect(::GetForegroundWindow(), &rect);
@@ -418,7 +431,7 @@ namespace Tile{
     }
   }
   void TilingWindowManager::manage(HWND hwnd_){
-    if(is_manageable_arrange(hwnd_) || is_manageable_focus(hwnd_)){
+    if(is_manageable(hwnd_)){
 
 #ifdef DEBUG
       HWND const parent = ::GetParent(hwnd_);
