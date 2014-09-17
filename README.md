@@ -3,6 +3,8 @@
 
 This is Tiling Window Manager for MS Windows.
 
+![](https://raw.github.com/rbtnn/tile/master/image.png)
+
 
 ## BUILD
 

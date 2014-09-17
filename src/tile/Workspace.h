@@ -25,7 +25,8 @@ namespace Tile{
       std::deque<HWND>::reverse_iterator rbegin();
       std::deque<HWND>::reverse_iterator rend();
       bool is_managed(HWND hwnd_);
-      void remanage(HWND hwnd_);
+      void remanage_back(HWND hwnd_);
+      void remanage_front(HWND hwnd_);
       void manage(HWND hwnd_, std::vector<std::string> classnames_);
       void unmanage(HWND const hwnd_);
       std::deque<HWND> const& get_managed_hwnds() const;

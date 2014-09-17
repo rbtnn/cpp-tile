@@ -238,25 +238,35 @@ namespace Tile{
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->size()){
-      m_workspace_it->remanage(foreground_hwnd);
+      m_workspace_it->remanage_front(foreground_hwnd);
       arrange();
     }
   }
+  void TilingWindowManager::try_focus_managed_window(){
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+      if(foreground_hwnd == hwnd){
+        return;
+      }
+    }
+    if(0 < m_workspace_it->size()){
+      ::SetForegroundWindow(m_workspace_it->at(0));
+      return;
+    }
+    ::SetForegroundWindow(::FindWindow("Progman", NULL));
+  }
   void TilingWindowManager::move_to_workspace_of(unsigned int const i){
     HWND const hwnd = ::GetForegroundWindow();
-    if(is_manageable(hwnd) || is_unmanageable(hwnd)){
-      unsigned int n = 0;
-      for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-        if(n == i && it != m_workspace_it){
-          m_workspace_it->unmanage(hwnd);
-          it->manage(hwnd, m_config->get_not_apply_style_to_classnames());
-          arrange();
-          ::ShowWindow(hwnd, SW_HIDE);
-          ::SetForegroundWindow(::FindWindow("Progman", NULL));
-          break;
-        }
-        n++;
+    unsigned int n = 0;
+    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+      if(n == i && it != m_workspace_it){
+        m_workspace_it->unmanage(hwnd);
+        it->manage(hwnd, m_config->get_not_apply_style_to_classnames());
+        arrange();
+        ::ShowWindow(hwnd, SW_HIDE);
+        break;
       }
+      n++;
     }
   }
   void TilingWindowManager::workspace_of(unsigned int const i){
@@ -269,8 +279,9 @@ namespace Tile{
               ::ShowWindow(hwnd, SW_HIDE);
             }
             m_workspace_it = it;
-            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              m_workspace_it->remanage(hwnd);
+            auto const hwnds = m_workspace_it->get_managed_hwnds();
+            for(auto hwnd : hwnds){
+              m_workspace_it->remanage_back(hwnd);
             }
             arrange();
             for(auto hwnd : m_workspace_it->get_managed_hwnds()){
@@ -280,12 +291,6 @@ namespace Tile{
           break;
         }
         n++;
-      }
-      if(0 < m_workspace_it->size()){
-        ::SetForegroundWindow(m_workspace_it->at(0));
-      }
-      else{
-        ::SetForegroundWindow(::FindWindow("Progman", NULL));
       }
     }
   }
@@ -405,7 +410,9 @@ namespace Tile{
       }
       m_layout_it->arrange(hwnds);
     }
-    if(is_manageable(::GetForegroundWindow()) || is_unmanageable(::GetForegroundWindow())){
+    try_focus_managed_window();
+
+    if(is_manageable(::GetForegroundWindow())){
       unsigned int n = 3;
       RECT rect;
       ::GetWindowRect(::GetForegroundWindow(), &rect);

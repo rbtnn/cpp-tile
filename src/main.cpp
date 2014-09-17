@@ -158,30 +158,52 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
         HDC hdc = ::GetWindowDC(hwnd_);
         ::SelectObject(hdc, ::GetStockObject(BLACK_BRUSH));
         ::Rectangle(hdc , 0, 0, get_statusline_width(), get_statusline_height());
+        ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
+
         RECT rect;
-        rect.left = 10;
-        rect.top = 10;
+        rect.left = 3;
+        rect.top = 3;
         rect.right = get_statusline_width();
         rect.bottom = get_statusline_height();
-        ::SetTextColor(hdc, RGB(0xff, 0xff, 0xff));
-        ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
 
         HWND const foreground_hwnd = ::GetForegroundWindow();
         std::string const classname = get_classname(foreground_hwnd);
         std::string const windowtext = get_windowtext(foreground_hwnd);
 
+        ::SetTextColor(hdc, RGB(0x00, 0xff, 0x00));
+
         SYSTEMTIME stTime;
         ::GetLocalTime(&stTime);
 
-        std::stringstream ss;
-        ss << "[" << stTime.wYear << "/" << stTime.wMonth << "/" << stTime.wDay
-          << " " << stTime.wHour << ":" << stTime.wMinute << ":" << stTime.wSecond << "]"
-          << "[" << g_p_tile_window_manager->get_workspace_name() << "]"
-          << "[" << g_p_tile_window_manager->get_managed_window_size() << "]"
-          << "[" << g_p_tile_window_manager->get_layout_name() << "]"
-          << "[" << classname << "] " << windowtext;
+        std::stringstream ss_time;
+        ss_time
+          << std::setfill('0') << std::setw(4) << stTime.wYear << "/"
+          << std::setfill('0') << std::setw(2) << stTime.wMonth << "/"
+          << std::setfill('0') << std::setw(2) << stTime.wDay << " "
+          << std::setfill('0') << std::setw(2) << stTime.wHour << ":"
+          << std::setfill('0') << std::setw(2) << stTime.wMinute << ":"
+          << std::setfill('0') << std::setw(2) << stTime.wSecond;
+        ::DrawText(hdc, ss_time.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
 
-        ::DrawText(hdc, ss.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
+        rect.left = 160;
+
+        std::stringstream ss_text;
+        ss_text
+          << "<<< "
+          << "workspace: " << g_p_tile_window_manager->get_workspace_name()
+          << ", managed: " << g_p_tile_window_manager->get_managed_window_size()
+          << ", layout: "  << g_p_tile_window_manager->get_layout_name()
+          << ", class: " << std::left << classname
+          << " >>>";
+        ::DrawText(hdc, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
+
+        rect.top = 20;
+        rect.left = 3;
+
+        ::SetTextColor(hdc, RGB(0xff, 0xff, 0x00));
+
+        ::DrawText(hdc, windowtext.c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
+
         ::ReleaseDC(hwnd_, hdc);
         ::EndPaint(hwnd_, &ps);
       }

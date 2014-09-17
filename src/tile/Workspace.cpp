@@ -42,7 +42,16 @@ namespace Tile{
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     return (it != std::end(m_managed_hwnds));
   }
-  void Workspace::remanage(HWND hwnd_){
+  void Workspace::remanage_back(HWND hwnd_){
+    auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
+    if(it != std::end(m_managed_hwnds)){
+      m_managed_hwnds.erase(it);
+    }
+    if(!is_managed(hwnd_)){
+      m_managed_hwnds.push_back(hwnd_);
+    }
+  }
+  void Workspace::remanage_front(HWND hwnd_){
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     if(it != std::end(m_managed_hwnds)){
       m_managed_hwnds.erase(it);

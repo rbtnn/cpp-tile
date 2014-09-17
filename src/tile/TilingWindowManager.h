@@ -68,6 +68,7 @@ namespace Tile{
       void workspace_8();
       void workspace_9();
       void focus_window_to_master();
+      void try_focus_managed_window();
       void move_to_workspace_of(unsigned int const i);
       void workspace_of(unsigned int const i);
 
