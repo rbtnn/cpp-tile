@@ -10,11 +10,15 @@ if s:is_windows
       execute '!start ' . s:tile_bin_path
     endif
   endfunction
+  function! s:tile_cd()
+    execut 'lcd ' . s:repo_dir
+  endfunction
   function! s:tile_edit_inifile()
     execut 'edit ' . s:tile_ini_path
   endfunction
 
   command! -nargs=0 Tile silent call <sid>tile()
+  command! -nargs=0 TileCd silent call <sid>tile_cd()
   command! -nargs=0 TileEditIniFile silent call <sid>tile_edit_inifile()
 endif
 
