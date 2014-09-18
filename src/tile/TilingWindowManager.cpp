@@ -123,6 +123,7 @@ namespace Tile{
     unmanage_all();
     ::EnumWindows(scan, 0);
     arrange();
+    try_focus_managed_window();
   }
   void TilingWindowManager::run_process(){
     std::string const path = m_config->get_run_process_path();
@@ -143,6 +144,7 @@ namespace Tile{
       m_layout_it = std::begin(m_layouts);
     }
     arrange();
+    try_focus_managed_window();
   }
   void TilingWindowManager::next_focus(){
     bool is_next_focus = false;
@@ -247,6 +249,7 @@ namespace Tile{
     if(0 < m_workspace_it->size()){
       m_workspace_it->remanage_front(foreground_hwnd);
       arrange();
+      try_focus_managed_window();
     }
   }
   void TilingWindowManager::try_focus_managed_window(){
@@ -270,6 +273,7 @@ namespace Tile{
         m_workspace_it->unmanage(hwnd);
         it->manage(hwnd, m_config->get_not_apply_style_to_classnames());
         arrange();
+        try_focus_managed_window();
         ::ShowWindow(hwnd, SW_HIDE);
         break;
       }
@@ -291,6 +295,7 @@ namespace Tile{
               m_workspace_it->remanage_back(hwnd);
             }
             arrange();
+            try_focus_managed_window();
             for(auto hwnd : m_workspace_it->get_managed_hwnds()){
               ::ShowWindow(hwnd, SW_SHOWNORMAL);
             }
@@ -396,6 +401,7 @@ namespace Tile{
 
     ::EnumWindows(scan, 0);
     arrange();
+    try_focus_managed_window();
 
     ::MSG msg;
     while (::GetMessage(&msg, NULL, 0, 0) > 0){
@@ -417,8 +423,6 @@ namespace Tile{
       }
       m_layout_it->arrange(hwnds);
     }
-    try_focus_managed_window();
-
     if(is_manageable(::GetForegroundWindow())){
       unsigned int n = 3;
       RECT rect;
