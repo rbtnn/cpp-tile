@@ -188,14 +188,39 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
 
         rect.left = 160;
 
+        SYSTEM_POWER_STATUS systemPowerStatus;
+        ::GetSystemPowerStatus(&systemPowerStatus);
+
         std::stringstream ss_text;
-        ss_text
-          << "<<< "
-          << "workspace: " << g_p_tile_window_manager->get_workspace_name()
-          << ", managed: " << g_p_tile_window_manager->get_managed_window_size()
-          << ", layout: "  << g_p_tile_window_manager->get_layout_name()
-          << ", class: " << std::left << classname
-          << " >>>";
+
+        ss_text << "<<< "
+          << "Workspace: " << g_p_tile_window_manager->get_workspace_name()
+          << ", Managed: " << g_p_tile_window_manager->get_managed_window_size()
+          << ", Layout: "  << g_p_tile_window_manager->get_layout_name()
+          << ", Class: " << std::left << classname;
+
+        ss_text << ", ACLineStatus:";
+        switch(systemPowerStatus.ACLineStatus){
+          case 0: ss_text << "Offline"; break;
+          case 1: ss_text << "Online"; break;
+          case 255: ss_text << "Unknown status"; break;
+        }
+
+        // ss_text << ", BatteryFlag:";
+        // switch(systemPowerStatus.BatteryFlag){
+        //   case 1: ss_text << "High"; break;
+        //   case 2: ss_text << "Low"; break;
+        //   case 4: ss_text << "Critical"; break;
+        //   case 8: ss_text << "Charging"; break;
+        //   case 128: ss_text << "No system battery"; break;
+        //   case 255: ss_text << "Unknown status"; break;
+        // }
+
+        ss_text << ", BatteryLifePercent:" << std::setw(4)
+          << static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent) << "%";
+
+        ss_text << " >>>";
+
         ::DrawText(hdc, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
 
         rect.top = 20;
