@@ -64,16 +64,6 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     ::freopen("./log.txt", "w", stdout);
   }
 #endif
-  // HMODULE h = ::LoadLibrary("test.dll");
-  // if(h == NULL){
-  //   ::MessageBox(NULL, "null", "", MB_OK);
-  // }
-  // else{
-  //   typedef int (*TFUNC)(int);
-  //   TFUNC DllFunction = (TFUNC)::GetProcAddress(h, "MyFunction");
-  //   DllFunction(12);
-  //   ::FreeLibrary(h);
-  // }
 
   if(::FindWindow("Tile", NULL) != NULL){
     ::MessageBox(NULL, "Multiplex starting is not permitted.", "Error", MB_ICONERROR);
@@ -153,22 +143,33 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
     case WM_TIMER:
     case WM_PAINT:
       if(g_p_tile_window_manager != nullptr){
+        HWND const foreground_hwnd = ::GetForegroundWindow();
+        std::string const classname = get_classname(foreground_hwnd);
+        std::string const windowtext = get_windowtext(foreground_hwnd);
+        COLORREF const color = RGB(0x40, 0x40, 0x40);
+        HBRUSH const hbrush = ::CreateSolidBrush(color);
+        HFONT const hFont = CreateFont(16, 0, 0, 0,
+            FW_REGULAR, FALSE, FALSE, FALSE,
+            SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
+            CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
+            FIXED_PITCH | FF_MODERN,
+            "ＭＳ ゴシック");
+
         PAINTSTRUCT ps;
         ::BeginPaint(hwnd_, &ps);
         HDC hdc = ::GetWindowDC(hwnd_);
-        ::SelectObject(hdc, ::GetStockObject(BLACK_BRUSH));
+
+        ::SelectObject(hdc, hbrush);
         ::Rectangle(hdc , 0, 0, get_statusline_width(), get_statusline_height());
-        ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
+        ::SetBkColor(hdc, color);
+
+        ::SelectObject(hdc, hFont);
 
         RECT rect;
         rect.left = 3;
         rect.top = 3;
         rect.right = get_statusline_width();
         rect.bottom = get_statusline_height();
-
-        HWND const foreground_hwnd = ::GetForegroundWindow();
-        std::string const classname = get_classname(foreground_hwnd);
-        std::string const windowtext = get_windowtext(foreground_hwnd);
 
         ::SetTextColor(hdc, RGB(0x00, 0xff, 0x00));
 

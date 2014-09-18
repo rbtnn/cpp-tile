@@ -31,7 +31,7 @@ namespace Tile{
     ::SetWindowPos(m_statusline_hwnd, HWND_TOPMOST,
         0, 0, get_statusline_width(), get_statusline_height(), SWP_NOACTIVATE);
 
-    ::SetWindowLong(m_statusline_hwnd, GWL_EXSTYLE, ::GetWindowLong(m_statusline_hwnd, GWL_EXSTYLE) || WS_EX_LAYERED);
+    ::SetWindowLong(m_statusline_hwnd, GWL_EXSTYLE, ::GetWindowLong(m_statusline_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
     ::SetLayeredWindowAttributes(m_statusline_hwnd, 0, 200, LWA_ALPHA);
   }
   void TilingWindowManager::init_border(){
