@@ -51,6 +51,32 @@ void arrange_maximal(std::deque<HWND> const& hwnds_, long const& width_, long co
     resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, 0, 0, width_, height_);
   }
 }
+void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
+  HWND const foreground_hwnd = ::GetForegroundWindow();
+  if(0 == hwnds_.size()){
+    // nop
+  }
+  else if(1 == hwnds_.size()){
+    resize_window(foreground_hwnd, HWND_TOP, 0, 0, width_, height_);
+  }
+  else{
+    resize_window(foreground_hwnd, HWND_TOP, width_ / 8 * 1, height_ / 8 * 1, width_ / 8 * 6, height_ / 8 * 6);
+    unsigned int i = 0;
+    long const w = width_ / 2;
+    long const h = height_ / 2;
+    for(auto hwnd : hwnds_){
+      if(foreground_hwnd != hwnd){
+        switch(i % 4){
+          case 0: resize_window(hwnd, HWND_TOP, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
+          case 1: resize_window(hwnd, HWND_TOP, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
+          case 2: resize_window(hwnd, HWND_TOP, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
+          case 3: resize_window(hwnd, HWND_TOP, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
+        }
+        i++;
+      }
+    }
+  }
+}
 
 int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLine_, int nShowCmd_){
 #ifdef DEBUG
@@ -75,13 +101,14 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
           Tile::Layout("arrange", arrange),
           Tile::Layout("arrange_twin", arrange_twin),
           Tile::Layout("arrange_maximal", arrange_maximal),
+          Tile::Layout("arrange_cross", arrange_cross),
           }, configreader));
 
-    if(exist_file(configreader->get_inipath())){
+    if(exist_file(configreader->get_inifile_path())){
       g_p_tile_window_manager->start();
     }
     else{
-      ::MessageBox(NULL, ("'" + configreader->get_inipath() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
+      ::MessageBox(NULL, ("'" + configreader->get_inifile_path() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
     }
   }
 

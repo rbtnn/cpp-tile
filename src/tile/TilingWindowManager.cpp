@@ -3,6 +3,7 @@
 #include "../common_functions.h"
 #include "../wndproc_functions.h"
 #include "./TilingWindowManager.h"
+#include "./ConfigReader.h"
 
 namespace Tile{
   void TilingWindowManager::init_main(){
@@ -123,8 +124,11 @@ namespace Tile{
     ::EnumWindows(scan, 0);
     arrange();
   }
-  void TilingWindowManager::run_shell(){
-    ::ShellExecute(NULL, NULL, "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "", NULL, SW_SHOWDEFAULT);
+  void TilingWindowManager::run_process(){
+    std::string const path = m_config->get_run_process_path();
+    if(exist_file(path)){
+      ::ShellExecute(NULL, NULL, path.c_str(), "", NULL, SW_SHOWDEFAULT);
+    }
   }
   void TilingWindowManager::exit_tile(){
     ::PostMessage(m_main_hwnd, WM_CLOSE, 0, 0);
@@ -379,7 +383,7 @@ namespace Tile{
     regist_key("next_layout", &TilingWindowManager::next_layout);
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
     regist_key("rescan", &TilingWindowManager::rescan);
-    regist_key("run_shell", &TilingWindowManager::run_shell);
+    regist_key("run_process", &TilingWindowManager::run_process);
     regist_key("workspace_1", &TilingWindowManager::workspace_1);
     regist_key("workspace_2", &TilingWindowManager::workspace_2);
     regist_key("workspace_3", &TilingWindowManager::workspace_3);

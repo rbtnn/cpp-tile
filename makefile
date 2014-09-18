@@ -42,7 +42,7 @@ Layout.o: ${SRC_DIR}/tile/Layout.cpp ${SRC_DIR}/tile/Layout.h ${COMMON_HEADERS}
 Workspace.o: ${SRC_DIR}/tile/Workspace.cpp ${SRC_DIR}/tile/Workspace.h ${COMMON_HEADERS}
 	${CC} -c $< ${CPPFlAGS}
 
-TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp ${SRC_DIR}/tile/TilingWindowManager.h ${COMMON_HEADERS}
+TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp ${SRC_DIR}/tile/TilingWindowManager.h ${SRC_DIR}/tile/ConfigReader.h ${COMMON_HEADERS}
 	${CC} -c $< ${CPPFlAGS}
 
 tile.exe: common_functions.o Key.o ConfigReader.o Layout.o Workspace.o TilingWindowManager.o main.o

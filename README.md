@@ -23,12 +23,12 @@ You can edit `tile.ini` and customize this.
     +--------------------+--------------------------------------+-----------------------------+
     | Alt + Ctrl + M     | active window to master erea.        | focus_window_to_master      |
     | Alt + Ctrl + Q     | exit tile.exe.                       | exit_tile                   |
-    | Alt + Ctrl + C     | kill a active window.                | kill_client                 |
+    | Alt + Ctrl + C     | kill an active window.               | kill_client                 |
     | Alt + Ctrl + K     | focus to a previous window.          | previous_focus              |
     | Alt + Ctrl + J     | focus to a next window.              | next_focus                  |
     | Alt + Ctrl + R     | rescan processes.                    | rescan                      |
     | Alt + Ctrl + Space | change layout method.                | next_layout                 |
-    | Alt + Ctrl + Enter | run `powershell.exe`.                | run_shell                   |
+    | Alt + Ctrl + Enter | run a process.                       | run_process                 |
     | Alt + Ctrl + 1     | go to workspace 1.                   | workspace_1                 |
     | Alt + Ctrl + 2     | go to workspace 2.                   | workspace_2                 |
     | Alt + Ctrl + 3     | go to workspace 3.                   | workspace_3                 |
@@ -92,6 +92,20 @@ You can edit `tile.ini` and customize this.
     |                                  |
     |                                  |
     +----------------------------------+
+
+
+### arrange\_cross
+
+    +-------+------------------+-------+
+    |       |        1,5,...   |       |
+    +-------+------------------+-------+
+    |       |                  |       |
+    |       |   MASTER EREA    |       |
+    |4,8,...|        0         |2,6,...|
+    |       |                  |       |
+    +-------+------------------+-------+
+    |       |        3,7,...   |       |
+    +-------+------------------+-------+
 
 
 ## LICENSE

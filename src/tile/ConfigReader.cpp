@@ -14,6 +14,7 @@ namespace Tile{
     }
     return result;
   }
+
   std::vector<std::string> ConfigReader::get_config_settings_ignore_classnames(){
     char buffer[buffer_size];
     ::GetPrivateProfileString("settings", "IGNORE_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
@@ -46,6 +47,12 @@ namespace Tile{
     }
     return m;
   }
+  std::string ConfigReader::get_run_process_path(){
+    char buffer[buffer_size];
+    ::GetPrivateProfileString("settings", "RUN_PROCESS_PATH", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
+    return std::string(buffer);
+  }
+
   std::string ConfigReader::get_inifile_path(){
     char szFileName[buffer_size];
     ::GetModuleFileName( NULL, szFileName, MAX_PATH);
@@ -66,8 +73,8 @@ namespace Tile{
     m_ignore_classnames = get_config_settings_ignore_classnames();
     m_not_apply_style_to_classnames = get_config_settings_not_apply_style_to_classnames();
     m_keys = get_config_keys();
-    m_inifile_path = get_inifile_path();
   }
+
   std::vector<std::string> const& ConfigReader::get_ignore_classnames() const{
     return m_ignore_classnames;
   }
@@ -76,9 +83,6 @@ namespace Tile{
   }
   std::map<std::string, std::string> const& ConfigReader::get_keys() const{
     return m_keys;
-  }
-  std::string const& ConfigReader::get_inipath() const{
-    return m_inifile_path;
   }
 }
 

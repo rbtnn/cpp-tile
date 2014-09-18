@@ -43,7 +43,7 @@ namespace Tile{
       void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)());
       void unmanage_all();
       void rescan();
-      void run_shell();
+      void run_process();
       void exit_tile();
       void kill_client();
       void next_layout();
