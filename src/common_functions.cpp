@@ -77,9 +77,9 @@ bool exist_file(std::string const path){
     return false;
   }
 }
-void resize_window(HWND const& hwnd_, HWND const& hWndInsertAfter_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
+void resize_window(HWND const& hwnd_, HWND const& hWndInsertAfter_, int const& cmdshow_, unsigned int left_, unsigned int top_, unsigned int width_, unsigned int height_){
   RECT const window_area = get_window_area();
-  ::ShowWindow(hwnd_, SW_SHOWNORMAL);
+  ::ShowWindow(hwnd_, cmdshow_);
 
   RECT rect;
   ::GetWindowRect(hwnd_, &rect);

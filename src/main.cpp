@@ -11,7 +11,7 @@ void arrange(std::deque<HWND> const& hwnds_, long const& width_, long const& hei
   long const split_size = 3;
   long sub_height = (2 < hwnds_.size()) ? (height_ / (hwnds_.size() - 1)) : height_;
   for(unsigned int i = 0; i < hwnds_.size(); i++){
-    resize_window(hwnds_.at(i), HWND_TOP,
+    resize_window(hwnds_.at(i), HWND_TOP, SW_SHOWNORMAL,
         ((i == 0) ? 0                                                      : width_ / split_size * 2),
         ((i == 0) ? 0                                                      : sub_height * (i - 1)),
         ((i == 0) ? ( hwnds_.size() == 1 ? width_ : width_ / split_size * 2) : width_ / split_size),
@@ -23,21 +23,21 @@ void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const
     // nop
   }
   else if(1 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width_, height_);
+    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
   }
   else if(2 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, 0, 0, width_ / 2        , height_);
-    resize_window(hwnds_.at(1), HWND_TOP, width_ / 2, 0, width_ / 2, height_);
+    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_ / 2        , height_);
+    resize_window(hwnds_.at(1), HWND_TOP, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_);
   }
   else{
     long const n = hwnds_.size() - 2;
     long const sub_width = width_ / n;
 
-    resize_window(hwnds_.at(0), HWND_TOP, 0        , 0, width_ / 2, height_ / 4 * 3);
-    resize_window(hwnds_.at(1), HWND_TOP, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
+    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0        , 0, width_ / 2, height_ / 4 * 3);
+    resize_window(hwnds_.at(1), HWND_TOP, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
 
     for(unsigned int i = 2; i < hwnds_.size(); i++){
-      resize_window(hwnds_.at(i), HWND_TOP,
+      resize_window(hwnds_.at(i), HWND_TOP, SW_SHOWNORMAL,
           (sub_width * (i - 2)),
           (height_ / 4 * 3),
           (sub_width),
@@ -48,7 +48,7 @@ void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const
 void arrange_maximal(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   HWND const foreground_hwnd = ::GetForegroundWindow();
   for(auto hwnd : hwnds_){
-    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, 0, 0, width_, height_);
+    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
   }
 }
 void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
@@ -57,20 +57,27 @@ void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long cons
     // nop
   }
   else if(1 == hwnds_.size()){
-    resize_window(foreground_hwnd, HWND_TOP, 0, 0, width_, height_);
+    for(auto hwnd : hwnds_){
+      if(foreground_hwnd == hwnd){
+        resize_window(hwnd, HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
+        break;
+      }
+    }
   }
   else{
-    resize_window(foreground_hwnd, HWND_TOP, width_ / 8 * 1, height_ / 8 * 1, width_ / 8 * 6, height_ / 8 * 6);
     unsigned int i = 0;
     long const w = width_ / 2;
     long const h = height_ / 2;
     for(auto hwnd : hwnds_){
-      if(foreground_hwnd != hwnd){
+      if(foreground_hwnd == hwnd){
+        resize_window(hwnd, HWND_TOPMOST, SW_SHOWNORMAL, width_ / 8 * 1, height_ / 8 * 1, width_ / 8 * 6, height_ / 8 * 6);
+      }
+      else{
         switch(i % 4){
-          case 0: resize_window(hwnd, HWND_TOP, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
-          case 1: resize_window(hwnd, HWND_TOP, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
-          case 2: resize_window(hwnd, HWND_TOP, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
-          case 3: resize_window(hwnd, HWND_TOP, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
+          case 0: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
+          case 1: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
+          case 2: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
+          case 3: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
         }
         i++;
       }
@@ -124,6 +131,16 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
 }
 LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
   switch (msg_) {
+    case WM_CREATE:
+      ::SetTimer(hwnd_, 1, 1000, NULL);
+      break;
+
+    case WM_TIMER:
+      if(g_p_tile_window_manager != nullptr){
+        g_p_tile_window_manager->arrange();
+      }
+      break;
+
     case WM_CLOSE:
     case WM_DESTROY:
       ::PostQuitMessage(0);
@@ -224,28 +241,14 @@ LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM
           << "Workspace: " << g_p_tile_window_manager->get_workspace_name()
           << ", Managed: " << g_p_tile_window_manager->get_managed_window_size()
           << ", Layout: "  << g_p_tile_window_manager->get_layout_name()
-          << ", Class: " << std::left << classname;
-
-        ss_text << ", ACLineStatus:";
-        switch(systemPowerStatus.ACLineStatus){
-          case 0: ss_text << "Offline"; break;
-          case 1: ss_text << "Online"; break;
-          case 255: ss_text << "Unknown status"; break;
-        }
-
-        // ss_text << ", BatteryFlag:";
-        // switch(systemPowerStatus.BatteryFlag){
-        //   case 1: ss_text << "High"; break;
-        //   case 2: ss_text << "Low"; break;
-        //   case 4: ss_text << "Critical"; break;
-        //   case 8: ss_text << "Charging"; break;
-        //   case 128: ss_text << "No system battery"; break;
-        //   case 255: ss_text << "Unknown status"; break;
-        // }
-
-        ss_text << ", BatteryLifePercent:" << std::setw(4)
+          << ", Class: " << std::left << classname
+          << ", Battery: " << std::left
           << static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent) << "%";
-
+        switch(systemPowerStatus.ACLineStatus){
+          case 0: ss_text << "[Offline]"; break;
+          case 1: ss_text << "[Online]"; break;
+          case 255: ss_text << "[Unknown]"; break;
+        }
         ss_text << " >>>";
 
         ::DrawText(hdc, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
