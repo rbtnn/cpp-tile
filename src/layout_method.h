@@ -1,6 +1,6 @@
 
-#ifndef TILE_ARRANGE_DLL_H
-#define TILE_ARRANGE_DLL_H
+#ifndef TILE_LAYOUT_METHOD_H
+#define TILE_LAYOUT_METHOD_H
 
 #include "./common_headers.h"
 #include "./common_functions.h"

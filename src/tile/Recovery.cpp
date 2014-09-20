@@ -21,7 +21,7 @@ namespace Tile{
       RECT const rect = rects[hwnd_];
       LONG const width = rect.right - rect.left;
       LONG const height = rect.bottom - rect.top;
-      ::SetWindowPos(hwnd_, HWND_TOP, rect.left, rect.top, width, height, SWP_NOACTIVATE);
+      ::SetWindowPos(hwnd_, HWND_NOTOPMOST, rect.left, rect.top, width, height, SWP_NOACTIVATE);
       ::SetWindowLong(hwnd_, GWL_STYLE, styles[hwnd_]);
       ::SetWindowLong(hwnd_, GWL_EXSTYLE, exstyles[hwnd_]);
       ::ShowWindow(hwnd_, SW_SHOWNORMAL);
