@@ -29,9 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
 
     std::vector<Tile::Layout> layouts;
     std::vector<HMODULE> module_handles;
-    std::vector<std::string> const layout_names = {
-      "arrange", "arrange_twin", "arrange_maximal", "arrange_cross",
-    };
+    std::vector<std::string> const layout_names = configreader->get_layout_method_names();
 
     for(auto name : layout_names){
       HMODULE const h = ::LoadLibrary((name + ".dll").c_str());

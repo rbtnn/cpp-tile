@@ -15,6 +15,7 @@ namespace Tile{
       std::string get_run_process_path();
       std::vector<std::string> get_ignore_classnames();
       std::vector<std::string> get_not_apply_style_to_classnames();
+      std::vector<std::string> get_layout_method_names();
       std::map<std::string, std::string> get_keys();
   };
 }

@@ -45,6 +45,11 @@ namespace Tile{
     ::GetPrivateProfileString("settings", "NOT_APPLY_STYLE_TO_CLASSNAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
     return split(std::string(buffer), ',');
   }
+  std::vector<std::string> ConfigReader::get_layout_method_names(){
+    char buffer[buffer_size];
+    ::GetPrivateProfileString("settings", "LAYOUT_METHOD_NAMES", "", buffer, sizeof(buffer) / sizeof(char), get_inifile_path().c_str());
+    return split(std::string(buffer), ',');
+  }
   std::map<std::string, std::string> ConfigReader::get_keys(){
     std::map<std::string, std::string> m;
     char buffer[buffer_size];
