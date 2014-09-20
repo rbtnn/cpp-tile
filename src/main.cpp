@@ -11,7 +11,7 @@ void arrange(std::deque<HWND> const& hwnds_, long const& width_, long const& hei
   long const split_size = 3;
   long sub_height = (2 < hwnds_.size()) ? (height_ / (hwnds_.size() - 1)) : height_;
   for(unsigned int i = 0; i < hwnds_.size(); i++){
-    resize_window(hwnds_.at(i), HWND_TOP, SW_SHOWNORMAL,
+    resize_window(hwnds_.at(i), HWND_NOTOPMOST, SW_SHOWNORMAL,
         ((i == 0) ? 0                                                      : width_ / split_size * 2),
         ((i == 0) ? 0                                                      : sub_height * (i - 1)),
         ((i == 0) ? ( hwnds_.size() == 1 ? width_ : width_ / split_size * 2) : width_ / split_size),
@@ -23,21 +23,21 @@ void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const
     // nop
   }
   else if(1 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
+    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
   }
   else if(2 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_ / 2        , height_);
-    resize_window(hwnds_.at(1), HWND_TOP, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_);
+    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_ / 2        , height_);
+    resize_window(hwnds_.at(1), HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_);
   }
   else{
     long const n = hwnds_.size() - 2;
     long const sub_width = width_ / n;
 
-    resize_window(hwnds_.at(0), HWND_TOP, SW_SHOWNORMAL, 0        , 0, width_ / 2, height_ / 4 * 3);
-    resize_window(hwnds_.at(1), HWND_TOP, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
+    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0        , 0, width_ / 2, height_ / 4 * 3);
+    resize_window(hwnds_.at(1), HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
 
     for(unsigned int i = 2; i < hwnds_.size(); i++){
-      resize_window(hwnds_.at(i), HWND_TOP, SW_SHOWNORMAL,
+      resize_window(hwnds_.at(i), HWND_NOTOPMOST, SW_SHOWNORMAL,
           (sub_width * (i - 2)),
           (height_ / 4 * 3),
           (sub_width),
@@ -48,7 +48,7 @@ void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const
 void arrange_maximal(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   HWND const foreground_hwnd = ::GetForegroundWindow();
   for(auto hwnd : hwnds_){
-    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
+    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
   }
 }
 void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
@@ -61,7 +61,7 @@ void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long cons
     else if(1 == hwnds_.size()){
       for(auto hwnd : hwnds_){
         if(foreground_hwnd == hwnd){
-          resize_window(hwnd, HWND_TOP, SW_SHOWNORMAL, 0, 0, width_, height_);
+          resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
           break;
         }
       }
