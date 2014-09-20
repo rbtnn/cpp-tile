@@ -18,36 +18,37 @@ This is Tiling Window Manager for MS Windows.
 Default key mappings of `tile.exe` is written in following figure.
 You can edit `tile.ini` and customize this.
 
-    +--------------------+--------------------------------------+-----------------------------+
-    | KeyStroke          | Description                          | keyname of tile.ini         |
-    +--------------------+--------------------------------------+-----------------------------+
-    | Alt + Ctrl + M     | active window to master erea.        | focus_window_to_master      |
-    | Alt + Ctrl + Q     | exit tile.exe.                       | exit_tile                   |
-    | Alt + Ctrl + C     | kill an active window.               | kill_client                 |
-    | Alt + Ctrl + K     | focus to a previous window.          | previous_focus              |
-    | Alt + Ctrl + J     | focus to a next window.              | next_focus                  |
-    | Alt + Ctrl + R     | rescan processes.                    | rescan                      |
-    | Alt + Ctrl + Space | change layout method.                | next_layout                 |
-    | Alt + Ctrl + Enter | run a process.                       | run_process                 |
-    | Alt + Ctrl + 1     | go to workspace 1.                   | workspace_1                 |
-    | Alt + Ctrl + 2     | go to workspace 2.                   | workspace_2                 |
-    | Alt + Ctrl + 3     | go to workspace 3.                   | workspace_3                 |
-    | Alt + Ctrl + 4     | go to workspace 4.                   | workspace_4                 |
-    | Alt + Ctrl + 5     | go to workspace 5.                   | workspace_5                 |
-    | Alt + Ctrl + 6     | go to workspace 6.                   | workspace_6                 |
-    | Alt + Ctrl + 7     | go to workspace 7.                   | workspace_7                 |
-    | Alt + Ctrl + 8     | go to workspace 8.                   | workspace_8                 |
-    | Alt + Ctrl + 9     | go to workspace 9.                   | workspace_9                 |
-    | Alt + Ctrl + !     | move active window to workspace 1.   | move_to_workspace_1         |
-    | Alt + Ctrl + @     | move active window to workspace 2.   | move_to_workspace_2         |
-    | Alt + Ctrl + #     | move active window to workspace 3.   | move_to_workspace_3         |
-    | Alt + Ctrl + $     | move active window to workspace 4.   | move_to_workspace_4         |
-    | Alt + Ctrl + %     | move active window to workspace 5.   | move_to_workspace_5         |
-    | Alt + Ctrl + ^     | move active window to workspace 6.   | move_to_workspace_6         |
-    | Alt + Ctrl + &     | move active window to workspace 7.   | move_to_workspace_7         |
-    | Alt + Ctrl + *     | move active window to workspace 8.   | move_to_workspace_8         |
-    | Alt + Ctrl + (     | move active window to workspace 9.   | move_to_workspace_9         |
-    +--------------------+--------------------------------------+-----------------------------+
+    +--------------------+-------------------------------------------+-----------------------------+
+    | KeyStroke          | Description                               | keyname of tile.ini         |
+    +--------------------+-------------------------------------------+-----------------------------+
+    | Alt + Ctrl + M     | active window to master erea.             | focus_window_to_master      |
+    | Alt + Ctrl + Q     | exit tile.exe.                            | exit_tile                   |
+    | Alt + Ctrl + C     | kill an active window.                    | kill_client                 |
+    | Alt + Ctrl + K     | focus to a previous window.               | previous_focus              |
+    | Alt + Ctrl + J     | focus to a next window.                   | next_focus                  |
+    | Alt + Ctrl + R     | rescan processes.                         | rescan                      |
+    | Alt + Ctrl + Space | change layout method.                     | next_layout                 |
+    | Alt + Ctrl + Enter | run a process.                            | run_process                 |
+    | Alt + Ctrl + 1     | go to workspace 1.                        | workspace_1                 |
+    | Alt + Ctrl + 2     | go to workspace 2.                        | workspace_2                 |
+    | Alt + Ctrl + 3     | go to workspace 3.                        | workspace_3                 |
+    | Alt + Ctrl + 4     | go to workspace 4.                        | workspace_4                 |
+    | Alt + Ctrl + 5     | go to workspace 5.                        | workspace_5                 |
+    | Alt + Ctrl + 6     | go to workspace 6.                        | workspace_6                 |
+    | Alt + Ctrl + 7     | go to workspace 7.                        | workspace_7                 |
+    | Alt + Ctrl + 8     | go to workspace 8.                        | workspace_8                 |
+    | Alt + Ctrl + 9     | go to workspace 9.                        | workspace_9                 |
+    | Alt + Ctrl + !     | move an active window to workspace 1.     | move_to_workspace_1         |
+    | Alt + Ctrl + @     | move an active window to workspace 2.     | move_to_workspace_2         |
+    | Alt + Ctrl + #     | move an active window to workspace 3.     | move_to_workspace_3         |
+    | Alt + Ctrl + $     | move an active window to workspace 4.     | move_to_workspace_4         |
+    | Alt + Ctrl + %     | move an active window to workspace 5.     | move_to_workspace_5         |
+    | Alt + Ctrl + ^     | move an active window to workspace 6.     | move_to_workspace_6         |
+    | Alt + Ctrl + &     | move an active window to workspace 7.     | move_to_workspace_7         |
+    | Alt + Ctrl + *     | move an active window to workspace 8.     | move_to_workspace_8         |
+    | Alt + Ctrl + (     | move an active window to workspace 9.     | move_to_workspace_9         |
+    | Alt + Ctrl + T     | toggle transparency to an active window.  | toggle_transparency_window  |
+    +--------------------+-------------------------------------------+-----------------------------+
 
 
 ## LAYOUTS

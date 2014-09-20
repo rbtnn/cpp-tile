@@ -126,6 +126,22 @@ namespace Tile{
     arrange();
     try_focus_managed_window();
   }
+  void TilingWindowManager::toggle_transparency_window(){
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    std::deque<HWND> const hwnds = m_workspace_it->get_managed_hwnds();
+    auto const it = std::find(std::begin(hwnds), std::end(hwnds), foreground_hwnd);
+    if(it != std::end(hwnds)){
+      LONG const exstyle = ::GetWindowLong(foreground_hwnd, GWL_EXSTYLE);
+      if(exstyle & WS_EX_LAYERED){
+        ::SetWindowLong(foreground_hwnd, GWL_EXSTYLE, exstyle ^ WS_EX_LAYERED);
+        ::SetLayeredWindowAttributes(foreground_hwnd, 0, 255, LWA_ALPHA);
+      }
+      else{
+        ::SetWindowLong(foreground_hwnd, GWL_EXSTYLE, exstyle | WS_EX_LAYERED);
+        ::SetLayeredWindowAttributes(foreground_hwnd, 0, 200, LWA_ALPHA);
+      }
+    }
+  }
   void TilingWindowManager::run_process(){
     std::string const path = m_config->get_run_process_path();
     if(exist_file(path)){
@@ -389,6 +405,7 @@ namespace Tile{
     regist_key("next_layout", &TilingWindowManager::next_layout);
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
     regist_key("rescan", &TilingWindowManager::rescan);
+    regist_key("toggle_transparency_window", &TilingWindowManager::toggle_transparency_window);
     regist_key("run_process", &TilingWindowManager::run_process);
     regist_key("workspace_1", &TilingWindowManager::workspace_1);
     regist_key("workspace_2", &TilingWindowManager::workspace_2);
