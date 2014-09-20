@@ -73,6 +73,7 @@ namespace Tile{
       void try_focus_managed_window();
       void move_to_workspace_of(unsigned int const i);
       void workspace_of(unsigned int const i);
+      void system_error(std::string const& msg);
 
     public:
       TilingWindowManager(HINSTANCE const&, std::string, std::vector<Tile::Layout>, std::shared_ptr<ConfigReader>);
@@ -81,7 +82,7 @@ namespace Tile{
       void arrange();
       void manage(HWND hwnd_);
       void unmanage(HWND hwnd_);
-      void call_key_method(UINT const& i_) const;
+      void call_key_method(UINT const& i_);
       void redraw_statusline();
       std::string get_layout_name();
       std::string get_workspace_name() const;
