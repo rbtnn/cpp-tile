@@ -7,87 +7,6 @@
 
 std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
 
-void arrange(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
-  long const split_size = 3;
-  long sub_height = (2 < hwnds_.size()) ? (height_ / (hwnds_.size() - 1)) : height_;
-  for(unsigned int i = 0; i < hwnds_.size(); i++){
-    resize_window(hwnds_.at(i), HWND_NOTOPMOST, SW_SHOWNORMAL,
-        ((i == 0) ? 0                                                      : width_ / split_size * 2),
-        ((i == 0) ? 0                                                      : sub_height * (i - 1)),
-        ((i == 0) ? ( hwnds_.size() == 1 ? width_ : width_ / split_size * 2) : width_ / split_size),
-        ((i == 0) ? height_                                                 : sub_height));
-  }
-}
-void arrange_twin(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
-  if(0 == hwnds_.size()){
-    // nop
-  }
-  else if(1 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
-  }
-  else if(2 == hwnds_.size()){
-    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_ / 2        , height_);
-    resize_window(hwnds_.at(1), HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_);
-  }
-  else{
-    long const n = hwnds_.size() - 2;
-    long const sub_width = width_ / n;
-
-    resize_window(hwnds_.at(0), HWND_NOTOPMOST, SW_SHOWNORMAL, 0        , 0, width_ / 2, height_ / 4 * 3);
-    resize_window(hwnds_.at(1), HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 2, 0, width_ / 2, height_ / 4 * 3);
-
-    for(unsigned int i = 2; i < hwnds_.size(); i++){
-      resize_window(hwnds_.at(i), HWND_NOTOPMOST, SW_SHOWNORMAL,
-          (sub_width * (i - 2)),
-          (height_ / 4 * 3),
-          (sub_width),
-          (height_ / 4 * 1));
-    }
-  }
-}
-void arrange_maximal(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
-  HWND const foreground_hwnd = ::GetForegroundWindow();
-  for(auto hwnd : hwnds_){
-    resize_window(((hwnd == foreground_hwnd) ? foreground_hwnd : hwnd), HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
-  }
-}
-void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
-  HWND const foreground_hwnd = ::GetForegroundWindow();
-  auto const it = std::find(std::begin(hwnds_), std::end(hwnds_), foreground_hwnd);
-  if(it != std::end(hwnds_)){
-    if(0 == hwnds_.size()){
-      // nop
-    }
-    else if(1 == hwnds_.size()){
-      for(auto hwnd : hwnds_){
-        if(foreground_hwnd == hwnd){
-          resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, 0, 0, width_, height_);
-          break;
-        }
-      }
-    }
-    else{
-      unsigned int i = 0;
-      long const w = width_ / 2;
-      long const h = height_ / 2;
-      for(auto hwnd : hwnds_){
-        if(foreground_hwnd == hwnd){
-          resize_window(hwnd, HWND_TOPMOST, SW_SHOWNORMAL, width_ / 8 * 1, height_ / 8 * 1, width_ / 8 * 6, height_ / 8 * 6);
-        }
-        else{
-          switch(i % 4){
-            case 0: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
-            case 1: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
-            case 2: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
-            case 3: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
-          }
-          i++;
-        }
-      }
-    }
-  }
-}
-
 int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLine_, int nShowCmd_){
 #ifdef DEBUG
   bool const use_console = true;
@@ -107,18 +26,35 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
   else{
     std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader);
 
-    g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", {
-          Tile::Layout("arrange", arrange),
-          Tile::Layout("arrange_twin", arrange_twin),
-          Tile::Layout("arrange_maximal", arrange_maximal),
-          Tile::Layout("arrange_cross", arrange_cross),
-          }, configreader));
+
+    std::vector<Tile::Layout> layouts;
+    std::vector<HMODULE> module_handles;
+    std::vector<std::string> const layout_names = {
+      "arrange", "arrange_twin", "arrange_maximal", "arrange_cross",
+    };
+
+    for(auto name : layout_names){
+      HMODULE const h = ::LoadLibrary((name + ".dll").c_str());
+      if(h != NULL){
+        module_handles.push_back(h);
+        Tile::Layout::ArrangeFuncRef const arrange_funcref = reinterpret_cast<Tile::Layout::ArrangeFuncRef>(::GetProcAddress(h, name.c_str()));
+        if(arrange_funcref != NULL){
+          layouts.push_back(Tile::Layout(name.c_str(), arrange_funcref));
+        }
+      }
+    }
+
+    g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", layouts, configreader));
 
     if(exist_file(configreader->get_inifile_path())){
       g_p_tile_window_manager->start();
     }
     else{
       ::MessageBox(NULL, ("'" + configreader->get_inifile_path() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
+    }
+
+    for(auto h : module_handles){
+      ::FreeLibrary(h);
     }
   }
 
