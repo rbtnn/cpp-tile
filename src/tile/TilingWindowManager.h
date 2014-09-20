@@ -8,6 +8,7 @@
 #include "./Key.h"
 #include "./Workspace.h"
 #include "./Layout.h"
+#include "./Recovery.h"
 
 namespace Tile{
   class TilingWindowManager{
@@ -34,6 +35,7 @@ namespace Tile{
       std::vector<Tile::Layout> m_layouts;
       std::vector<Tile::Layout>::iterator m_layout_it;
 
+      Tile::Recovery recovery;
 
       void init_main();
       void init_statusline();

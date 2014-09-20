@@ -4,6 +4,7 @@ LOG = ./log.txt
 CC = g++.exe
 CPPFlAGS = -std=c++11 -pedantic -Wall -Os -fno-strict-aliasing
 COMMON_HEADERS = ${SRC_DIR}/common_headers.h ${SRC_DIR}/common_functions.h ${SRC_DIR}/wndproc_functions.h
+OBJECTS = common_functions.o Key.o ConfigReader.o Layout.o Workspace.o Recovery.o TilingWindowManager.o main.o
 
 .PHONY: run all clean clean_objects clean_modules clean_log
 
@@ -21,8 +22,15 @@ clean_modules:
 	rm -f tile.exe
 	rm -f test.dll
 
+compile: ${OBJECTS}
+
+link: ${OBJECTS}
+	${CC} $^ -o tile.exe -mwindows -s
+
 clean_log:
 	rm -f ${LOG}
+
+tile.exe: compile link
 
 main.o: ${SRC_DIR}/main.cpp ${COMMON_HEADERS} ${SRC_DIR}/tile/TilingWindowManager.h ${SRC_DIR}/tile/Layout.h
 	${CC} -c $< ${CPPFlAGS}
@@ -42,11 +50,12 @@ Layout.o: ${SRC_DIR}/tile/Layout.cpp ${SRC_DIR}/tile/Layout.h ${COMMON_HEADERS}
 Workspace.o: ${SRC_DIR}/tile/Workspace.cpp ${SRC_DIR}/tile/Workspace.h ${COMMON_HEADERS}
 	${CC} -c $< ${CPPFlAGS}
 
-TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp ${SRC_DIR}/tile/TilingWindowManager.h ${SRC_DIR}/tile/ConfigReader.h ${COMMON_HEADERS}
+Recovery.o: ${SRC_DIR}/tile/Recovery.cpp ${SRC_DIR}/tile/Recovery.h ${COMMON_HEADERS}
 	${CC} -c $< ${CPPFlAGS}
 
-tile.exe: common_functions.o Key.o ConfigReader.o Layout.o Workspace.o TilingWindowManager.o main.o
-	${CC} $^ -o $@ -mwindows -s
+TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp ${SRC_DIR}/tile/TilingWindowManager.h \
+  ${SRC_DIR}/tile/ConfigReader.h ${SRC_DIR}/tile/Recovery.h ${COMMON_HEADERS}
+	${CC} -c $< ${CPPFlAGS}
 
 test.o: ${SRC_DIR}/test.cpp ${SRC_DIR}/common_functions.h
 	${CC} -c $< ${CPPFlAGS}

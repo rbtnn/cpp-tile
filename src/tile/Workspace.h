@@ -8,12 +8,7 @@ namespace Tile{
   class Workspace{
     private:
       std::string m_workspace_name;
-
       std::deque<HWND> m_managed_hwnds;
-      std::map<HWND, RECT> m_managed_hwnd_to_rect;
-      std::map<HWND, LONG> m_managed_hwnd_to_style;
-      std::map<HWND, LONG> m_managed_hwnd_to_exstyle;
-
       void set_style(HWND hwnd_, std::vector<std::string> classnames_);
 
     public:

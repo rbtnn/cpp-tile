@@ -113,9 +113,10 @@ namespace Tile{
   }
   void TilingWindowManager::unmanage_all(){
     for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-      for(auto hwnd : it->get_managed_hwnds()){
+      auto const hwnds = it->get_managed_hwnds();
+      for(auto hwnd : hwnds){
         it->unmanage(hwnd);
-        ::ShowWindow(hwnd, SW_SHOWNORMAL);
+        recovery.load(hwnd);
       }
     }
   }
@@ -461,7 +462,7 @@ namespace Tile{
       std::cout << "classname:" << classname << std::endl;
       std::cout << std::endl;
 #endif
-
+      recovery.save(hwnd_);
       m_workspace_it->manage(hwnd_, m_config->get_not_apply_style_to_classnames());
     }
   }
