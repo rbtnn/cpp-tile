@@ -7,7 +7,7 @@ if s:is_windows
 
   function! s:tile_start()
     if filereadable(s:tile_bin_path)
-      execute '!start ' . s:tile_bin_path
+      execute printf('!start %s %s', s:tile_bin_path, s:tile_config_path)
     endif
   endfunction
   function! s:tile_edit_configurefile()

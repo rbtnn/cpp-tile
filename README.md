@@ -15,7 +15,7 @@ This is Tiling Window Manager for MS Windows.
 
 ## USAGE
 
-> tile.exe
+> tile.exe ./tile.json
 
 
 ## LAYOUT METHODS
@@ -219,6 +219,19 @@ TODO
 TODO
 
 #### layout\_method\_names
+
+TODO
+
+
+## Vim Interface
+
+### Commands
+
+#### TileStart
+
+TODO
+
+#### TileEditConfigureFile
 
 TODO
 

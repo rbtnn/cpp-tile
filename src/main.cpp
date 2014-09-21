@@ -26,7 +26,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
   else{
     std::vector<HMODULE> module_handles;
     try{
-      std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader);
+      std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader(lpCmdLine_));
 
       std::vector<Tile::Layout> layouts;
       std::vector<std::string> const layout_names = configreader->get_layout_method_names();
@@ -47,7 +47,6 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     }
     catch(std::exception const& e){
       ::MessageBox(NULL, e.what(), "Error", MB_ICONERROR);
-      // ::MessageBox(NULL, ("'" + configreader->get_inifile_path() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
     }
     for(auto h : module_handles){
       ::FreeLibrary(h);

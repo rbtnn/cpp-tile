@@ -14,7 +14,7 @@ namespace Tile{
       boost::property_tree::ptree m_pt;
 
     public:
-      ConfigReader();
+      ConfigReader(char const * const);
       boost::optional<std::string> get_run_process_path() const;
       std::vector<std::string> get_ignore_classnames() const;
       std::vector<std::string> get_not_apply_style_to_classnames() const;

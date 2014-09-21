@@ -5,8 +5,8 @@
 #include "./ConfigReader.h"
 
 namespace Tile{
-  ConfigReader::ConfigReader(){
-    boost::property_tree::read_json("tile.json", m_pt);
+  ConfigReader::ConfigReader(char const * const path_){
+    boost::property_tree::read_json(path_, m_pt);
   }
   boost::optional<std::string> ConfigReader::get_run_process_path() const{
     return m_pt.get_optional<std::string>("settings.run_process_path");
