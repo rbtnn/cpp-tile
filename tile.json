@@ -1,6 +1,6 @@
 {
   "settings" : {
-    "IGNORE_CLASSNAMES" : [
+    "ignore_classnames" : [
       "ImmersiveLauncher",
       "Shell_CharmWindow",
       "ImmersiveBackgroundWindow",
@@ -20,11 +20,11 @@
       "DV2ControlHost",
       "IDEOwner"
       ],
-    "NOT_APPLY_STYLE_TO_CLASSNAMES" : [
+    "not_apply_style_to_classnames" : [
       "CabinetWClass", "Chrome_WidgetWin_1", "XLMAIN", "ConsoleWindowClass", "MSPaintApp"
       ],
-    "RUN_PROCESS_PATH" : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-    "LAYOUT_METHOD_NAMES" : [
+    "run_process_path" : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "layout_method_names" : [
       "arrange", "arrange_twin", "arrange_maximal", "arrange_cross"
       ]
   },

@@ -9,11 +9,11 @@ namespace Tile{
     boost::property_tree::read_json("tile.json", m_pt);
   }
   boost::optional<std::string> ConfigReader::get_run_process_path() const{
-    return m_pt.get_optional<std::string>("settings.RUN_PROCESS_PATH");
+    return m_pt.get_optional<std::string>("settings.run_process_path");
   }
   std::vector<std::string> ConfigReader::get_ignore_classnames() const{
     std::vector<std::string> xs;
-    auto const children = m_pt.get_child_optional("settings.IGNORE_CLASSNAMES");
+    auto const children = m_pt.get_child_optional("settings.ignore_classnames");
     if(children){
       for(auto const& x : *children){
         xs.push_back(x.second.get<std::string>(""));
@@ -23,7 +23,7 @@ namespace Tile{
   }
   std::vector<std::string> ConfigReader::get_not_apply_style_to_classnames() const{
     std::vector<std::string> xs;
-    auto const children = m_pt.get_child_optional("settings.NOT_APPLY_STYLE_TO_CLASSNAMES");
+    auto const children = m_pt.get_child_optional("settings.not_apply_style_to_classnames");
     if(children){
       for(auto const& x : *children){
         xs.push_back(x.second.get<std::string>(""));
@@ -33,7 +33,7 @@ namespace Tile{
   }
   std::vector<std::string> ConfigReader::get_layout_method_names() const{
     std::vector<std::string> xs;
-    auto const children = m_pt.get_child_optional("settings.LAYOUT_METHOD_NAMES");
+    auto const children = m_pt.get_child_optional("settings.layout_method_names");
     if(children){
       for(auto const& x : *children){
         xs.push_back(x.second.get<std::string>(""));

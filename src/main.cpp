@@ -177,7 +177,7 @@ void paint_statusline(HWND const& hwnd_){
         FW_REGULAR, FALSE, FALSE, FALSE,
         SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
         CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
-        FIXED_PITCH | FF_MODERN, "ＭＳ ゴシック");
+        FIXED_PITCH | FF_MODERN, "");
 
     ::SelectObject(hdcMem, hbrush);
     ::Rectangle(hdcMem , 0, 0, get_statusline_width(), get_statusline_height());

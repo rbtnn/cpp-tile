@@ -78,22 +78,14 @@ This is Tiling Window Manager for MS Windows.
 
 ## CONFIGURATION
 
-Default key mappings of `tile.exe` is defined in `tile.json`.
-You can edit it and customize key mappings.
-
-
-### settings
-
-#### IGNORE\_CLASSNAMES
-
-#### NOT\_APPLY\_STYLE\_TO\_CLASSNAMES
-
-#### RUN\_PROCESS\_PATH
-
-#### LAYOUT\_METHOD\_NAMES
+Configure file of `tile.exe` is `tile.json`.
 
 
 ### keys
+
+Default key mappings is defined `keys` section.
+You can edit it and customize key mappings.
+
 
 #### focus\_window\_to\_master (`Alt + Ctrl + m`)
 
@@ -210,6 +202,25 @@ Move an active window to workspace 8.
 #### move\_to\_workspace\_9 (`Alt + Ctrl + (`)
 
 Move an active window to workspace 9.
+
+
+### settings
+
+#### ignore\_classnames
+
+TODO
+
+#### not\_apply\_style\_to\_classnames
+
+TODO
+
+#### run\_process\_path
+
+TODO
+
+#### layout\_method\_names
+
+TODO
 
 
 ## LICENSE
