@@ -1,9 +1,7 @@
 
-# tile
+# ![](https://raw.github.com/rbtnn/tile/master/images/icon_large.png) Tile
 
 This is Tiling Window Manager for MS Windows.
-
-![](https://raw.github.com/rbtnn/tile/master/image.png)
 
 
 ## BUILD
@@ -22,59 +20,22 @@ This is Tiling Window Manager for MS Windows.
 
 ### arrange
 
-    +-------------------------+--------+
-    |                         |   1    |
-    |                         +--------+
-    |                         |   2    |
-    |      MASTER PANE        +--------+
-    |                         |   3    |
-    |           0             +--------+
-    |                         |        |
-    |                         |...     |
-    +-------------------------+--------+
+![](https://raw.github.com/rbtnn/tile/master/images/arrange.png)
 
 
 ### arrange\_twin
 
-    +----------------+-----------------+
-    |                |                 |
-    |                |                 |
-    |  MASTER PANE   |                 |
-    |                |                 |
-    |       0        |        1        |
-    |                |                 |
-    +-----------+----------+-----------+
-    |     2     |    3     |    ...    |
-    +-----------+----------+-----------+
+![](https://raw.github.com/rbtnn/tile/master/images/arrange_cross.png)
 
 
 ### arrange\_maximal
 
-    +----------------------------------+
-    |                                  |
-    |                                  |
-    |                                  |
-    |          MASTER PANE             |
-    |                                  |
-    |              0                   |
-    |                                  |
-    |                                  |
-    +----------------------------------+
+![](https://raw.github.com/rbtnn/tile/master/images/arrange_maximal.png)
 
 
 ### arrange\_cross
 
-    +---------+--------------+---------+
-    |         |      1,5,... |         |
-    |       +----------------+-+       |
-    +-------+                  +-------+
-    |       |   MASTER PANE    |       |
-    |4,8,...|                  |2,6,...|
-    |       |        0         |       |
-    +-------+                  +-------+
-    |       +----------------+-+       |
-    |         |      3,7,... |         |
-    +---------+--------------+---------+
+![](https://raw.github.com/rbtnn/tile/master/images/arrange_twin.png)
 
 
 ## CONFIGURATION
