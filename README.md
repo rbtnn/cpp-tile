@@ -10,7 +10,7 @@ This is Tiling Window Manager for MS Windows.
 
 > mingw32-make.exe -f makefile
 
-* should be defined `BOOST_ROOT`.
+* should define `BOOST_ROOT`.
 
 
 ## USAGE
