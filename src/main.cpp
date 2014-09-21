@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
 #endif
 
   if(::FindWindow("Tile", NULL) != NULL){
-    ::MessageBox(NULL, "Multiplex starting is not permitted.", "Error", MB_ICONERROR);
+    system_error("Multiplex starting is not permitted.");
   }
   else{
     std::vector<HMODULE> module_handles;
@@ -46,7 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
       g_p_tile_window_manager->start();
     }
     catch(std::exception const& e){
-      ::MessageBox(NULL, e.what(), "Error", MB_ICONERROR);
+      system_error(e.what());
     }
     for(auto h : module_handles){
       ::FreeLibrary(h);

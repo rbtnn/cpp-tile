@@ -76,7 +76,6 @@ namespace Tile{
       void swap_previous();
       void move_to_workspace_of(unsigned int const i);
       void workspace_of(unsigned int const i);
-      void system_error(std::string const& msg);
 
     public:
       TilingWindowManager(HINSTANCE const&, std::string, std::vector<Tile::Layout>, std::shared_ptr<ConfigReader>);

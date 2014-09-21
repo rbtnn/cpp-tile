@@ -65,7 +65,6 @@ std::string get_windowtext(HWND const hwnd_){
   ::GetWindowText(hwnd_, buffer, sizeof(buffer) / sizeof(char));
   return std::string(buffer);
 }
-
 bool exist_file(std::string const path){
   WIN32_FIND_DATA findData;
   HANDLE hFindFile = ::FindFirstFile(path.c_str(), &findData);
@@ -114,5 +113,10 @@ void resize_window(HWND const& hwnd_, HWND const& hWndInsertAfter_, int const& c
     << std::endl
     << std::endl;
 #endif
+}
+void system_error(std::string const& msg){
+  std::stringstream ss;
+  ss << "tile system error! (" << msg << ")";
+  ::MessageBox(NULL, ss.str().c_str(), "Error", MB_OK | MB_ICONSTOP | MB_SYSTEMMODAL);
 }
 

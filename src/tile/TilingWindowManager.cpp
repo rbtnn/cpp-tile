@@ -558,6 +558,7 @@ namespace Tile{
     }
     catch(...){
       system_error("TilingWindowManager::call_key_method");
+      exit_tile();
     }
   }
   void TilingWindowManager::redraw_statusline(){
@@ -576,12 +577,6 @@ namespace Tile{
   }
   long TilingWindowManager::get_managed_window_size() const{
     return m_workspace_it->size();
-  }
-  void TilingWindowManager::system_error(std::string const& msg){
-    std::stringstream ss;
-    ss << "tile system error! (" << msg << ")";
-    ::MessageBox(m_main_hwnd, ss.str().c_str(), "Error", MB_OK | MB_ICONSTOP | MB_SYSTEMMODAL);
-    exit_tile();
   }
 }
 
