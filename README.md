@@ -25,7 +25,7 @@ This is Tiling Window Manager for MS Windows.
 
 ### arrange\_twin
 
-![](https://raw.github.com/rbtnn/tile/master/images/arrange_cross.png)
+![](https://raw.github.com/rbtnn/tile/master/images/arrange_twin.png)
 
 
 ### arrange\_maximal
@@ -35,7 +35,7 @@ This is Tiling Window Manager for MS Windows.
 
 ### arrange\_cross
 
-![](https://raw.github.com/rbtnn/tile/master/images/arrange_twin.png)
+![](https://raw.github.com/rbtnn/tile/master/images/arrange_cross.png)
 
 
 ## CONFIGURATION
