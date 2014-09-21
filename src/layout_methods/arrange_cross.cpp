@@ -15,10 +15,10 @@ EXPORT void arrange_cross(std::deque<HWND> const& hwnds_, long const& width_, lo
         }
         else{
           switch(i % 4){
-            case 0: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
-            case 1: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
-            case 2: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
-            case 3: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
+            case 1: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 0, w, h); break;
+            case 2: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 4, height_ / 8 * 2, w, h); break;
+            case 3: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 2, height_ / 8 * 4, w, h); break;
+            case 0: resize_window(hwnd, HWND_NOTOPMOST, SW_SHOWNORMAL, width_ / 8 * 0, height_ / 8 * 2, w, h); break;
           }
         }
         i++;
