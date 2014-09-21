@@ -83,99 +83,133 @@ You can edit it and customize key mappings.
 
 
 ### settings
+
 * IGNORE\_CLASSNAMES
+
 * NOT\_APPLY\_STYLE\_TO\_CLASSNAMES
+
 * RUN\_PROCESS\_PATH
+
 * LAYOUT\_METHOD\_NAMES
 
 
 ### keys
-* focus\_window\_to\_master
-Focus an active window to master pane. (KeyStroke: `Alt + Ctrl + m`)
 
-* next\_layout
-Change layout method.  (KeyStroke: `Alt + Ctrl + Space`)
+* focus\_window\_to\_master (`Alt + Ctrl + m`)
 
-* next\_focus
-Focus to a next window.  (KeyStroke: `Alt + Ctrl + j`)
+Focus an active window to master pane.
 
-* previous\_focus
-Focus to a previous window.  (KeyStroke: `Alt + Ctrl + k`)
+* next\_layout (`Alt + Ctrl + Space`)
 
-* exit\_tile
-Exit tile.exe.  (KeyStroke: `Alt + Ctrl + q`)
+Change layout method.
 
-* kill\_client
-Kill an active window.  (KeyStroke: `Alt + Ctrl + c`)
+* next\_focus (`Alt + Ctrl + j`)
 
-* run\_process
-Run a process.  (KeyStroke: `Alt + Ctrl + Enter`)
+Focus to a next window.
 
-* rescan
-Rescan processes.  (KeyStroke: `Alt + Ctrl + r`)
+* previous\_focus (`Alt + Ctrl + k`)
 
-* toggle\_transparency\_window
-Toggle transparency to an active window.  (KeyStroke: `Alt + Ctrl + t`)
+Focus to a previous window.
 
-* swap\_next
-Swap an active window and a next window.  (KeyStroke: `Alt + Ctrl + J`)
+* exit\_tile (`Alt + Ctrl + q`)
 
-* swap\_previous
-Swap an active window and a previous window.  (KeyStroke: `Alt + Ctrl + K`)
+Exit tile.exe.
 
-* workspace\_1
-Go to workspace 1.  (KeyStroke: `Alt + Ctrl + 1`)
+* kill\_client (`Alt + Ctrl + c`)
 
-* workspace\_2
-Go to workspace 2.  (KeyStroke: `Alt + Ctrl + 2`)
+Kill an active window.
 
-* workspace\_3
-Go to workspace 3.  (KeyStroke: `Alt + Ctrl + 3`)
+* run\_process (`Alt + Ctrl + Enter`)
 
-* workspace\_4
-Go to workspace 4.  (KeyStroke: `Alt + Ctrl + 4`)
+Run a process.
 
-* workspace\_5
-Go to workspace 5.  (KeyStroke: `Alt + Ctrl + 5`)
+* rescan (`Alt + Ctrl + r`)
 
-* workspace\_6
-Go to workspace 6.  (KeyStroke: `Alt + Ctrl + 6`)
+Rescan processes.
 
-* workspace\_7
-Go to workspace 7.  (KeyStroke: `Alt + Ctrl + 7`)
+* toggle\_transparency\_window (`Alt + Ctrl + t`)
 
-* workspace\_8
-Go to workspace 8.  (KeyStroke: `Alt + Ctrl + 8`)
+Toggle transparency to an active window.
 
-* workspace\_9
-Go to workspace 9.  (KeyStroke: `Alt + Ctrl + 9`)
+* swap\_next (`Alt + Ctrl + J`)
 
-* move\_to\_workspace\_1
-Move an active window to workspace 1.  (KeyStroke: `Alt + Ctrl + !`)
+Swap an active window and a next window.
 
-* move\_to\_workspace\_2
-Move an active window to workspace 2.  (KeyStroke: `Alt + Ctrl + @`)
+* swap\_previous (`Alt + Ctrl + K`)
 
-* move\_to\_workspace\_3
-Move an active window to workspace 3.  (KeyStroke: `Alt + Ctrl + #`)
+Swap an active window and a previous window.
 
-* move\_to\_workspace\_4
-Move an active window to workspace 4.  (KeyStroke: `Alt + Ctrl + $`)
+* workspace\_1 (`Alt + Ctrl + 1`)
 
-* move\_to\_workspace\_5
-Move an active window to workspace 5.  (KeyStroke: `Alt + Ctrl + %`)
+Go to workspace 1.
 
-* move\_to\_workspace\_6
-Move an active window to workspace 6.  (KeyStroke: `Alt + Ctrl + ^`)
+* workspace\_2 (`Alt + Ctrl + 2`)
 
-* move\_to\_workspace\_7
-Move an active window to workspace 7.  (KeyStroke: `Alt + Ctrl + &`)
+Go to workspace 2.
 
-* move\_to\_workspace\_8
-Move an active window to workspace 8.  (KeyStroke: `Alt + Ctrl + *`)
+* workspace\_3 (`Alt + Ctrl + 3`)
 
-* move\_to\_workspace\_9
-Move an active window to workspace 9.  (KeyStroke: `Alt + Ctrl + (`)
+Go to workspace 3.
+
+* workspace\_4 (`Alt + Ctrl + 4`)
+
+Go to workspace 4.
+
+* workspace\_5 (`Alt + Ctrl + 5`)
+
+Go to workspace 5.
+
+* workspace\_6 (`Alt + Ctrl + 6`)
+
+Go to workspace 6.
+
+* workspace\_7 (`Alt + Ctrl + 7`)
+
+Go to workspace 7.
+
+* workspace\_8 (`Alt + Ctrl + 8`)
+
+Go to workspace 8.
+
+* workspace\_9 (`Alt + Ctrl + 9`)
+
+Go to workspace 9.
+
+* move\_to\_workspace\_1 (`Alt + Ctrl + !`)
+
+Move an active window to workspace 1.
+
+* move\_to\_workspace\_2 (`Alt + Ctrl + @`)
+
+Move an active window to workspace 2.
+
+* move\_to\_workspace\_3 (`Alt + Ctrl + #`)
+
+Move an active window to workspace 3.
+
+* move\_to\_workspace\_4 (`Alt + Ctrl + $`)
+
+Move an active window to workspace 4.
+
+* move\_to\_workspace\_5 (`Alt + Ctrl + %`)
+
+Move an active window to workspace 5.
+
+* move\_to\_workspace\_6 (`Alt + Ctrl + ^`)
+
+Move an active window to workspace 6.
+
+* move\_to\_workspace\_7 (`Alt + Ctrl + &`)
+
+Move an active window to workspace 7.
+
+* move\_to\_workspace\_8 (`Alt + Ctrl + *`)
+
+Move an active window to workspace 8.
+
+* move\_to\_workspace\_9 (`Alt + Ctrl + (`)
+
+Move an active window to workspace 9.
 
 
 ## LICENSE
