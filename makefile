@@ -2,7 +2,7 @@
 SRC_DIR = ./src
 LOG = ./log.txt
 CC = g++.exe
-CPPFlAGS = -std=c++11 -pedantic -Wall -Os -fno-strict-aliasing
+CPPFlAGS = -std=c++11 -pedantic -Wall -Os -fno-strict-aliasing -Wno-unused-local-typedefs -I${BOOST_ROOT}
 COMMON_HEADERS = ${SRC_DIR}/common_headers.h ${SRC_DIR}/common_functions.h ${SRC_DIR}/wndproc_functions.h
 OBJECTS = common_functions.o Key.o ConfigReader.o Layout.o Workspace.o Recovery.o TilingWindowManager.o main.o
 
@@ -34,7 +34,7 @@ clean_log:
 
 
 
-main.o: ${SRC_DIR}/main.cpp ${COMMON_HEADERS} ${SRC_DIR}/tile/TilingWindowManager.h ${SRC_DIR}/tile/Layout.h
+main.o: ${SRC_DIR}/main.cpp ${COMMON_HEADERS} ${SRC_DIR}/tile/TilingWindowManager.h ${SRC_DIR}/tile/Layout.h ${SRC_DIR}/tile/ConfigReader.h
 	${CC} -c $< ${CPPFlAGS}
 
 common_functions.o: ${SRC_DIR}/common_functions.cpp ${SRC_DIR}/common_functions.h

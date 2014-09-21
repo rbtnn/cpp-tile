@@ -1,0 +1,62 @@
+{
+  "settings" : {
+    "IGNORE_CLASSNAMES" : [
+      "ImmersiveLauncher",
+      "Shell_CharmWindow",
+      "ImmersiveBackgroundWindow",
+      "Snapped Desktop",
+      "SearchPane",
+      "#32770",
+      "Progman",
+      "QToolTip",
+      "wndclass_desked_gsk",
+      "PbrsHost",
+      "ThunderRT6FormMain",
+      "ThunderRT6FormDC",
+      "Ghost",
+      "bosa_sdm_XL9",
+      "MS-SDIb",
+      "wndclass_desked_gsk",
+      "DV2ControlHost",
+      "IDEOwner"
+      ],
+    "NOT_APPLY_STYLE_TO_CLASSNAMES" : [
+      "CabinetWClass", "Chrome_WidgetWin_1", "XLMAIN", "ConsoleWindowClass", "MSPaintApp"
+      ],
+    "RUN_PROCESS_PATH" : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "LAYOUT_METHOD_NAMES" : [
+      "arrange", "arrange_twin", "arrange_maximal", "arrange_cross"
+      ]
+  },
+  "keys" : {
+    "focus_window_to_master" : "m",
+    "next_layout" : " ",
+    "next_focus" : "j",
+    "previous_focus" : "k",
+    "exit_tile" : "q",
+    "kill_client" : "c",
+    "run_process" : "\u000d",
+    "rescan" : "r",
+    "toggle_transparency_window" : "t",
+    "swap_next" : "J",
+    "swap_previous" : "K",
+    "workspace_1" : "1",
+    "workspace_2" : "2",
+    "workspace_3" : "3",
+    "workspace_4" : "4",
+    "workspace_5" : "5",
+    "workspace_6" : "6",
+    "workspace_7" : "7",
+    "workspace_8" : "8",
+    "workspace_9" : "9",
+    "move_to_workspace_1" : "!",
+    "move_to_workspace_2" : "@",
+    "move_to_workspace_3" : "#",
+    "move_to_workspace_4" : "$",
+    "move_to_workspace_5" : "%",
+    "move_to_workspace_6" : "^",
+    "move_to_workspace_7" : "&",
+    "move_to_workspace_8" : "*",
+    "move_to_workspace_9" : "("
+  }
+}

@@ -72,6 +72,8 @@ namespace Tile{
       void workspace_9();
       void focus_window_to_master();
       void try_focus_managed_window();
+      void swap_next();
+      void swap_previous();
       void move_to_workspace_of(unsigned int const i);
       void workspace_of(unsigned int const i);
       void system_error(std::string const& msg);

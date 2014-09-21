@@ -10,48 +10,15 @@ This is Tiling Window Manager for MS Windows.
 
 > mingw32-make.exe -f makefile
 
+* should be defined `BOOST_ROOT`.
+
 
 ## USAGE
 
 > tile.exe
 
-Default key mappings of `tile.exe` is written in following figure.
-You can edit `tile.ini` and customize this.
 
-    +--------------------+-------------------------------------------+-----------------------------+
-    | KeyStroke          | Description                               | keyname of tile.ini         |
-    +--------------------+-------------------------------------------+-----------------------------+
-    | Alt + Ctrl + M     | active window to master erea.             | focus_window_to_master      |
-    | Alt + Ctrl + Q     | exit tile.exe.                            | exit_tile                   |
-    | Alt + Ctrl + C     | kill an active window.                    | kill_client                 |
-    | Alt + Ctrl + K     | focus to a previous window.               | previous_focus              |
-    | Alt + Ctrl + J     | focus to a next window.                   | next_focus                  |
-    | Alt + Ctrl + R     | rescan processes.                         | rescan                      |
-    | Alt + Ctrl + Space | change layout method.                     | next_layout                 |
-    | Alt + Ctrl + Enter | run a process.                            | run_process                 |
-    | Alt + Ctrl + 1     | go to workspace 1.                        | workspace_1                 |
-    | Alt + Ctrl + 2     | go to workspace 2.                        | workspace_2                 |
-    | Alt + Ctrl + 3     | go to workspace 3.                        | workspace_3                 |
-    | Alt + Ctrl + 4     | go to workspace 4.                        | workspace_4                 |
-    | Alt + Ctrl + 5     | go to workspace 5.                        | workspace_5                 |
-    | Alt + Ctrl + 6     | go to workspace 6.                        | workspace_6                 |
-    | Alt + Ctrl + 7     | go to workspace 7.                        | workspace_7                 |
-    | Alt + Ctrl + 8     | go to workspace 8.                        | workspace_8                 |
-    | Alt + Ctrl + 9     | go to workspace 9.                        | workspace_9                 |
-    | Alt + Ctrl + !     | move an active window to workspace 1.     | move_to_workspace_1         |
-    | Alt + Ctrl + @     | move an active window to workspace 2.     | move_to_workspace_2         |
-    | Alt + Ctrl + #     | move an active window to workspace 3.     | move_to_workspace_3         |
-    | Alt + Ctrl + $     | move an active window to workspace 4.     | move_to_workspace_4         |
-    | Alt + Ctrl + %     | move an active window to workspace 5.     | move_to_workspace_5         |
-    | Alt + Ctrl + ^     | move an active window to workspace 6.     | move_to_workspace_6         |
-    | Alt + Ctrl + &     | move an active window to workspace 7.     | move_to_workspace_7         |
-    | Alt + Ctrl + *     | move an active window to workspace 8.     | move_to_workspace_8         |
-    | Alt + Ctrl + (     | move an active window to workspace 9.     | move_to_workspace_9         |
-    | Alt + Ctrl + T     | toggle transparency to an active window.  | toggle_transparency_window  |
-    +--------------------+-------------------------------------------+-----------------------------+
-
-
-## LAYOUTS
+## LAYOUT METHODS
 
 ### arrange
 
@@ -59,7 +26,7 @@ You can edit `tile.ini` and customize this.
     |                         |   1    |
     |                         +--------+
     |                         |   2    |
-    |      MASTER EREA        +--------+
+    |      MASTER PANE        +--------+
     |                         |   3    |
     |           0             +--------+
     |                         |        |
@@ -72,7 +39,7 @@ You can edit `tile.ini` and customize this.
     +----------------+-----------------+
     |                |                 |
     |                |                 |
-    |  MASTER EREA   |                 |
+    |  MASTER PANE   |                 |
     |                |                 |
     |       0        |        1        |
     |                |                 |
@@ -87,7 +54,7 @@ You can edit `tile.ini` and customize this.
     |                                  |
     |                                  |
     |                                  |
-    |          MASTER EREA             |
+    |          MASTER PANE             |
     |                                  |
     |              0                   |
     |                                  |
@@ -101,7 +68,7 @@ You can edit `tile.ini` and customize this.
     |       |        1,5,...   |       |
     +-------+------------------+-------+
     |       |                  |       |
-    |       |   MASTER EREA    |       |
+    |       |   MASTER PANE    |       |
     |4,8,...|        0         |2,6,...|
     |       |                  |       |
     +-------+------------------+-------+
@@ -109,7 +76,110 @@ You can edit `tile.ini` and customize this.
     +-------+------------------+-------+
 
 
+## CONFIGURATION
+
+Default key mappings of `tile.exe` is defined in `tile.json`.
+You can edit it and customize key mappings.
+
+
+### settings
+* IGNORE\_CLASSNAMES
+* NOT\_APPLY\_STYLE\_TO\_CLASSNAMES
+* RUN\_PROCESS\_PATH
+* LAYOUT\_METHOD\_NAMES
+
+
+### keys
+* focus\_window\_to\_master
+Focus an active window to master pane. (KeyStroke: `Alt + Ctrl + m`)
+
+* next\_layout
+Change layout method.  (KeyStroke: `Alt + Ctrl + Space`)
+
+* next\_focus
+Focus to a next window.  (KeyStroke: `Alt + Ctrl + j`)
+
+* previous\_focus
+Focus to a previous window.  (KeyStroke: `Alt + Ctrl + k`)
+
+* exit\_tile
+Exit tile.exe.  (KeyStroke: `Alt + Ctrl + q`)
+
+* kill\_client
+Kill an active window.  (KeyStroke: `Alt + Ctrl + c`)
+
+* run\_process
+Run a process.  (KeyStroke: `Alt + Ctrl + Enter`)
+
+* rescan
+Rescan processes.  (KeyStroke: `Alt + Ctrl + r`)
+
+* toggle\_transparency\_window
+Toggle transparency to an active window.  (KeyStroke: `Alt + Ctrl + t`)
+
+* swap\_next
+Swap an active window and a next window.  (KeyStroke: `Alt + Ctrl + J`)
+
+* swap\_previous
+Swap an active window and a previous window.  (KeyStroke: `Alt + Ctrl + K`)
+
+* workspace\_1
+Go to workspace 1.  (KeyStroke: `Alt + Ctrl + 1`)
+
+* workspace\_2
+Go to workspace 2.  (KeyStroke: `Alt + Ctrl + 2`)
+
+* workspace\_3
+Go to workspace 3.  (KeyStroke: `Alt + Ctrl + 3`)
+
+* workspace\_4
+Go to workspace 4.  (KeyStroke: `Alt + Ctrl + 4`)
+
+* workspace\_5
+Go to workspace 5.  (KeyStroke: `Alt + Ctrl + 5`)
+
+* workspace\_6
+Go to workspace 6.  (KeyStroke: `Alt + Ctrl + 6`)
+
+* workspace\_7
+Go to workspace 7.  (KeyStroke: `Alt + Ctrl + 7`)
+
+* workspace\_8
+Go to workspace 8.  (KeyStroke: `Alt + Ctrl + 8`)
+
+* workspace\_9
+Go to workspace 9.  (KeyStroke: `Alt + Ctrl + 9`)
+
+* move\_to\_workspace\_1
+Move an active window to workspace 1.  (KeyStroke: `Alt + Ctrl + !`)
+
+* move\_to\_workspace\_2
+Move an active window to workspace 2.  (KeyStroke: `Alt + Ctrl + @`)
+
+* move\_to\_workspace\_3
+Move an active window to workspace 3.  (KeyStroke: `Alt + Ctrl + #`)
+
+* move\_to\_workspace\_4
+Move an active window to workspace 4.  (KeyStroke: `Alt + Ctrl + $`)
+
+* move\_to\_workspace\_5
+Move an active window to workspace 5.  (KeyStroke: `Alt + Ctrl + %`)
+
+* move\_to\_workspace\_6
+Move an active window to workspace 6.  (KeyStroke: `Alt + Ctrl + ^`)
+
+* move\_to\_workspace\_7
+Move an active window to workspace 7.  (KeyStroke: `Alt + Ctrl + &`)
+
+* move\_to\_workspace\_8
+Move an active window to workspace 8.  (KeyStroke: `Alt + Ctrl + *`)
+
+* move\_to\_workspace\_9
+Move an active window to workspace 9.  (KeyStroke: `Alt + Ctrl + (`)
+
+
 ## LICENSE
 
 Distributed under MIT License. See LICENSE.txt
+
 

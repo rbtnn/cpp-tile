@@ -96,19 +96,29 @@ namespace Tile{
     auto it = m.find(key);
     if(it != std::end(m)){
       unsigned long MODKEY = MOD_ALT | MOD_CONTROL;
-      unsigned char n = std::atoi(m[key].c_str());
-      switch(n){
-        case '!': n = '1'; MODKEY |= MOD_SHIFT; break;
-        case '@': n = '2'; MODKEY |= MOD_SHIFT; break;
-        case '#': n = '3'; MODKEY |= MOD_SHIFT; break;
-        case '$': n = '4'; MODKEY |= MOD_SHIFT; break;
-        case '%': n = '5'; MODKEY |= MOD_SHIFT; break;
-        case '^': n = '6'; MODKEY |= MOD_SHIFT; break;
-        case '&': n = '7'; MODKEY |= MOD_SHIFT; break;
-        case '*': n = '8'; MODKEY |= MOD_SHIFT; break;
-        case '(': n = '9'; MODKEY |= MOD_SHIFT; break;
+      if(0 < m[key].length()){
+        unsigned char n = m[key].at(0);
+        switch(n){
+          case '!': n = '1'; MODKEY |= MOD_SHIFT; break;
+          case '@': n = '2'; MODKEY |= MOD_SHIFT; break;
+          case '#': n = '3'; MODKEY |= MOD_SHIFT; break;
+          case '$': n = '4'; MODKEY |= MOD_SHIFT; break;
+          case '%': n = '5'; MODKEY |= MOD_SHIFT; break;
+          case '^': n = '6'; MODKEY |= MOD_SHIFT; break;
+          case '&': n = '7'; MODKEY |= MOD_SHIFT; break;
+          case '*': n = '8'; MODKEY |= MOD_SHIFT; break;
+          case '(': n = '9'; MODKEY |= MOD_SHIFT; break;
+          default:
+                    if('A' <= n && n <= 'Z'){
+                      MODKEY |= MOD_SHIFT;
+                    }
+                    else if('a' <= n && n <= 'z'){
+                      n -= 0x20;
+                    }
+                    break;
+        }
+        m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, MODKEY, n, std::bind(f_, this))));
       }
-      m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, MODKEY, n, std::bind(f_, this))));
     }
   }
   void TilingWindowManager::unmanage_all(){
@@ -142,10 +152,60 @@ namespace Tile{
       }
     }
   }
+  void TilingWindowManager::swap_next(){
+    auto const hwnds = m_workspace_it->get_managed_hwnds();
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    if(std::find(std::begin(hwnds), std::end(hwnds), foreground_hwnd) != std::end(hwnds)){
+      for(auto it = std::begin(hwnds); it < std::end(hwnds);it++){
+        if(*it == foreground_hwnd){
+          it++;
+          if(it == std::end(hwnds)){
+            auto const top = hwnds.at(0);
+            m_workspace_it->remanage_front(foreground_hwnd);
+            m_workspace_it->remanage_back(top);
+          }
+          else{
+            m_workspace_it->remanage_back(*it);
+            m_workspace_it->remanage_back(foreground_hwnd);
+          }
+        }
+        else{
+          m_workspace_it->remanage_back(*it);
+        }
+      }
+    }
+  }
+  void TilingWindowManager::swap_previous(){
+    auto const hwnds = m_workspace_it->get_managed_hwnds();
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    if(std::find(std::begin(hwnds), std::end(hwnds), foreground_hwnd) != std::end(hwnds)){
+      for(auto it = std::begin(hwnds); it < std::end(hwnds);it++){
+        if(*it == foreground_hwnd){
+          if(it == std::begin(hwnds)){
+            auto const tail = hwnds.at(hwnds.size() - 1);
+            m_workspace_it->remanage_back(foreground_hwnd);
+            m_workspace_it->remanage_front(tail);
+            break;
+          }
+          else{
+            it--;
+            m_workspace_it->remanage_back(foreground_hwnd);
+            m_workspace_it->remanage_back(*it);
+            it++;
+          }
+        }
+        else{
+          m_workspace_it->remanage_back(*it);
+        }
+      }
+    }
+  }
   void TilingWindowManager::run_process(){
-    std::string const path = m_config->get_run_process_path();
-    if(exist_file(path)){
-      ::ShellExecute(NULL, NULL, path.c_str(), "", NULL, SW_SHOWDEFAULT);
+    auto const path = m_config->get_run_process_path();
+    if(path){
+      if(exist_file(*path)){
+        ::ShellExecute(NULL, NULL, path->c_str(), "", NULL, SW_SHOWDEFAULT);
+      }
     }
   }
   void TilingWindowManager::exit_tile(){
@@ -406,6 +466,8 @@ namespace Tile{
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
     regist_key("rescan", &TilingWindowManager::rescan);
     regist_key("toggle_transparency_window", &TilingWindowManager::toggle_transparency_window);
+    regist_key("swap_next", &TilingWindowManager::swap_next);
+    regist_key("swap_previous", &TilingWindowManager::swap_previous);
     regist_key("run_process", &TilingWindowManager::run_process);
     regist_key("workspace_1", &TilingWindowManager::workspace_1);
     regist_key("workspace_2", &TilingWindowManager::workspace_2);

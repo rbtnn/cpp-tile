@@ -24,33 +24,31 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     ::MessageBox(NULL, "Multiplex starting is not permitted.", "Error", MB_ICONERROR);
   }
   else{
-    std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader);
-
-
-    std::vector<Tile::Layout> layouts;
     std::vector<HMODULE> module_handles;
-    std::vector<std::string> const layout_names = configreader->get_layout_method_names();
+    try{
+      std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader);
 
-    for(auto name : layout_names){
-      HMODULE const h = ::LoadLibrary((name + ".dll").c_str());
-      if(h != NULL){
-        module_handles.push_back(h);
-        Tile::Layout::ArrangeFuncRef const arrange_funcref = reinterpret_cast<Tile::Layout::ArrangeFuncRef>(::GetProcAddress(h, name.c_str()));
-        if(arrange_funcref != NULL){
-          layouts.push_back(Tile::Layout(name.c_str(), arrange_funcref));
+      std::vector<Tile::Layout> layouts;
+      std::vector<std::string> const layout_names = configreader->get_layout_method_names();
+
+      for(auto name : layout_names){
+        HMODULE const h = ::LoadLibrary((name + ".dll").c_str());
+        if(h != NULL){
+          module_handles.push_back(h);
+          Tile::Layout::ArrangeFuncRef const arrange_funcref = reinterpret_cast<Tile::Layout::ArrangeFuncRef>(::GetProcAddress(h, name.c_str()));
+          if(arrange_funcref != NULL){
+            layouts.push_back(Tile::Layout(name.c_str(), arrange_funcref));
+          }
         }
       }
-    }
 
-    g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", layouts, configreader));
-
-    if(exist_file(configreader->get_inifile_path())){
+      g_p_tile_window_manager.reset(new Tile::TilingWindowManager(hInstance_, "Tile", layouts, configreader));
       g_p_tile_window_manager->start();
     }
-    else{
-      ::MessageBox(NULL, ("'" + configreader->get_inifile_path() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
+    catch(std::exception const& e){
+      ::MessageBox(NULL, e.what(), "Error", MB_ICONERROR);
+      // ::MessageBox(NULL, ("'" + configreader->get_inifile_path() + "' does not exist.").c_str(), "Error", MB_ICONERROR);
     }
-
     for(auto h : module_handles){
       ::FreeLibrary(h);
     }
