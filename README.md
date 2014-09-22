@@ -45,7 +45,7 @@ Configure file of `tile.exe` is `tile.json`.
 
 ### keys
 
-Default key mappings is defined `keys` section.
+Default key mappings are defined `keys` section.
 You can edit it and customize key mappings.
 
 
@@ -185,7 +185,7 @@ TODO
 TODO
 
 
-## Vim Interface
+## VIM INTERFACE
 
 ### Commands
 

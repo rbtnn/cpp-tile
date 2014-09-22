@@ -23,6 +23,8 @@
 #include <functional>
 #include <algorithm>
 
+#include <boost/optional.hpp>
+
 #include <stdlib.h>
 #include <time.h>
 

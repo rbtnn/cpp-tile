@@ -18,7 +18,9 @@ namespace Tile{
       ::SetWindowLong(hwnd_, GWL_STYLE, style ^ WS_CAPTION ^ WS_THICKFRAME );
     }
   }
-  Workspace::Workspace(std::string const& workspace_name_): m_workspace_name(workspace_name_){
+  Workspace::Workspace(std::string const& workspace_name_, std::shared_ptr<std::vector<Tile::Layout>> const& layouts_): m_workspace_name(workspace_name_){
+    m_layouts = layouts_;
+    m_layout_it = std::begin(*m_layouts);
   }
   unsigned int Workspace::size(){
     return m_managed_hwnds.size();
@@ -71,6 +73,40 @@ namespace Tile{
   }
   std::string Workspace::get_workspace_name() const{
     return m_workspace_name;
+  }
+  void Workspace::next_layout(){
+    m_layout_it++;
+    if(m_layout_it == std::end(*m_layouts)){
+      m_layout_it = std::begin(*m_layouts);
+    }
+  }
+  boost::optional<std::string> Workspace::get_layout_name() const{
+    if(0 < m_layouts->size()){
+      return m_layout_it->get_layout_name();
+    }
+    else{
+      return boost::none;
+    }
+  }
+  void Workspace::arrange(std::vector<std::string> const& classnames_){
+    if(m_layout_it != std::end(*m_layouts)){
+      std::deque<HWND> hwnds;
+      for(auto hwnd : m_managed_hwnds){
+        if(is_manageable(hwnd)){
+          bool b = true;
+          std::string const classname = get_classname(hwnd);
+          for(auto c : classnames_){
+            if(classname == c){
+              b = false;
+            }
+          }
+          if(b){
+            hwnds.push_back(hwnd);
+          }
+        }
+      }
+      m_layout_it->arrange(hwnds);
+    }
   }
 }
 

@@ -27,8 +27,8 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
     std::vector<HMODULE> module_handles;
     try{
       std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader(lpCmdLine_));
+      std::shared_ptr<std::vector<Tile::Layout>> layouts(new std::vector<Tile::Layout>());
 
-      std::vector<Tile::Layout> layouts;
       std::vector<std::string> const layout_names = configreader->get_layout_method_names();
 
       for(auto name : layout_names){
@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
           module_handles.push_back(h);
           Tile::Layout::ArrangeFuncRef const arrange_funcref = reinterpret_cast<Tile::Layout::ArrangeFuncRef>(::GetProcAddress(h, name.c_str()));
           if(arrange_funcref != NULL){
-            layouts.push_back(Tile::Layout(name.c_str(), arrange_funcref));
+            layouts->push_back(Tile::Layout(name.c_str(), arrange_funcref));
           }
         }
       }

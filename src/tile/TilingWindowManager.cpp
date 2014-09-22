@@ -47,42 +47,6 @@ namespace Tile{
     m_border_top_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
     m_border_bottom_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
   }
-  bool TilingWindowManager::is_manageable(HWND const& hwnd_){
-    if(hwnd_ == NULL){
-      return false;
-    }
-
-    HWND const parent = ::GetParent(hwnd_);
-    int const style = ::GetWindowLong(hwnd_, GWL_STYLE);
-    int const exstyle = ::GetWindowLong(hwnd_, GWL_EXSTYLE);
-    bool const pok = (parent != 0 && is_manageable(parent));
-    bool const istool = exstyle & WS_EX_TOOLWINDOW;
-    bool const isapp = exstyle & WS_EX_APPWINDOW;
-
-    std::string const classname = get_classname(hwnd_);
-    if(classname == m_statusline_class_name){
-      return false;
-    }
-
-    if (::GetWindowTextLength(hwnd_) == 0) {
-      return false;
-    }
-
-    if (style & WS_DISABLED) {
-      return false;
-    }
-
-    if((parent == 0 && ::IsWindowVisible(hwnd_)) || pok){
-      if((!istool && parent == 0) || (istool && pok)){
-        return true;
-      }
-      if(isapp && parent != 0){
-        return true;
-      }
-    }
-
-    return false;
-  }
   void TilingWindowManager::regist_key(std::string const& key, void (Tile::TilingWindowManager::* f_)()){
     std::map<std::string, std::string> m = m_config->get_keys();
     auto it = m.find(key);
@@ -208,10 +172,7 @@ namespace Tile{
     ::PostMessage(foreground_hwnd, WM_CLOSE, 0, 0);
   }
   void TilingWindowManager::next_layout(){
-    m_layout_it++;
-    if(m_layout_it == std::end(m_layouts)){
-      m_layout_it = std::begin(m_layouts);
-    }
+    m_workspace_it->next_layout();
     arrange();
     try_focus_managed_window();
   }
@@ -375,23 +336,20 @@ namespace Tile{
       }
     }
   }
-  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string const& main_classname_, std::vector<Tile::Layout> const& layouts_, std::shared_ptr<ConfigReader> const& config_) : m_hInstance(hInstance_), m_config(config_){
+  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string const& main_classname_, std::shared_ptr<std::vector<Tile::Layout>> const& layouts_, std::shared_ptr<ConfigReader> const& config_) : m_hInstance(hInstance_), m_config(config_){
 
     m_workspaces = {
-      Tile::Workspace("1"),
-      Tile::Workspace("2"),
-      Tile::Workspace("3"),
-      Tile::Workspace("4"),
-      Tile::Workspace("5"),
-      Tile::Workspace("6"),
-      Tile::Workspace("7"),
-      Tile::Workspace("8"),
-      Tile::Workspace("9"),
+      Tile::Workspace("1", layouts_),
+      Tile::Workspace("2", layouts_),
+      Tile::Workspace("3", layouts_),
+      Tile::Workspace("4", layouts_),
+      Tile::Workspace("5", layouts_),
+      Tile::Workspace("6", layouts_),
+      Tile::Workspace("7", layouts_),
+      Tile::Workspace("8", layouts_),
+      Tile::Workspace("9", layouts_),
     };
     m_workspace_it = std::begin(m_workspaces);
-
-    m_layouts = layouts_;
-    m_layout_it = std::begin(m_layouts);
 
     m_main_class_name = main_classname_;
     init_main();
@@ -483,24 +441,7 @@ namespace Tile{
     return msg.wParam;
   }
   void TilingWindowManager::arrange(){
-    if(m_layout_it != std::end(m_layouts)){
-      std::deque<HWND> hwnds;
-      for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-        if(is_manageable(hwnd)){
-          bool b = true;
-          std::string const classname = get_classname(hwnd);
-          for(auto c : m_config->get_ignore_classnames()){
-            if(classname == c){
-              b = false;
-            }
-          }
-          if(b){
-            hwnds.push_back(hwnd);
-          }
-        }
-      }
-      m_layout_it->arrange(hwnds);
-    }
+    m_workspace_it->arrange(m_config->get_ignore_classnames());
     if(is_manageable(::GetForegroundWindow())){
       unsigned int const n = 3;
       RECT rect;
@@ -561,12 +502,7 @@ namespace Tile{
     ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
   }
   boost::optional<std::string> TilingWindowManager::get_layout_name() const{
-    if(0 < m_layouts.size()){
-      return m_layout_it->get_layout_name();
-    }
-    else{
-      return boost::none;
-    }
+    return m_workspace_it->get_layout_name();
   }
   std::string TilingWindowManager::get_workspace_name() const{
     return m_workspace_it->get_workspace_name();

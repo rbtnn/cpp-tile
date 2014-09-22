@@ -3,16 +3,20 @@
 #define TILE_WORKSPACE_H
 
 #include "../common_headers.h"
+#include "./Layout.h"
 
 namespace Tile{
   class Workspace{
     private:
       std::string m_workspace_name;
       std::deque<HWND> m_managed_hwnds;
-      void set_style(HWND const& hwnd_, std::vector<std::string> const& classnames_);
+      std::shared_ptr<std::vector<Tile::Layout>> m_layouts;
+      std::vector<Tile::Layout>::iterator m_layout_it;
+
+      void set_style(HWND const&, std::vector<std::string> const&);
 
     public:
-      Workspace(std::string const&);
+      Workspace(std::string const&, std::shared_ptr<std::vector<Tile::Layout>> const&);
       unsigned int size();
       HWND at(unsigned int const&);
       std::deque<HWND>::reverse_iterator const rbegin();
@@ -24,6 +28,9 @@ namespace Tile{
       void unmanage(HWND const&);
       std::deque<HWND> const& get_managed_hwnds() const;
       std::string get_workspace_name() const;
+      void next_layout();
+      boost::optional<std::string> get_layout_name() const;
+      void arrange(std::vector<std::string> const&);
   };
 }
 

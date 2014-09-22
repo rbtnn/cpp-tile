@@ -119,4 +119,35 @@ void system_error(std::string const& msg){
   ss << "tile system error! (" << msg << ")";
   ::MessageBox(NULL, ss.str().c_str(), "Error", MB_OK | MB_ICONSTOP | MB_SYSTEMMODAL);
 }
+bool is_manageable(HWND const& hwnd_){
+  if(hwnd_ == NULL){
+    return false;
+  }
+
+  HWND const parent = ::GetParent(hwnd_);
+  int const style = ::GetWindowLong(hwnd_, GWL_STYLE);
+  int const exstyle = ::GetWindowLong(hwnd_, GWL_EXSTYLE);
+  bool const pok = (parent != 0 && is_manageable(parent));
+  bool const istool = exstyle & WS_EX_TOOLWINDOW;
+  bool const isapp = exstyle & WS_EX_APPWINDOW;
+
+  if (::GetWindowTextLength(hwnd_) == 0) {
+    return false;
+  }
+
+  if (style & WS_DISABLED) {
+    return false;
+  }
+
+  if((parent == 0 && ::IsWindowVisible(hwnd_)) || pok){
+    if((!istool && parent == 0) || (istool && pok)){
+      return true;
+    }
+    if(isapp && parent != 0){
+      return true;
+    }
+  }
+
+  return false;
+}
 

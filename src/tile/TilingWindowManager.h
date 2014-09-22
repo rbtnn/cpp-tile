@@ -25,22 +25,18 @@ namespace Tile{
       HWND m_border_bottom_hwnd;
       std::string m_border_class_name;
 
-      std::shared_ptr<ConfigReader> const m_config;
+      std::shared_ptr<Tile::ConfigReader> const m_config;
 
-      std::vector<std::shared_ptr<Key> > m_keys;
+      std::vector<std::shared_ptr<Tile::Key>> m_keys;
 
       std::vector<Tile::Workspace> m_workspaces;
       std::vector<Tile::Workspace>::iterator m_workspace_it;
-
-      std::vector<Tile::Layout> m_layouts;
-      std::vector<Tile::Layout>::iterator m_layout_it;
 
       Tile::Recovery recovery;
 
       void init_main();
       void init_statusline();
       void init_border();
-      bool is_manageable(HWND const&);
       void regist_key(std::string const&, void (Tile::TilingWindowManager::*)());
       void unmanage_all();
       void rescan();
@@ -77,7 +73,7 @@ namespace Tile{
       void workspace_of(unsigned int const&);
 
     public:
-      TilingWindowManager(HINSTANCE const&, std::string const&, std::vector<Tile::Layout> const&, std::shared_ptr<ConfigReader> const&);
+      TilingWindowManager(HINSTANCE const&, std::string const&, std::shared_ptr<std::vector<Tile::Layout>> const&, std::shared_ptr<ConfigReader> const&);
       ~TilingWindowManager();
       UINT const start();
       void arrange();
