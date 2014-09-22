@@ -172,7 +172,7 @@ void paint_statusline(HWND const& hwnd_){
     std::string const windowtext = get_windowtext(foreground_hwnd);
     COLORREF const color = RGB(0x40, 0x40, 0x40);
     HBRUSH const hbrush = ::CreateSolidBrush(color);
-    HFONT const hFont = ::CreateFont(16, 0, 0, 0,
+    HFONT const hFont = ::CreateFont(((get_statusline_height() - 2) / 2), 0, 0, 0,
         FW_REGULAR, FALSE, FALSE, FALSE,
         SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
         CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
@@ -195,30 +195,38 @@ void paint_statusline(HWND const& hwnd_){
     SYSTEMTIME stTime;
     ::GetLocalTime(&stTime);
 
-    std::stringstream ss_time;
-    ss_time
-      << std::setfill('0') << std::setw(4) << stTime.wYear << "/"
-      << std::setfill('0') << std::setw(2) << stTime.wMonth << "/"
-      << std::setfill('0') << std::setw(2) << stTime.wDay << " "
-      << std::setfill('0') << std::setw(2) << stTime.wHour << ":"
-      << std::setfill('0') << std::setw(2) << stTime.wMinute << ":"
-      << std::setfill('0') << std::setw(2) << stTime.wSecond;
-    ::DrawText(hdcMem, ss_time.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
-
-    rect.left = 160;
-
     SYSTEM_POWER_STATUS systemPowerStatus;
     ::GetSystemPowerStatus(&systemPowerStatus);
 
     std::stringstream ss_text;
 
-    ss_text << "<<< "
+    ss_text
+      << std::setfill('0') << std::setw(4) << stTime.wYear << "/"
+      << std::setfill('0') << std::setw(2) << stTime.wMonth << "/"
+      << std::setfill('0') << std::setw(2) << stTime.wDay << " "
+      << std::setfill('0') << std::setw(2) << stTime.wHour << ":"
+      << std::setfill('0') << std::setw(2) << stTime.wMinute << ":"
+      << std::setfill('0') << std::setw(2) << stTime.wSecond
+      << " <<< "
       << "Workspace: " << g_p_tile_window_manager->get_workspace_name()
-      << ", Managed: " << g_p_tile_window_manager->get_managed_window_size()
-      << ", Layout: "  << g_p_tile_window_manager->get_layout_name()
+      << ", Managed: " << g_p_tile_window_manager->get_managed_window_size();
+
+    boost::optional<std::string> const layout_name = g_p_tile_window_manager->get_layout_name();
+    if(layout_name){
+      ss_text << ", Layout: "  << *layout_name;
+    }
+    ss_text
       << ", Class: " << std::left << classname
-      << ", Battery: " << std::left
-      << static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent) << "%";
+      << ", Battery: " << std::left;
+    switch(static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent)){
+      case 255:
+        ss_text << "??";
+        break;
+      default:
+        ss_text << static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent);
+        break;
+    }
+    ss_text << "%";
     switch(systemPowerStatus.ACLineStatus){
       case 0: ss_text << "[Offline]"; break;
       case 1: ss_text << "[Online]"; break;
@@ -228,7 +236,7 @@ void paint_statusline(HWND const& hwnd_){
 
     ::DrawText(hdcMem, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
 
-    rect.top = 20;
+    rect.top = get_statusline_height() / 2;
     rect.left = 3;
 
     ::SetTextColor(hdcMem, RGB(0xff, 0xff, 0x00));

@@ -13,7 +13,7 @@
 namespace Tile{
   class TilingWindowManager{
     private:
-      HINSTANCE m_hInstance;
+      HINSTANCE const m_hInstance;
       UINT m_shellhookid;
       HWND m_main_hwnd;
       std::string m_main_class_name;
@@ -25,7 +25,7 @@ namespace Tile{
       HWND m_border_bottom_hwnd;
       std::string m_border_class_name;
 
-      std::shared_ptr<ConfigReader> m_config;
+      std::shared_ptr<ConfigReader> const m_config;
 
       std::vector<std::shared_ptr<Key> > m_keys;
 
@@ -85,7 +85,7 @@ namespace Tile{
       void unmanage(HWND hwnd_);
       void call_key_method(UINT const& i_);
       void redraw_statusline();
-      std::string get_layout_name();
+      boost::optional<std::string> get_layout_name() const;
       std::string get_workspace_name() const;
       long get_managed_window_size() const;
   };

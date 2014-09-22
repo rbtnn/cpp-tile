@@ -12,7 +12,7 @@ namespace Tile{
     return m_layout_name;
   }
   void Layout::arrange(std::deque<HWND> const& hwnds_){
-    RECT window_area = get_window_area();
+    RECT const window_area = get_window_area();
     long const width = window_area.right - window_area.left;
     long const height = window_area.bottom - window_area.top;
     m_f(hwnds_, width, height);

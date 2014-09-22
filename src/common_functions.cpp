@@ -2,7 +2,7 @@
 #include "./common_headers.h"
 
 long get_statusline_height(){
-  return 40;
+  return 60;
 }
 RECT get_window_area(){
   RECT wa;
@@ -20,7 +20,7 @@ RECT get_window_area(){
   return wa;
 }
 long get_statusline_width(){
-  RECT rect = get_window_area();
+  RECT const rect = get_window_area();
   long const width = rect.right - rect.left;
   return width;
 }
@@ -67,7 +67,7 @@ std::string get_windowtext(HWND const hwnd_){
 }
 bool exist_file(std::string const path){
   WIN32_FIND_DATA findData;
-  HANDLE hFindFile = ::FindFirstFile(path.c_str(), &findData);
+  HANDLE const hFindFile = ::FindFirstFile(path.c_str(), &findData);
   if(hFindFile != INVALID_HANDLE_VALUE){
     ::FindClose(hFindFile);
     return true;

@@ -375,10 +375,8 @@ namespace Tile{
       }
     }
   }
-  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_, std::shared_ptr<ConfigReader> config_){
-    m_hInstance = hInstance_;
-
-    m_config = config_;
+  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_, std::shared_ptr<ConfigReader> config_)
+  : m_hInstance(hInstance_), m_config(config_){
 
     m_workspaces = {
       Tile::Workspace("1"),
@@ -434,7 +432,7 @@ namespace Tile{
   UINT const TilingWindowManager::start(){
     typedef BOOL (* RegisterShellHookWindowProc) (HWND);
     RegisterShellHookWindowProc RegisterShellHookWindow \
-      = (RegisterShellHookWindowProc) ::GetProcAddress( ::GetModuleHandle("USER32.DLL"), "RegisterShellHookWindow");
+      = reinterpret_cast<RegisterShellHookWindowProc>(::GetProcAddress( ::GetModuleHandle("USER32.DLL"), "RegisterShellHookWindow"));
     if (!RegisterShellHookWindow){
       die("Could not find RegisterShellHookWindow");
     }
@@ -505,7 +503,7 @@ namespace Tile{
       m_layout_it->arrange(hwnds);
     }
     if(is_manageable(::GetForegroundWindow())){
-      unsigned int n = 3;
+      unsigned int const n = 3;
       RECT rect;
       ::GetWindowRect(::GetForegroundWindow(), &rect);
       ::SetWindowPos(m_border_left_hwnd, HWND_TOPMOST,
@@ -565,12 +563,12 @@ namespace Tile{
   void TilingWindowManager::redraw_statusline(){
     ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
   }
-  std::string TilingWindowManager::get_layout_name(){
+  boost::optional<std::string> TilingWindowManager::get_layout_name() const{
     if(0 < m_layouts.size()){
       return m_layout_it->get_layout_name();
     }
     else{
-      return "";
+      return boost::none;
     }
   }
   std::string TilingWindowManager::get_workspace_name() const{
