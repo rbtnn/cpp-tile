@@ -63,11 +63,6 @@ namespace Tile{
     if(classname == m_statusline_class_name){
       return false;
     }
-    for(auto c : m_config->get_ignore_classnames()){
-      if(classname == c){
-        return false;
-      }
-    }
 
     if (::GetWindowTextLength(hwnd_) == 0) {
       return false;
@@ -87,9 +82,6 @@ namespace Tile{
     }
 
     return false;
-  }
-  bool TilingWindowManager::is_unmanageable(HWND const hwnd_){
-    return !is_manageable(hwnd_);
   }
   void TilingWindowManager::regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
     std::map<std::string, std::string> m = m_config->get_keys();
@@ -498,7 +490,16 @@ namespace Tile{
       std::deque<HWND> hwnds;
       for(auto hwnd : m_workspace_it->get_managed_hwnds()){
         if(is_manageable(hwnd)){
-          hwnds.push_back(hwnd);
+          bool b = true;
+          std::string const classname = get_classname(hwnd);
+          for(auto c : m_config->get_ignore_classnames()){
+            if(classname == c){
+              b = false;
+            }
+          }
+          if(b){
+            hwnds.push_back(hwnd);
+          }
         }
       }
       m_layout_it->arrange(hwnds);

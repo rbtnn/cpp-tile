@@ -1,28 +1,33 @@
 {
   "settings" : {
     "ignore_classnames" : [
-      "ImmersiveLauncher",
-      "Shell_CharmWindow",
-      "ImmersiveBackgroundWindow",
-      "Snapped Desktop",
-      "SearchPane",
       "#32770",
+      "DV2ControlHost",
+      "Ghost",
+      "IDEOwner",
+      "ImmersiveBackgroundWindow",
+      "ImmersiveLauncher",
+      "MS-SDIb",
+      "PbrsHost",
       "Progman",
       "QToolTip",
-      "wndclass_desked_gsk",
-      "PbrsHost",
+      "SearchPane",
+      "Shell_CharmWindow",
+      "Snapped Desktop",
       "ThunderFormDC",
-      "ThunderRT6FormMain",
       "ThunderRT6FormDC",
-      "Ghost",
+      "ThunderRT6FormMain",
       "bosa_sdm_XL9",
-      "MS-SDIb",
-      "wndclass_desked_gsk",
-      "DV2ControlHost",
-      "IDEOwner"
+      "wndclass_desked_gsk"
       ],
     "not_apply_style_to_classnames" : [
-      "CabinetWClass", "Chrome_WidgetWin_1", "XLMAIN", "ConsoleWindowClass", "MSPaintApp"
+      "CabinetWClass",
+      "Chrome_WidgetWin_1",
+      "ConsoleWindowClass",
+      "IDEOwner",
+      "MSPaintApp",
+      "XLMAIN",
+      "wndclass_desked_gsk"
       ],
     "run_process_path" : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
     "layout_method_names" : [
