@@ -9,21 +9,19 @@ namespace Tile{
     private:
       std::string m_workspace_name;
       std::deque<HWND> m_managed_hwnds;
-      void set_style(HWND hwnd_, std::vector<std::string> classnames_);
+      void set_style(HWND const& hwnd_, std::vector<std::string> const& classnames_);
 
     public:
-      Workspace(std::string workspace_name_);
+      Workspace(std::string const&);
       unsigned int size();
-      HWND at(unsigned int i);
-      std::deque<HWND>::iterator begin();
-      std::deque<HWND>::iterator end();
-      std::deque<HWND>::reverse_iterator rbegin();
-      std::deque<HWND>::reverse_iterator rend();
-      bool is_managed(HWND hwnd_);
-      void remanage_back(HWND hwnd_);
-      void remanage_front(HWND hwnd_);
-      void manage(HWND hwnd_, std::vector<std::string> classnames_);
-      void unmanage(HWND const hwnd_);
+      HWND at(unsigned int const&);
+      std::deque<HWND>::reverse_iterator const rbegin();
+      std::deque<HWND>::reverse_iterator const rend();
+      bool is_managed(HWND const&);
+      void remanage_back(HWND const&);
+      void remanage_front(HWND const&);
+      void manage(HWND const&, std::vector<std::string> const&);
+      void unmanage(HWND const&);
       std::deque<HWND> const& get_managed_hwnds() const;
       std::string get_workspace_name() const;
   };

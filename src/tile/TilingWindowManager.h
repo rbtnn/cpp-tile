@@ -40,8 +40,8 @@ namespace Tile{
       void init_main();
       void init_statusline();
       void init_border();
-      bool is_manageable(HWND const hwnd_);
-      void regist_key(std::string key, void (Tile::TilingWindowManager::* f_)());
+      bool is_manageable(HWND const&);
+      void regist_key(std::string const&, void (Tile::TilingWindowManager::*)());
       void unmanage_all();
       void rescan();
       void toggle_transparency_window();
@@ -73,17 +73,17 @@ namespace Tile{
       void try_focus_managed_window();
       void swap_next();
       void swap_previous();
-      void move_to_workspace_of(unsigned int const i);
-      void workspace_of(unsigned int const i);
+      void move_to_workspace_of(unsigned int const&);
+      void workspace_of(unsigned int const&);
 
     public:
-      TilingWindowManager(HINSTANCE const&, std::string, std::vector<Tile::Layout>, std::shared_ptr<ConfigReader>);
+      TilingWindowManager(HINSTANCE const&, std::string const&, std::vector<Tile::Layout> const&, std::shared_ptr<ConfigReader> const&);
       ~TilingWindowManager();
       UINT const start();
       void arrange();
-      void manage(HWND hwnd_);
-      void unmanage(HWND hwnd_);
-      void call_key_method(UINT const& i_);
+      void manage(HWND const& hwnd_);
+      void unmanage(HWND const& hwnd_);
+      void call_key_method(UINT const&);
       void redraw_statusline();
       boost::optional<std::string> get_layout_name() const;
       std::string get_workspace_name() const;

@@ -5,7 +5,7 @@
 #include "./Workspace.h"
 
 namespace Tile{
-  void Workspace::set_style(HWND hwnd_, std::vector<std::string> classnames_){
+  void Workspace::set_style(HWND const& hwnd_, std::vector<std::string> const& classnames_){
     std::string const classname = get_classname(hwnd_);
     LONG const style = ::GetWindowLong(hwnd_, GWL_STYLE);
     bool b = true;
@@ -18,31 +18,25 @@ namespace Tile{
       ::SetWindowLong(hwnd_, GWL_STYLE, style ^ WS_CAPTION ^ WS_THICKFRAME );
     }
   }
-  Workspace::Workspace(std::string workspace_name_): m_workspace_name(workspace_name_){
+  Workspace::Workspace(std::string const& workspace_name_): m_workspace_name(workspace_name_){
   }
   unsigned int Workspace::size(){
     return m_managed_hwnds.size();
   }
-  HWND Workspace::at(unsigned int i){
-    return m_managed_hwnds.at(i);
+  HWND Workspace::at(unsigned int const& i_){
+    return m_managed_hwnds.at(i_);
   }
-  std::deque<HWND>::iterator Workspace::begin(){
-    return std::begin(m_managed_hwnds);
-  }
-  std::deque<HWND>::iterator Workspace::end(){
-    return std::begin(m_managed_hwnds);
-  }
-  std::deque<HWND>::reverse_iterator Workspace::rbegin(){
+  std::deque<HWND>::reverse_iterator const Workspace::rbegin(){
     return m_managed_hwnds.rbegin();
   }
-  std::deque<HWND>::reverse_iterator Workspace::rend(){
+  std::deque<HWND>::reverse_iterator const Workspace::rend(){
     return m_managed_hwnds.rend();
   }
-  bool Workspace::is_managed(HWND hwnd_){
+  bool Workspace::is_managed(HWND const& hwnd_){
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     return (it != std::end(m_managed_hwnds));
   }
-  void Workspace::remanage_back(HWND hwnd_){
+  void Workspace::remanage_back(HWND const& hwnd_){
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     if(it != std::end(m_managed_hwnds)){
       m_managed_hwnds.erase(it);
@@ -51,7 +45,7 @@ namespace Tile{
       m_managed_hwnds.push_back(hwnd_);
     }
   }
-  void Workspace::remanage_front(HWND hwnd_){
+  void Workspace::remanage_front(HWND const& hwnd_){
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     if(it != std::end(m_managed_hwnds)){
       m_managed_hwnds.erase(it);
@@ -60,13 +54,13 @@ namespace Tile{
       m_managed_hwnds.push_front(hwnd_);
     }
   }
-  void Workspace::manage(HWND hwnd_, std::vector<std::string> classnames_){
+  void Workspace::manage(HWND const& hwnd_, std::vector<std::string> const& classnames_){
     if(!is_managed(hwnd_)){
       m_managed_hwnds.push_front(hwnd_);
       set_style(hwnd_, classnames_);
     }
   }
-  void Workspace::unmanage(HWND const hwnd_){
+  void Workspace::unmanage(HWND const& hwnd_){
     auto it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
     if(it != std::end(m_managed_hwnds)){
       m_managed_hwnds.erase(it);

@@ -47,7 +47,7 @@ namespace Tile{
     m_border_top_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
     m_border_bottom_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
   }
-  bool TilingWindowManager::is_manageable(HWND const hwnd_){
+  bool TilingWindowManager::is_manageable(HWND const& hwnd_){
     if(hwnd_ == NULL){
       return false;
     }
@@ -83,7 +83,7 @@ namespace Tile{
 
     return false;
   }
-  void TilingWindowManager::regist_key(std::string key, void (Tile::TilingWindowManager::* f_)()){
+  void TilingWindowManager::regist_key(std::string const& key, void (Tile::TilingWindowManager::* f_)()){
     std::map<std::string, std::string> m = m_config->get_keys();
     auto it = m.find(key);
     if(it != std::end(m)){
@@ -334,7 +334,7 @@ namespace Tile{
     }
     ::SetForegroundWindow(::FindWindow("Progman", NULL));
   }
-  void TilingWindowManager::move_to_workspace_of(unsigned int const i){
+  void TilingWindowManager::move_to_workspace_of(unsigned int const& i){
     HWND const hwnd = ::GetForegroundWindow();
     unsigned int n = 0;
     for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
@@ -349,7 +349,7 @@ namespace Tile{
       n++;
     }
   }
-  void TilingWindowManager::workspace_of(unsigned int const i){
+  void TilingWindowManager::workspace_of(unsigned int const& i){
     unsigned int n = 0;
     if(i < m_workspaces.size()){
       for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
@@ -375,8 +375,7 @@ namespace Tile{
       }
     }
   }
-  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string main_classname_, std::vector<Tile::Layout> layouts_, std::shared_ptr<ConfigReader> config_)
-  : m_hInstance(hInstance_), m_config(config_){
+  TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string const& main_classname_, std::vector<Tile::Layout> const& layouts_, std::shared_ptr<ConfigReader> const& config_) : m_hInstance(hInstance_), m_config(config_){
 
     m_workspaces = {
       Tile::Workspace("1"),
@@ -527,13 +526,11 @@ namespace Tile{
       ::ShowWindow(m_border_right_hwnd, SW_HIDE);
     }
   }
-  void TilingWindowManager::manage(HWND hwnd_){
+  void TilingWindowManager::manage(HWND const& hwnd_){
     if(is_manageable(hwnd_)){
-
 #ifdef DEBUG
       HWND const parent = ::GetParent(hwnd_);
       std::string const classname = get_classname(hwnd_);
-
       std::cout << "[TilingWindowManager::manage]" << std::endl;
       std::cout << "hwnd:" << hwnd_ << std::endl;
       std::cout << "parent:" << parent << std::endl;
@@ -544,7 +541,7 @@ namespace Tile{
       m_workspace_it->manage(hwnd_, m_config->get_not_apply_style_to_classnames());
     }
   }
-  void TilingWindowManager::unmanage(HWND hwnd_){
+  void TilingWindowManager::unmanage(HWND const& hwnd_){
     m_workspace_it->unmanage(hwnd_);
   }
   void TilingWindowManager::call_key_method(UINT const& i_){

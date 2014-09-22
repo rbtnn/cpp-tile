@@ -57,7 +57,7 @@ Recovery.o: ${SRC_DIR}/tile/Recovery.cpp ${SRC_DIR}/tile/Recovery.h ${COMMON_HEA
 	${CC} -c $< ${CPPFlAGS}
 
 TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp ${SRC_DIR}/tile/TilingWindowManager.h \
-  ${SRC_DIR}/tile/ConfigReader.h ${SRC_DIR}/tile/Recovery.h ${COMMON_HEADERS}
+  ${SRC_DIR}/tile/Workspace.h ${SRC_DIR}/tile/ConfigReader.h ${SRC_DIR}/tile/Recovery.h ${COMMON_HEADERS}
 	${CC} -c $< ${CPPFlAGS}
 
 tile.exe: ${OBJECTS}
