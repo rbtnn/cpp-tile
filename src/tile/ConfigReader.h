@@ -3,10 +3,12 @@
 #define TILE_CONFIGREADER_H
 
 #include "../common_headers.h"
+#include "./NotApplyStyleToClassNames.h"
+#include "./IgnoreClassNamesArranged.h"
+#include "./LayoutMethodNames.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/optional.hpp>
 
 namespace Tile{
   class ConfigReader{
@@ -16,9 +18,9 @@ namespace Tile{
     public:
       ConfigReader(char const * const);
       boost::optional<std::string> get_run_process_path() const;
-      std::vector<std::string> get_ignore_classnames() const;
-      std::vector<std::string> get_not_apply_style_to_classnames() const;
-      std::vector<std::string> get_layout_method_names() const;
+      Tile::IgnoreClassNamesArranged get_ignore_classnames_arranged() const;
+      Tile::NotApplyStyleToClassNames get_not_apply_style_to_classnames() const;
+      Tile::LayoutMethodNames get_layout_method_names() const;
       std::map<std::string, std::string> get_keys() const;
   };
 }

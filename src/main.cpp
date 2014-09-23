@@ -2,6 +2,7 @@
 #include "./common_headers.h"
 #include "./common_functions.h"
 #include "./wndproc_functions.h"
+
 #include "./tile/TilingWindowManager.h"
 #include "./tile/Layout.h"
 
@@ -29,9 +30,9 @@ int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLi
       std::shared_ptr<Tile::ConfigReader> const configreader(new Tile::ConfigReader(lpCmdLine_));
       std::shared_ptr<std::vector<Tile::Layout>> layouts(new std::vector<Tile::Layout>());
 
-      std::vector<std::string> const layout_names = configreader->get_layout_method_names();
+      auto const layout_names = configreader->get_layout_method_names();
 
-      for(auto name : layout_names){
+      for(auto name : layout_names.value){
         HMODULE const h = ::LoadLibrary((name + ".dll").c_str());
         if(h != NULL){
           module_handles.push_back(h);

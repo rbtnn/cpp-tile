@@ -1,4 +1,7 @@
 
+#ifndef COMMON_FUNCTIONS_H
+#define COMMON_FUNCTIONS_H
+
 #include "./common_headers.h"
 
 long get_statusline_height();
@@ -13,4 +16,6 @@ bool exist_file(std::string const);
 void resize_window(HWND const&, HWND const&, int const&, unsigned int, unsigned int, unsigned int, unsigned int);
 void system_error(std::string const&);
 bool is_manageable(HWND const&);
+
+#endif
 

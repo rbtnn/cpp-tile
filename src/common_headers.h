@@ -1,4 +1,7 @@
 
+#ifndef COMMON_HEADERS_H
+#define COMMON_HEADERS_H
+
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_WINNT      0x0500
 
@@ -29,4 +32,6 @@
 #include <time.h>
 
 #define buffer_size 1024
+
+#endif
 

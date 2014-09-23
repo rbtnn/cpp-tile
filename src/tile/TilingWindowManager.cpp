@@ -2,6 +2,7 @@
 #include "../common_headers.h"
 #include "../common_functions.h"
 #include "../wndproc_functions.h"
+
 #include "./TilingWindowManager.h"
 #include "./ConfigReader.h"
 #include "./Workspace.h"
@@ -442,7 +443,7 @@ namespace Tile{
     return msg.wParam;
   }
   void TilingWindowManager::arrange(){
-    m_workspace_it->arrange(m_config->get_ignore_classnames());
+    m_workspace_it->arrange(m_config->get_ignore_classnames_arranged());
     if(is_manageable(::GetForegroundWindow())){
       unsigned int const n = 3;
       RECT rect;

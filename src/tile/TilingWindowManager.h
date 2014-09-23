@@ -3,7 +3,7 @@
 #define TILE_TILINGWINDOWMANAGER_H
 
 #include "../common_headers.h"
-#include "./TilingWindowManager.h"
+
 #include "./ConfigReader.h"
 #include "./Key.h"
 #include "./Workspace.h"
