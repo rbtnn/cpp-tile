@@ -1,6 +1,6 @@
 {
   "settings" : {
-    "ignore_classnames" : [
+    "ignore_classnames_arranged" : [
       "#32770",
       "DV2ControlHost",
       "Ghost",

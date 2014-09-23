@@ -175,7 +175,7 @@ Move an active window to workspace 9.
 
 ### settings
 
-#### ignore\_classnames
+#### ignore\_classnames\_arranged
 
 ...
 
@@ -207,6 +207,8 @@ Move an active window to workspace 9.
 
 ## LICENSE
 
-Distributed under MIT License. See LICENSE.txt
+* This software is distributed under The MIT License. See LICENSE.txt
+
+* This software uses [Boost C++ Libraries](http://www.boost.org/), which is licensed by [The Boost License](http://www.boost.org/users/license.html).
 
 

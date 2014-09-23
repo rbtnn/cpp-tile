@@ -15,7 +15,7 @@ namespace Tile{
   }
   Tile::IgnoreClassNamesArranged ConfigReader::get_ignore_classnames_arranged() const{
     Tile::IgnoreClassNamesArranged xs;
-    auto const children = m_pt.get_child_optional("settings.ignore_classnames");
+    auto const children = m_pt.get_child_optional("settings.ignore_classnames_arranged");
     if(children){
       for(auto const& x : *children){
         xs.value.push_back(x.second.get<std::string>(""));
