@@ -39,6 +39,11 @@ This is Tiling Window Manager for MS Windows.
 
 ### arrange\_square
 
+...
+
+### arrange\_manual
+
+...
 
 ## CONFIGURATION
 
@@ -172,19 +177,19 @@ Move an active window to workspace 9.
 
 #### ignore\_classnames
 
-TODO
+...
 
 #### not\_apply\_style\_to\_classnames
 
-TODO
+...
 
 #### run\_process\_path
 
-TODO
+...
 
 #### layout\_method\_names
 
-TODO
+...
 
 
 ## VIM INTERFACE
@@ -193,11 +198,11 @@ TODO
 
 #### :TileStart
 
-TODO
+...
 
 #### :TileEditConfigureFile
 
-TODO
+...
 
 
 ## LICENSE

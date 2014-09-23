@@ -37,6 +37,7 @@
       "arrange_twin",
       "arrange_maximal",
       "arrange_cross",
+      "arrange_manual",
       "arrange_square"
       ]
   },
