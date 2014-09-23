@@ -2,7 +2,7 @@
 #include "./common_headers.h"
 
 long get_statusline_height(){
-  return 60;
+  return 50;
 }
 RECT get_window_area(){
   RECT wa;

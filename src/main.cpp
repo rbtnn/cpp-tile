@@ -200,24 +200,17 @@ void paint_statusline(HWND const& hwnd_){
 
     std::stringstream ss_text;
 
-    ss_text
+    ss_text << g_p_tile_window_manager->get_window_count_of_workspaces();
+
+    ss_text << " "
       << std::setfill('0') << std::setw(4) << stTime.wYear << "/"
       << std::setfill('0') << std::setw(2) << stTime.wMonth << "/"
       << std::setfill('0') << std::setw(2) << stTime.wDay << " "
       << std::setfill('0') << std::setw(2) << stTime.wHour << ":"
       << std::setfill('0') << std::setw(2) << stTime.wMinute << ":"
-      << std::setfill('0') << std::setw(2) << stTime.wSecond
-      << " <<< "
-      << "Workspace: " << g_p_tile_window_manager->get_workspace_name()
-      << ", Managed: " << g_p_tile_window_manager->get_managed_window_size();
+      << std::setfill('0') << std::setw(2) << stTime.wSecond;
 
-    boost::optional<std::string> const layout_name = g_p_tile_window_manager->get_layout_name();
-    if(layout_name){
-      ss_text << ", Layout: "  << *layout_name;
-    }
-    ss_text
-      << ", Class: " << std::left << classname
-      << ", Battery: " << std::left;
+    ss_text << " " << std::left;
     switch(static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent)){
       case 255:
         ss_text << "??";
@@ -227,12 +220,20 @@ void paint_statusline(HWND const& hwnd_){
         break;
     }
     ss_text << "%";
+
     switch(systemPowerStatus.ACLineStatus){
-      case 0: ss_text << "[Offline]"; break;
-      case 1: ss_text << "[Online]"; break;
-      case 255: ss_text << "[Unknown]"; break;
+      case 0: ss_text << "-"; break;
+      case 1: ss_text << "+"; break;
+      case 255: ss_text << "?"; break;
     }
-    ss_text << " >>>";
+
+
+    boost::optional<std::string> const layout_name = g_p_tile_window_manager->get_layout_name();
+    if(layout_name){
+      ss_text << " " << *layout_name;
+    }
+
+    ss_text << " " << std::left << classname;
 
     ::DrawText(hdcMem, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
 

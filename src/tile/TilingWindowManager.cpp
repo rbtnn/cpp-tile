@@ -4,6 +4,7 @@
 #include "../wndproc_functions.h"
 #include "./TilingWindowManager.h"
 #include "./ConfigReader.h"
+#include "./Workspace.h"
 
 namespace Tile{
   void TilingWindowManager::init_main(){
@@ -339,15 +340,15 @@ namespace Tile{
   TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string const& main_classname_, std::shared_ptr<std::vector<Tile::Layout>> const& layouts_, std::shared_ptr<ConfigReader> const& config_) : m_hInstance(hInstance_), m_config(config_){
 
     m_workspaces = {
-      Tile::Workspace("1", layouts_),
-      Tile::Workspace("2", layouts_),
-      Tile::Workspace("3", layouts_),
-      Tile::Workspace("4", layouts_),
-      Tile::Workspace("5", layouts_),
-      Tile::Workspace("6", layouts_),
-      Tile::Workspace("7", layouts_),
-      Tile::Workspace("8", layouts_),
-      Tile::Workspace("9", layouts_),
+      Tile::Workspace("A", layouts_),
+      Tile::Workspace("B", layouts_),
+      Tile::Workspace("C", layouts_),
+      Tile::Workspace("D", layouts_),
+      Tile::Workspace("E", layouts_),
+      Tile::Workspace("F", layouts_),
+      Tile::Workspace("G", layouts_),
+      Tile::Workspace("H", layouts_),
+      Tile::Workspace("I", layouts_),
     };
     m_workspace_it = std::begin(m_workspaces);
 
@@ -504,11 +505,17 @@ namespace Tile{
   boost::optional<std::string> TilingWindowManager::get_layout_name() const{
     return m_workspace_it->get_layout_name();
   }
-  std::string TilingWindowManager::get_workspace_name() const{
-    return m_workspace_it->get_workspace_name();
-  }
-  long TilingWindowManager::get_managed_window_size() const{
-    return m_workspace_it->size();
+  std::string TilingWindowManager::get_window_count_of_workspaces(){
+    std::stringstream ss;
+    ss << "|";
+    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+      if(it == m_workspace_it){
+        ss << "*";
+      }
+      ss << it->get_workspace_name() << ":" << it->size();
+      ss << "|";
+    }
+    return ss.str();
   }
 }
 

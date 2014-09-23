@@ -82,8 +82,7 @@ namespace Tile{
       void call_key_method(UINT const&);
       void redraw_statusline();
       boost::optional<std::string> get_layout_name() const;
-      std::string get_workspace_name() const;
-      long get_managed_window_size() const;
+      std::string get_window_count_of_workspaces();
   };
 }
 
