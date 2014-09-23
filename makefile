@@ -11,10 +11,11 @@ OBJECTS = common_functions.o Key.o ConfigReader.o Layout.o Workspace.o Recovery.
 .PHONY: run all clean clean_objects clean_modules clean_log
 
 
+ARRANGES = arrange.dll arrange_twin.dll arrange_maximal.dll arrange_cross.dll arrange_square.dll
 
-all: tile.exe arrange.dll arrange_twin.dll arrange_maximal.dll arrange_cross.dll
+all: tile.exe ${ARRANGES}
 
-run: tile.exe arrange.dll arrange_twin.dll arrange_maximal.dll arrange_cross.dll
+run: tile.exe ${ARRANGES}
 	tile.exe
 
 clean: clean_objects clean_modules clean_log
@@ -94,4 +95,12 @@ arrange_cross.o: ${SRC_DIR}/layout_methods/arrange_cross.cpp ${SRC_DIR}/common_f
 
 arrange_cross.dll: arrange_cross.o common_functions.o
 	${CC} $^ -o $@ -mwindows -shared -Wl,--add-stdcall-alias
+
+
+arrange_square.o: ${SRC_DIR}/layout_methods/arrange_square.cpp ${SRC_DIR}/common_functions.h ${SRC_DIR}/layout_method.h
+	${CC} -c $< ${CPPFlAGS}
+
+arrange_square.dll: arrange_square.o common_functions.o
+	${CC} $^ -o $@ -mwindows -shared -Wl,--add-stdcall-alias
+
 

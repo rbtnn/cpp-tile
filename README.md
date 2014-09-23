@@ -37,6 +37,8 @@ This is Tiling Window Manager for MS Windows.
 
 ![](https://raw.github.com/rbtnn/tile/master/images/arrange_cross.png)
 
+### arrange\_square
+
 
 ## CONFIGURATION
 
