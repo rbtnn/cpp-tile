@@ -87,6 +87,10 @@ Run a process.
 #### rescan (`Alt + Ctrl + r`)
 
 Rescan processes.
+ 
+#### show\_information (`Alt + Ctrl + i`)
+
+Show an information of an active window(hwnd, classname, managable, ...).
 
 #### toggle\_border (`Alt + Ctrl + b`)
 

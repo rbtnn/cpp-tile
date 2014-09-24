@@ -169,7 +169,6 @@ void paint_statusline(HWND const& hwnd_){
 
   if(g_p_tile_window_manager != nullptr){
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    std::string const classname = get_classname(foreground_hwnd);
     std::string const windowtext = get_windowtext(foreground_hwnd);
     COLORREF const color = RGB(0x40, 0x40, 0x40);
     HBRUSH const hbrush = ::CreateSolidBrush(color);
@@ -233,8 +232,6 @@ void paint_statusline(HWND const& hwnd_){
     if(layout_name){
       ss_text << " " << *layout_name;
     }
-
-    ss_text << " " << std::left << classname;
 
     ::DrawText(hdcMem, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
 

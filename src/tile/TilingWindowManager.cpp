@@ -94,6 +94,20 @@ namespace Tile{
     arrange();
     try_focus_managed_window();
   }
+  void TilingWindowManager::show_information(){
+    std::stringstream ss;
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    int const exstyle = ::GetWindowLong(foreground_hwnd, GWL_EXSTYLE);
+    HWND const parent = ::GetParent(foreground_hwnd);
+    ss << "ClassName:" << get_classname(foreground_hwnd) << "\n";
+    ss << "hwnd(self):" << foreground_hwnd << "\n";
+    ss << "is_manageable(self):" << is_manageable(foreground_hwnd) << "\n";
+    ss << "hwnd(parent):" << parent << "\n";
+    ss << "is_manageable(parent):" << is_manageable(parent) << "\n";
+    ss << "WS_EX_TOOLWINDOW:" << (exstyle & WS_EX_TOOLWINDOW) << "\n";
+    ss << "WS_EX_APPWINDOW:" << (exstyle & WS_EX_APPWINDOW) << "\n";
+    ::MessageBox(m_main_hwnd, ss.str().c_str(), "Information", MB_OK | MB_SYSTEMMODAL);
+  }
   void TilingWindowManager::toggle_border(){
     int const showCmd = (::IsWindowVisible(m_border_left_hwnd) == true) ? SW_HIDE : SW_SHOWNORMAL;
     for(auto hwnd : {
@@ -425,6 +439,7 @@ namespace Tile{
     regist_key("next_layout", &TilingWindowManager::next_layout);
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
     regist_key("rescan", &TilingWindowManager::rescan);
+    regist_key("show_information", &TilingWindowManager::show_information);
     regist_key("toggle_border", &TilingWindowManager::toggle_border);
     regist_key("toggle_transparency_window", &TilingWindowManager::toggle_transparency_window);
     regist_key("swap_next", &TilingWindowManager::swap_next);

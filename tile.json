@@ -50,6 +50,7 @@
     "kill_client" : "c",
     "run_process" : "\u000d",
     "rescan" : "r",
+    "show_information" : "i",
     "toggle_border" : "b",
     "toggle_transparency_window" : "t",
     "swap_next" : "J",
