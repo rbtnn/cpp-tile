@@ -94,6 +94,17 @@ namespace Tile{
     arrange();
     try_focus_managed_window();
   }
+  void TilingWindowManager::toggle_border(){
+    int const showCmd = (::IsWindowVisible(m_border_left_hwnd) == true) ? SW_HIDE : SW_SHOWNORMAL;
+    for(auto hwnd : {
+        m_border_top_hwnd,
+        m_border_bottom_hwnd,
+        m_border_left_hwnd,
+        m_border_right_hwnd,
+        }){
+      ::ShowWindow(hwnd, showCmd);
+    }
+  }
   void TilingWindowManager::toggle_transparency_window(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     std::deque<HWND> const hwnds = m_workspace_it->get_managed_hwnds();
@@ -414,6 +425,7 @@ namespace Tile{
     regist_key("next_layout", &TilingWindowManager::next_layout);
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
     regist_key("rescan", &TilingWindowManager::rescan);
+    regist_key("toggle_border", &TilingWindowManager::toggle_border);
     regist_key("toggle_transparency_window", &TilingWindowManager::toggle_transparency_window);
     regist_key("swap_next", &TilingWindowManager::swap_next);
     regist_key("swap_previous", &TilingWindowManager::swap_previous);
@@ -444,30 +456,17 @@ namespace Tile{
   }
   void TilingWindowManager::arrange(){
     m_workspace_it->arrange(m_config->get_ignore_classnames_arranged());
-    if(is_manageable(::GetForegroundWindow())){
-      unsigned int const n = 3;
-      RECT rect;
-      ::GetWindowRect(::GetForegroundWindow(), &rect);
-      ::SetWindowPos(m_border_left_hwnd, HWND_TOPMOST,
-          rect.left, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
-      ::SetWindowPos(m_border_right_hwnd, HWND_TOPMOST,
-          rect.right - n, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
-      ::SetWindowPos(m_border_top_hwnd, HWND_TOPMOST,
-          rect.left, rect.top, rect.right - rect.left, n, SWP_NOACTIVATE);
-      ::SetWindowPos(m_border_bottom_hwnd, HWND_TOPMOST,
-          rect.left, rect.bottom - n, rect.right - rect.left, n, SWP_NOACTIVATE);
-
-      ::ShowWindow(m_border_top_hwnd, SW_SHOWNORMAL);
-      ::ShowWindow(m_border_bottom_hwnd, SW_SHOWNORMAL);
-      ::ShowWindow(m_border_left_hwnd, SW_SHOWNORMAL);
-      ::ShowWindow(m_border_right_hwnd, SW_SHOWNORMAL);
-    }
-    else{
-      ::ShowWindow(m_border_top_hwnd, SW_HIDE);
-      ::ShowWindow(m_border_bottom_hwnd, SW_HIDE);
-      ::ShowWindow(m_border_left_hwnd, SW_HIDE);
-      ::ShowWindow(m_border_right_hwnd, SW_HIDE);
-    }
+    unsigned int const n = 3;
+    RECT rect;
+    ::GetWindowRect(::GetForegroundWindow(), &rect);
+    ::SetWindowPos(m_border_left_hwnd, HWND_TOPMOST,
+        rect.left, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
+    ::SetWindowPos(m_border_right_hwnd, HWND_TOPMOST,
+        rect.right - n, rect.top, n, rect.bottom - rect.top, SWP_NOACTIVATE);
+    ::SetWindowPos(m_border_top_hwnd, HWND_TOPMOST,
+        rect.left, rect.top, rect.right - rect.left, n, SWP_NOACTIVATE);
+    ::SetWindowPos(m_border_bottom_hwnd, HWND_TOPMOST,
+        rect.left, rect.bottom - n, rect.right - rect.left, n, SWP_NOACTIVATE);
   }
   void TilingWindowManager::manage(HWND const& hwnd_){
     if(is_manageable(hwnd_)){

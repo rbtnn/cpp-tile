@@ -40,6 +40,7 @@ namespace Tile{
       void regist_key(std::string const&, void (Tile::TilingWindowManager::*)());
       void unmanage_all();
       void rescan();
+      void toggle_border();
       void toggle_transparency_window();
       void run_process();
       void exit_tile();

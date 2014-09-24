@@ -88,6 +88,10 @@ Run a process.
 
 Rescan processes.
 
+#### toggle\_border (`Alt + Ctrl + b`)
+
+Toggle a border of an active window.
+
 #### toggle\_transparency\_window (`Alt + Ctrl + t`)
 
 Toggle transparency to an active window.
