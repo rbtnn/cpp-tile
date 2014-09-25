@@ -25,9 +25,12 @@
       "CabinetWClass",
       "Chrome_WidgetWin_1",
       "ConsoleWindowClass",
-      "OperationStatusWindow",
       "IDEOwner",
       "MSPaintApp",
+      "OperationStatusWindow",
+      "ThunderFormDC",
+      "ThunderRT6FormDC",
+      "ThunderRT6FormMain",
       "XLMAIN",
       "wndclass_desked_gsk"
       ],
