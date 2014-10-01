@@ -23,20 +23,6 @@ namespace Tile{
       die("Error creating window(main)");
     }
   }
-  void TilingWindowManager::init_statusline(){
-    WNDCLASSEX winClass = make_wndclassex(m_hInstance, StatusLineWndProc, m_statusline_class_name);
-    ATOM atom = ::RegisterClassEx(&winClass);
-    if(!atom){
-      die("Error registering window class(statusline)");
-    }
-
-    m_statusline_hwnd = make_toolwindow(m_hInstance, m_statusline_class_name);
-    ::SetWindowPos(m_statusline_hwnd, HWND_TOPMOST,
-        0, 0, get_statusline_width(), get_statusline_height(), SWP_NOACTIVATE);
-
-    ::SetWindowLong(m_statusline_hwnd, GWL_EXSTYLE, ::GetWindowLong(m_statusline_hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-    ::SetLayeredWindowAttributes(m_statusline_hwnd, 0, 200, LWA_ALPHA);
-  }
   void TilingWindowManager::init_border(){
     WNDCLASSEX winClass = make_wndclassex(m_hInstance, BorderWndProc, m_border_class_name);
     ATOM atom = ::RegisterClassEx(&winClass);
@@ -202,6 +188,12 @@ namespace Tile{
     m_workspace_it->next_layout();
     arrange();
     try_focus_managed_window();
+
+    boost::optional<std::string> s = m_workspace_it->get_layout_name();
+    if(s){
+      lstrcpy( m_nid.szTip, s->c_str());
+    }
+    ::Shell_NotifyIcon( NIM_MODIFY, &m_nid);
   }
   void TilingWindowManager::next_focus(){
     bool is_next_focus = false;
@@ -380,20 +372,29 @@ namespace Tile{
 
     m_main_class_name = main_classname_;
     init_main();
-    m_statusline_class_name = "TileStatusLine";
-    init_statusline();
+    // m_statusline_class_name = "TileStatusLine";
+    // init_statusline();
     m_border_class_name = "TileBorder";
     init_border();
+
+    m_nid.cbSize = sizeof(NOTIFYICONDATA);
+    m_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+    m_nid.hWnd = m_main_hwnd;
+    m_nid.hIcon = ::LoadIcon(hInstance_, "SAMPLEICON");
+    boost::optional<std::string> s = m_workspace_it->get_layout_name();
+    if(s){
+      lstrcpy( m_nid.szTip, s->c_str());
+    }
+    ::Shell_NotifyIcon( NIM_ADD, &m_nid );
 
     m_shellhookid = ::RegisterWindowMessage("SHELLHOOK");
   }
   TilingWindowManager::~TilingWindowManager(){
+    ::Shell_NotifyIcon( NIM_DELETE, &m_nid );
+
     unmanage_all();
     if (!m_main_hwnd){
       ::DestroyWindow(m_main_hwnd);
-    }
-    if (!m_statusline_hwnd){
-      ::DestroyWindow(m_statusline_hwnd);
     }
     if (!m_border_left_hwnd){
       ::DestroyWindow(m_border_left_hwnd);
@@ -409,7 +410,7 @@ namespace Tile{
     }
     if (!m_hInstance){
       ::UnregisterClass(m_main_class_name.c_str(), m_hInstance);
-      ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
+      // ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
       ::UnregisterClass(m_border_class_name.c_str(), m_hInstance);
     }
   }
@@ -513,12 +514,6 @@ namespace Tile{
       system_error("TilingWindowManager::call_key_method");
       exit_tile();
     }
-  }
-  void TilingWindowManager::redraw_statusline(){
-    ::PostMessage(m_statusline_hwnd, WM_PAINT, 0, 0);
-  }
-  boost::optional<std::string> TilingWindowManager::get_layout_name() const{
-    return m_workspace_it->get_layout_name();
   }
   std::string TilingWindowManager::get_window_count_of_workspaces(){
     std::stringstream ss;

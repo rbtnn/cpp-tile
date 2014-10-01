@@ -13,12 +13,11 @@
 namespace Tile{
   class TilingWindowManager{
     private:
+      NOTIFYICONDATA m_nid;
       HINSTANCE const m_hInstance;
       UINT m_shellhookid;
       HWND m_main_hwnd;
       std::string m_main_class_name;
-      HWND m_statusline_hwnd;
-      std::string m_statusline_class_name;
       HWND m_border_left_hwnd;
       HWND m_border_right_hwnd;
       HWND m_border_top_hwnd;
@@ -35,7 +34,6 @@ namespace Tile{
       Tile::Recovery recovery;
 
       void init_main();
-      void init_statusline();
       void init_border();
       void regist_key(std::string const&, void (Tile::TilingWindowManager::*)());
       void unmanage_all();
@@ -82,8 +80,6 @@ namespace Tile{
       void manage(HWND const& hwnd_);
       void unmanage(HWND const& hwnd_);
       void call_key_method(UINT const&);
-      void redraw_statusline();
-      boost::optional<std::string> get_layout_name() const;
       std::string get_window_count_of_workspaces();
   };
 }

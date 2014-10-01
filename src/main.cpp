@@ -109,23 +109,6 @@ LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lPara
   }
   return ::DefWindowProc(hwnd_,msg_, wParam_, lParam_);
 }
-LRESULT CALLBACK StatusLineWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
-  switch (msg_) {
-    case WM_DESTROY:
-      ::PostQuitMessage(0);
-      break;
-
-    case WM_CREATE:
-      ::SetTimer(hwnd_, 1, 500, NULL);
-      break;
-
-    case WM_TIMER:
-    case WM_PAINT:
-      paint_statusline(hwnd_);
-      break;
-  }
-  return ::DefWindowProc(hwnd_, msg_, wParam_, lParam_);
-}
 LRESULT CALLBACK BorderWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
   switch (msg_) {
     case WM_DESTROY:
@@ -156,102 +139,5 @@ BOOL CALLBACK scan(HWND hwnd_, LPARAM lParam_){
     ::EnumChildWindows(hwnd_, scan, 0);
   }
   return TRUE;
-}
-
-void paint_statusline(HWND const& hwnd_){
-  PAINTSTRUCT ps;
-  ::BeginPaint(hwnd_, &ps);
-
-  HDC const hdc = ::GetWindowDC(hwnd_);
-  HBITMAP const hBitmap = ::CreateCompatibleBitmap(hdc, get_statusline_width(), get_statusline_height());
-  HDC const hdcMem = ::CreateCompatibleDC(hdc);
-  ::SelectObject(hdcMem, hBitmap);
-
-  if(g_p_tile_window_manager != nullptr){
-    HWND const foreground_hwnd = ::GetForegroundWindow();
-    std::string const windowtext = get_windowtext(foreground_hwnd);
-    COLORREF const color = RGB(0x40, 0x40, 0x40);
-    HBRUSH const hbrush = ::CreateSolidBrush(color);
-    HFONT const hFont = ::CreateFont(((get_statusline_height() - 2) / 2), 0, 0, 0,
-        FW_REGULAR, FALSE, FALSE, FALSE,
-        SHIFTJIS_CHARSET, OUT_DEFAULT_PRECIS,
-        CLIP_DEFAULT_PRECIS, PROOF_QUALITY,
-        FIXED_PITCH | FF_MODERN, "");
-
-    ::SelectObject(hdcMem, hbrush);
-    ::Rectangle(hdcMem , 0, 0, get_statusline_width(), get_statusline_height());
-    ::SetBkColor(hdcMem, color);
-
-    ::SelectObject(hdcMem, hFont);
-
-    RECT rect;
-    rect.left = 3;
-    rect.top = 3;
-    rect.right = get_statusline_width();
-    rect.bottom = get_statusline_height();
-
-    ::SetTextColor(hdcMem, RGB(0x00, 0xff, 0x00));
-
-    SYSTEMTIME stTime;
-    ::GetLocalTime(&stTime);
-
-    SYSTEM_POWER_STATUS systemPowerStatus;
-    ::GetSystemPowerStatus(&systemPowerStatus);
-
-    std::stringstream ss_text;
-
-    ss_text << g_p_tile_window_manager->get_window_count_of_workspaces();
-
-    ss_text << " "
-      << std::setfill('0') << std::setw(4) << stTime.wYear << "/"
-      << std::setfill('0') << std::setw(2) << stTime.wMonth << "/"
-      << std::setfill('0') << std::setw(2) << stTime.wDay << " "
-      << std::setfill('0') << std::setw(2) << stTime.wHour << ":"
-      << std::setfill('0') << std::setw(2) << stTime.wMinute << ":"
-      << std::setfill('0') << std::setw(2) << stTime.wSecond;
-
-    ss_text << " " << std::left;
-    switch(static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent)){
-      case 255:
-        ss_text << "??";
-        break;
-      default:
-        ss_text << static_cast<unsigned int>(systemPowerStatus.BatteryLifePercent);
-        break;
-    }
-    ss_text << "%";
-
-    switch(systemPowerStatus.ACLineStatus){
-      case 0: ss_text << "-"; break;
-      case 1: ss_text << "+"; break;
-      case 255: ss_text << "?"; break;
-    }
-
-
-    boost::optional<std::string> const layout_name = g_p_tile_window_manager->get_layout_name();
-    if(layout_name){
-      ss_text << " " << *layout_name;
-    }
-
-    ::DrawText(hdcMem, ss_text.str().c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
-
-    rect.top = get_statusline_height() / 2;
-    rect.left = 3;
-
-    ::SetTextColor(hdcMem, RGB(0xff, 0xff, 0x00));
-
-    ::DrawText(hdcMem, windowtext.c_str(), -1, &rect, DT_LEFT | DT_WORDBREAK);
-    ::ReleaseDC(hwnd_, hdcMem);
-  }
-
-  ::BitBlt(hdc, 0, 0, get_statusline_width(), get_statusline_height(), hdcMem, 0, 0, SRCCOPY);
-
-  ::ReleaseDC(hwnd_, hdc);
-
-  ::EndPaint(hwnd_, &ps);
-
-  ::DeleteDC(hdc);
-  ::DeleteDC(hdcMem);
-  ::DeleteObject(hBitmap);
 }
 

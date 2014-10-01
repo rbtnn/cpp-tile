@@ -1,9 +1,6 @@
 
 #include "./common_headers.h"
 
-long get_statusline_height(){
-  return 50;
-}
 RECT get_window_area(){
   RECT wa;
   HWND const hwnd = ::FindWindow("Shell_TrayWnd", NULL);
@@ -16,13 +13,8 @@ RECT get_window_area(){
     wa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
     wa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
   }
-  wa.top += get_statusline_height();
+  // wa.top += get_statusline_height();
   return wa;
-}
-long get_statusline_width(){
-  RECT const rect = get_window_area();
-  long const width = rect.right - rect.left;
-  return width;
 }
 void die(std::string const& msg){
   std::cout << msg << std::endl;
@@ -84,7 +76,7 @@ void resize_window(HWND const& hwnd_, HWND const& hWndInsertAfter_, int const& c
   ::GetWindowRect(hwnd_, &rect);
   bool const b = static_cast<unsigned int>(rect.right - rect.left) == width_
               && static_cast<unsigned int>(rect.bottom - rect.top) == height_
-              && static_cast<unsigned int>(rect.top) == (get_statusline_height() + top_)
+              && static_cast<unsigned int>(rect.top) == top_
               && static_cast<unsigned int>(rect.left) == left_;
   if(!b){
     ::SetWindowPos(hwnd_, hWndInsertAfter_,
