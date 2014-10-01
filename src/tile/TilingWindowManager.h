@@ -80,7 +80,6 @@ namespace Tile{
       void manage(HWND const& hwnd_);
       void unmanage(HWND const& hwnd_);
       void call_key_method(UINT const&);
-      std::string get_window_count_of_workspaces();
   };
 }
 

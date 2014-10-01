@@ -34,6 +34,9 @@ namespace Tile{
     m_border_right_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
     m_border_top_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
     m_border_bottom_hwnd = make_toolwindow(m_hInstance, m_border_class_name);
+
+    // first hide border
+    toggle_border();
   }
   void TilingWindowManager::regist_key(std::string const& key, void (Tile::TilingWindowManager::* f_)()){
     std::map<std::string, std::string> m = m_config->get_keys();
@@ -81,10 +84,18 @@ namespace Tile{
     try_focus_managed_window();
   }
   void TilingWindowManager::show_information(){
-    std::stringstream ss;
     HWND const foreground_hwnd = ::GetForegroundWindow();
     int const exstyle = ::GetWindowLong(foreground_hwnd, GWL_EXSTYLE);
     HWND const parent = ::GetParent(foreground_hwnd);
+    boost::optional<std::string> const s = m_workspace_it->get_layout_name();
+
+    std::stringstream ss;
+
+    ss << "-------------------------------" << "\n";
+    ss << "WorkspaceName:" << m_workspace_it->get_workspace_name() << "\n";
+    ss << "LayoutName:" << (s ? *s : "NULL") << "\n";
+    ss << "Count:" << m_workspace_it->count() << "\n";
+    ss << "-------------------------------" << "\n";
     ss << "ClassName:" << get_classname(foreground_hwnd) << "\n";
     ss << "hwnd(self):" << foreground_hwnd << "\n";
     ss << "is_manageable(self):" << is_manageable(foreground_hwnd) << "\n";
@@ -92,7 +103,9 @@ namespace Tile{
     ss << "is_manageable(parent):" << is_manageable(parent) << "\n";
     ss << "WS_EX_TOOLWINDOW:" << (exstyle & WS_EX_TOOLWINDOW) << "\n";
     ss << "WS_EX_APPWINDOW:" << (exstyle & WS_EX_APPWINDOW) << "\n";
-    ::MessageBox(m_main_hwnd, ss.str().c_str(), "Information", MB_OK | MB_SYSTEMMODAL);
+    ss << "-------------------------------" << "\n";
+
+    ::MessageBox(m_main_hwnd, ss.str().c_str(), "Tile", MB_OK | MB_SYSTEMMODAL);
   }
   void TilingWindowManager::toggle_border(){
     int const showCmd = (::IsWindowVisible(m_border_left_hwnd) == true) ? SW_HIDE : SW_SHOWNORMAL;
@@ -172,9 +185,7 @@ namespace Tile{
   void TilingWindowManager::run_process(){
     auto const path = m_config->get_run_process_path();
     if(path){
-      if(exist_file(*path)){
-        ::ShellExecute(NULL, NULL, path->c_str(), "", NULL, SW_SHOWDEFAULT);
-      }
+      ::ShellExecute(NULL, NULL, path->c_str(), "", NULL, SW_SHOWDEFAULT);
     }
   }
   void TilingWindowManager::exit_tile(){
@@ -188,17 +199,11 @@ namespace Tile{
     m_workspace_it->next_layout();
     arrange();
     try_focus_managed_window();
-
-    boost::optional<std::string> s = m_workspace_it->get_layout_name();
-    if(s){
-      lstrcpy( m_nid.szTip, s->c_str());
-    }
-    ::Shell_NotifyIcon( NIM_MODIFY, &m_nid);
   }
   void TilingWindowManager::next_focus(){
     bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    if(0 < m_workspace_it->size()){
+    if(0 < m_workspace_it->count()){
 #ifdef DEBUG
       std::cout << "[TilingWindowManager::next_focus]" << std::endl;
       std::cout << m_workspace_it->size() << std::endl;
@@ -220,12 +225,12 @@ namespace Tile{
   void TilingWindowManager::previous_focus(){
     bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    if(0 < m_workspace_it->size()){
+    if(0 < m_workspace_it->count()){
 #ifdef DEBUG
       std::cout << "[TilingWindowManager::previous_focus]" << std::endl;
       std::cout << m_workspace_it->size() << std::endl;
 #endif
-      ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->size() - 1));
+      ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->count() - 1));
       for(auto it = m_workspace_it->rbegin(); it < m_workspace_it->rend(); it++){
         if(foreground_hwnd == *it){
           is_next_focus = true;
@@ -295,7 +300,7 @@ namespace Tile{
   }
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    if(0 < m_workspace_it->size()){
+    if(0 < m_workspace_it->count()){
       m_workspace_it->remanage_front(foreground_hwnd);
       arrange();
       try_focus_managed_window();
@@ -308,7 +313,7 @@ namespace Tile{
         return;
       }
     }
-    if(0 < m_workspace_it->size()){
+    if(0 < m_workspace_it->count()){
       ::SetForegroundWindow(m_workspace_it->at(0));
       return;
     }
@@ -381,10 +386,7 @@ namespace Tile{
     m_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
     m_nid.hWnd = m_main_hwnd;
     m_nid.hIcon = ::LoadIcon(hInstance_, "SAMPLEICON");
-    boost::optional<std::string> s = m_workspace_it->get_layout_name();
-    if(s){
-      lstrcpy( m_nid.szTip, s->c_str());
-    }
+    lstrcpy( m_nid.szTip, "Tile");
     ::Shell_NotifyIcon( NIM_ADD, &m_nid );
 
     m_shellhookid = ::RegisterWindowMessage("SHELLHOOK");
@@ -514,18 +516,6 @@ namespace Tile{
       system_error("TilingWindowManager::call_key_method");
       exit_tile();
     }
-  }
-  std::string TilingWindowManager::get_window_count_of_workspaces(){
-    std::stringstream ss;
-    ss << "|";
-    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-      if(it == m_workspace_it){
-        ss << "*";
-      }
-      ss << it->get_workspace_name() << ":" << it->size();
-      ss << "|";
-    }
-    return ss.str();
   }
 }
 

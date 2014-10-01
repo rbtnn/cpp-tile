@@ -34,7 +34,7 @@
       "XLMAIN",
       "wndclass_desked_gsk"
       ],
-    "run_process_path" : "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "run_process_path" : "C:/vim/src/gvim.exe",
     "layout_method_names" : [
       "arrange",
       "arrange_twin",

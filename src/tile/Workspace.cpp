@@ -24,7 +24,7 @@ namespace Tile{
     m_layouts = layouts_;
     m_layout_it = std::begin(*m_layouts);
   }
-  unsigned int Workspace::size(){
+  unsigned int Workspace::count(){
     return m_managed_hwnds.size();
   }
   HWND Workspace::at(unsigned int const& i_){

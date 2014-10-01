@@ -19,7 +19,7 @@ namespace Tile{
 
     public:
       Workspace(std::string const&, std::shared_ptr<std::vector<Tile::Layout>> const&);
-      unsigned int size();
+      unsigned int count();
       HWND at(unsigned int const&);
       std::deque<HWND>::reverse_iterator const rbegin();
       std::deque<HWND>::reverse_iterator const rend();

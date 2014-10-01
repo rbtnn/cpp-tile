@@ -13,7 +13,7 @@ This is Tiling Window Manager for MS Windows.
 
 ## USAGE
 
-> tile.exe ./tile.json
+> tile.exe &lt;json file&gt;
 
 
 ## LAYOUT METHODS
@@ -47,7 +47,7 @@ This is Tiling Window Manager for MS Windows.
 
 ## CONFIGURATION
 
-Configure file of `tile.exe` is `tile.json`.
+Configure file of `tile.exe` is a json file.
 
 
 ### keys
