@@ -278,6 +278,22 @@ namespace Tile{
   void TilingWindowManager::workspace_9(){
     workspace_of(8);
   }
+  void TilingWindowManager::scrollwheel_up(){
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    RECT r;
+    ::GetWindowRect(foreground_hwnd, &r);
+    unsigned int const x = r.top + (r.bottom - r.top) / 2;
+    unsigned int const y = r.left + (r.right - r.left) / 2;
+    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * -1), MAKELPARAM(y, x));
+  }
+  void TilingWindowManager::scrollwheel_down(){
+    HWND const foreground_hwnd = ::GetForegroundWindow();
+    RECT r;
+    ::GetWindowRect(foreground_hwnd, &r);
+    unsigned int const x = r.top + (r.bottom - r.top) / 2;
+    unsigned int const y = r.left + (r.right - r.left) / 2;
+    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * 1), MAKELPARAM(y, x));
+  }
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->count()){
@@ -437,6 +453,8 @@ namespace Tile{
     regist_key("workspace_7", &TilingWindowManager::workspace_7);
     regist_key("workspace_8", &TilingWindowManager::workspace_8);
     regist_key("workspace_9", &TilingWindowManager::workspace_9);
+    regist_key("scrollwheel_up", &TilingWindowManager::scrollwheel_up);
+    regist_key("scrollwheel_down", &TilingWindowManager::scrollwheel_down);
 
     ::EnumWindows(scan, 0);
     arrange();

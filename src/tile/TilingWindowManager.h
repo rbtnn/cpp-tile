@@ -65,6 +65,8 @@ namespace Tile{
       void workspace_7();
       void workspace_8();
       void workspace_9();
+      void scrollwheel_up();
+      void scrollwheel_down();
       void focus_window_to_master();
       void try_focus_managed_window();
       void swap_next();
