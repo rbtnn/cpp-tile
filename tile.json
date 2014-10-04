@@ -76,7 +76,7 @@
     "move_to_workspace_7"        : { "vk" :      "7", "mod_shift" :  true, "mod_control" : true, "mod_alt" : true, "mod_win" : false },
     "move_to_workspace_8"        : { "vk" :      "8", "mod_shift" :  true, "mod_control" : true, "mod_alt" : true, "mod_win" : false },
     "move_to_workspace_9"        : { "vk" :      "9", "mod_shift" :  true, "mod_control" : true, "mod_alt" : true, "mod_win" : false },
-    "scrollwheel_up"             : { "vk" :      "Y", "mod_shift" : false, "mod_control" : true, "mod_alt" : true, "mod_win" : false },
-    "scrollwheel_down"           : { "vk" :      "E", "mod_shift" : false, "mod_control" : true, "mod_alt" : true, "mod_win" : false }
+    "scrollwheel_up"             : { "vk" :      "E", "mod_shift" : false, "mod_control" : true, "mod_alt" : true, "mod_win" : false },
+    "scrollwheel_down"           : { "vk" :      "Y", "mod_shift" : false, "mod_control" : true, "mod_alt" : true, "mod_win" : false }
   }
 }

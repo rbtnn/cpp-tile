@@ -284,7 +284,7 @@ namespace Tile{
     ::GetWindowRect(foreground_hwnd, &r);
     unsigned int const x = r.top + (r.bottom - r.top) / 2;
     unsigned int const y = r.left + (r.right - r.left) / 2;
-    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * -1), MAKELPARAM(y, x));
+    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * 1), MAKELPARAM(y, x));
   }
   void TilingWindowManager::scrollwheel_down(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
@@ -292,7 +292,7 @@ namespace Tile{
     ::GetWindowRect(foreground_hwnd, &r);
     unsigned int const x = r.top + (r.bottom - r.top) / 2;
     unsigned int const y = r.left + (r.right - r.left) / 2;
-    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * 1), MAKELPARAM(y, x));
+    ::SendMessage(foreground_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, WHEEL_DELTA * -1), MAKELPARAM(y, x));
   }
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();

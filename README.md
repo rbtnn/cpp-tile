@@ -56,7 +56,7 @@ Default key mappings are defined `keys` section.
 You can edit it and customize key mappings.
 
 
-#### focus\_window\_to\_master (`Alt + Ctrl + m`)
+#### focus\_window\_to\_master (`Alt + Ctrl + M`)
 
 Focus an active window to master pane.
 
@@ -64,19 +64,19 @@ Focus an active window to master pane.
 
 Change layout method.
 
-#### next\_focus (`Alt + Ctrl + j`)
+#### next\_focus (`Alt + Ctrl + J`)
 
 Focus to a next window.
 
-#### previous\_focus (`Alt + Ctrl + k`)
+#### previous\_focus (`Alt + Ctrl + K`)
 
 Focus to a previous window.
 
-#### exit\_tile (`Alt + Ctrl + q`)
+#### exit\_tile (`Alt + Ctrl + Q`)
 
 Exit tile.exe.
 
-#### kill\_client (`Alt + Ctrl + c`)
+#### kill\_client (`Alt + Ctrl + C`)
 
 Kill an active window.
 
@@ -84,27 +84,27 @@ Kill an active window.
 
 Run a process.
 
-#### rescan (`Alt + Ctrl + r`)
+#### rescan (`Alt + Ctrl + R`)
 
 Rescan processes.
  
-#### show\_information (`Alt + Ctrl + i`)
+#### show\_information (`Alt + Ctrl + I`)
 
 Show an information of an active window(hwnd, classname, managable, ...).
 
-#### toggle\_border (`Alt + Ctrl + b`)
+#### toggle\_border (`Alt + Ctrl + B`)
 
 Toggle a border of an active window.
 
-#### toggle\_transparency\_window (`Alt + Ctrl + t`)
+#### toggle\_transparency\_window (`Alt + Ctrl + T`)
 
 Toggle transparency to an active window.
 
-#### swap\_next (`Alt + Ctrl + J`)
+#### swap\_next (`Alt + Ctrl + SHIFT + J`)
 
 Swap an active window and a next window.
 
-#### swap\_previous (`Alt + Ctrl + K`)
+#### swap\_previous (`Alt + Ctrl + SHIFT + K`)
 
 Swap an active window and a previous window.
 
@@ -144,42 +144,49 @@ Go to workspace 8.
 
 Go to workspace 9.
 
-#### move\_to\_workspace\_1 (`Alt + Ctrl + !`)
+#### move\_to\_workspace\_1 (`Alt + Ctrl + SHIFT + 1`)
 
 Move an active window to workspace 1.
 
-#### move\_to\_workspace\_2 (`Alt + Ctrl + @`)
+#### move\_to\_workspace\_2 (`Alt + Ctrl + SHIFT + 2`)
 
 Move an active window to workspace 2.
 
-#### move\_to\_workspace\_3 (`Alt + Ctrl + #`)
+#### move\_to\_workspace\_3 (`Alt + Ctrl + SHIFT + 3`)
 
 Move an active window to workspace 3.
 
-#### move\_to\_workspace\_4 (`Alt + Ctrl + $`)
+#### move\_to\_workspace\_4 (`Alt + Ctrl + SHIFT + 4`)
 
 Move an active window to workspace 4.
 
-#### move\_to\_workspace\_5 (`Alt + Ctrl + %`)
+#### move\_to\_workspace\_5 (`Alt + Ctrl + SHIFT + 5`)
 
 Move an active window to workspace 5.
 
-#### move\_to\_workspace\_6 (`Alt + Ctrl + ^`)
+#### move\_to\_workspace\_6 (`Alt + Ctrl + SHIFT + 6`)
 
 Move an active window to workspace 6.
 
-#### move\_to\_workspace\_7 (`Alt + Ctrl + &`)
+#### move\_to\_workspace\_7 (`Alt + Ctrl + SHIFT + 7`)
 
 Move an active window to workspace 7.
 
-#### move\_to\_workspace\_8 (`Alt + Ctrl + *`)
+#### move\_to\_workspace\_8 (`Alt + Ctrl + SHIFT + 8`)
 
 Move an active window to workspace 8.
 
-#### move\_to\_workspace\_9 (`Alt + Ctrl + (`)
+#### move\_to\_workspace\_9 (`Alt + Ctrl + SHIFT + 9`)
 
 Move an active window to workspace 9.
 
+#### scrollwheel\_up (`Alt + Ctrl + E`)
+
+Scrollwheel up.
+
+#### scrollwheel\_down (`Alt + Ctrl + Y`)
+
+Scrollwheel down.
 
 ### settings
 
