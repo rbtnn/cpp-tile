@@ -6,6 +6,7 @@
 #include "./TilingWindowManager.h"
 #include "./ConfigReader.h"
 #include "./Workspace.h"
+#include "./HotKey.h"
 
 namespace Tile{
   void TilingWindowManager::init_main(){
@@ -39,33 +40,12 @@ namespace Tile{
     toggle_border();
   }
   void TilingWindowManager::regist_key(std::string const& key, void (Tile::TilingWindowManager::* f_)()){
-    std::map<std::string, std::string> m = m_config->get_keys();
+    std::map<std::string, Tile::HotKey> m = m_config->get_keys();
     auto it = m.find(key);
     if(it != std::end(m)){
-      unsigned long MODKEY = MOD_ALT | MOD_CONTROL;
-      if(0 < m[key].length()){
-        unsigned char n = m[key].at(0);
-        switch(n){
-          case '!': n = '1'; MODKEY |= MOD_SHIFT; break;
-          case '@': n = '2'; MODKEY |= MOD_SHIFT; break;
-          case '#': n = '3'; MODKEY |= MOD_SHIFT; break;
-          case '$': n = '4'; MODKEY |= MOD_SHIFT; break;
-          case '%': n = '5'; MODKEY |= MOD_SHIFT; break;
-          case '^': n = '6'; MODKEY |= MOD_SHIFT; break;
-          case '&': n = '7'; MODKEY |= MOD_SHIFT; break;
-          case '*': n = '8'; MODKEY |= MOD_SHIFT; break;
-          case '(': n = '9'; MODKEY |= MOD_SHIFT; break;
-          default:
-                    if('A' <= n && n <= 'Z'){
-                      MODKEY |= MOD_SHIFT;
-                    }
-                    else if('a' <= n && n <= 'z'){
-                      n -= 0x20;
-                    }
-                    break;
-        }
-        m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, MODKEY, n, std::bind(f_, this))));
-      }
+      unsigned int const vk = it->second.get_vk();
+      unsigned int const mod = it->second.get_fsModifiers();
+      m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, mod, vk, std::bind(f_, this))));
     }
   }
   void TilingWindowManager::unmanage_all(){

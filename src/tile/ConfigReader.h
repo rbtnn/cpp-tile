@@ -6,6 +6,7 @@
 #include "./NotApplyStyleToClassNames.h"
 #include "./IgnoreClassNamesArranged.h"
 #include "./LayoutMethodNames.h"
+#include "./HotKey.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -21,7 +22,7 @@ namespace Tile{
       Tile::IgnoreClassNamesArranged get_ignore_classnames_arranged() const;
       Tile::NotApplyStyleToClassNames get_not_apply_style_to_classnames() const;
       Tile::LayoutMethodNames get_layout_method_names() const;
-      std::map<std::string, std::string> get_keys() const;
+      std::map<std::string, Tile::HotKey> get_keys() const;
   };
 }
 

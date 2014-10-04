@@ -148,6 +148,9 @@ Workspace.o: ${SRC_DIR}/tile/Workspace.cpp
 Recovery.o: ${SRC_DIR}/tile/Recovery.cpp
 	${CC} -c $< ${CPPFlAGS}
 
+HotKey.o: ${SRC_DIR}/tile/HotKey.cpp
+	${CC} -c $< ${CPPFlAGS}
+
 TilingWindowManager.o: ${SRC_DIR}/tile/TilingWindowManager.cpp
 	${CC} -c $< ${CPPFlAGS}
 
@@ -172,7 +175,7 @@ arrange_manual.o: ${SRC_DIR}/layout_methods/arrange_manual.cpp
 
 
 
-tile.exe: common_functions.o Key.o ConfigReader.o Layout.o Workspace.o Recovery.o TilingWindowManager.o main.o resource.o
+tile.exe: common_functions.o Key.o ConfigReader.o Layout.o Workspace.o Recovery.o TilingWindowManager.o main.o resource.o HotKey.o
 	${CC} $^ -o tile.exe -mwindows -s
 
 arrange.dll: arrange.o common_functions.o

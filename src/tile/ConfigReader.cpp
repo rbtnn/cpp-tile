@@ -5,6 +5,7 @@
 #include "./ConfigReader.h"
 #include "./NotApplyStyleToClassNames.h"
 #include "./IgnoreClassNamesArranged.h"
+#include "./HotKey.h"
 
 namespace Tile{
   ConfigReader::ConfigReader(char const * const path_){
@@ -43,14 +44,24 @@ namespace Tile{
     }
     return xs;
   }
-  std::map<std::string, std::string> ConfigReader::get_keys() const{
-    std::map<std::string, std::string> m;
+  std::map<std::string, Tile::HotKey> ConfigReader::get_keys() const{
+    std::map<std::string, Tile::HotKey> m;
     auto const children = m_pt.get_child_optional("keys");
     if(children){
       for(auto const& x : *children){
-        m.insert(std::map<std::string, std::string>::value_type(
+        auto const vk_str = x.second.get_optional<std::string>("vk");
+        auto const vk_char = (vk_str ? (0 < vk_str->length() ? vk_str->at(0) : ' ' ) : ' ');
+        auto const shift = x.second.get_optional<bool>("mod_shift");
+        auto const control = x.second.get_optional<bool>("mod_control");
+        auto const alt = x.second.get_optional<bool>("mod_alt");
+        auto const win = x.second.get_optional<bool>("mod_win");
+        m.insert(std::map<std::string, Tile::HotKey>::value_type(
               x.first,
-              x.second.get<std::string>("")
+              HotKey(vk_char,
+                     (shift ? (*shift) : false),
+                     (control ? (*control) : false),
+                     (alt ? (*alt) : false),
+                     (win ? (*win) : false))
               ));
       }
     }
