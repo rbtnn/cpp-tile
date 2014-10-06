@@ -186,7 +186,7 @@ namespace Tile{
     if(0 < m_workspace_it->count()){
 #ifdef DEBUG
       std::cout << "[TilingWindowManager::next_focus]" << std::endl;
-      std::cout << m_workspace_it->size() << std::endl;
+      std::cout << m_workspace_it->count() << std::endl;
 #endif
       ::SetForegroundWindow(m_workspace_it->at(0));
       for(auto hwnd : m_workspace_it->get_managed_hwnds()){
@@ -208,7 +208,7 @@ namespace Tile{
     if(0 < m_workspace_it->count()){
 #ifdef DEBUG
       std::cout << "[TilingWindowManager::previous_focus]" << std::endl;
-      std::cout << m_workspace_it->size() << std::endl;
+      std::cout << m_workspace_it->count() << std::endl;
 #endif
       ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->count() - 1));
       for(auto it = m_workspace_it->rbegin(); it < m_workspace_it->rend(); it++){

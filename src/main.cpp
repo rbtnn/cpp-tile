@@ -10,7 +10,7 @@ std::shared_ptr<Tile::TilingWindowManager> g_p_tile_window_manager(nullptr);
 
 int WINAPI WinMain(HINSTANCE hInstance_, HINSTANCE hPrevInstance_, LPSTR lpCmdLine_, int nShowCmd_){
 #ifdef DEBUG
-  bool const use_console = true;
+  bool const use_console = false;
   if(use_console){
     ::AllocConsole();
     ::freopen("CONOUT$", "w", stdout);
@@ -82,6 +82,11 @@ LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lPara
       return 0;
 
     case WM_HOTKEY:
+#ifdef DEBUG
+      std::cout << "[WM_HOTKEY]" << std::endl;
+      std::cout << "wParam:"  << wParam_ << std::endl;
+      std::cout << "lParam:"  << lParam_ << std::endl;
+#endif
       if(g_p_tile_window_manager != nullptr){
         g_p_tile_window_manager->call_key_method(wParam_);
       }
