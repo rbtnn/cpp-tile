@@ -95,14 +95,8 @@ namespace Tile{
       std::deque<HWND> hwnds;
       for(auto hwnd : m_managed_hwnds){
         if(is_manageable(hwnd)){
-          bool b = true;
-          std::string const classname = get_classname(hwnd);
-          for(auto c : classnames_.value){
-            if(classname == c){
-              b = false;
-            }
-          }
-          if(b){
+          auto const classnames = classnames_.value;
+          if(std::find(std::begin(classnames), std::end(classnames), get_classname(hwnd)) == std::end(classnames)){
             hwnds.push_back(hwnd);
           }
         }

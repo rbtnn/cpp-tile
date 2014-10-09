@@ -181,21 +181,33 @@ namespace Tile{
     try_focus_managed_window();
   }
   void TilingWindowManager::next_focus(){
-    bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    if(0 < m_workspace_it->count()){
-#ifdef DEBUG
-      std::cout << "[TilingWindowManager::next_focus]" << std::endl;
-      std::cout << m_workspace_it->count() << std::endl;
-#endif
-      ::SetForegroundWindow(m_workspace_it->at(0));
-      for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-        if(foreground_hwnd == hwnd){
-          is_next_focus = true;
-        }
-        else{
+    auto const classnames = m_config->get_ignore_classnames_arranged().value;
+    std::deque<HWND> const hwnds = m_workspace_it->get_managed_hwnds();
+    if(0 < hwnds.size()){
+      bool is_next_focus = false;
+      if(std::find(std::begin(hwnds), std::end(hwnds), foreground_hwnd) != std::end(hwnds)){
+        for(auto it = hwnds.begin(); it < hwnds.end(); it++){
+          if(std::find(std::begin(classnames), std::end(classnames), get_classname(*it)) != std::end(classnames)){
+            continue;
+          }
           if(is_next_focus){
-            ::SetForegroundWindow(hwnd);
+            ::SetForegroundWindow(*it);
+            is_next_focus = false;
+            break;
+          }
+          else if(foreground_hwnd == *it){
+            is_next_focus = true;
+          }
+        }
+      }
+      else{
+        is_next_focus = true;
+      }
+      if(is_next_focus){
+        for(auto it = hwnds.begin(); it < hwnds.end(); it++){
+          if(std::find(std::begin(classnames), std::end(classnames), get_classname(*it)) == std::end(classnames)){
+            ::SetForegroundWindow(*it);
             break;
           }
         }
@@ -203,20 +215,32 @@ namespace Tile{
     }
   }
   void TilingWindowManager::previous_focus(){
-    bool is_next_focus = false;
     HWND const foreground_hwnd = ::GetForegroundWindow();
-    if(0 < m_workspace_it->count()){
-#ifdef DEBUG
-      std::cout << "[TilingWindowManager::previous_focus]" << std::endl;
-      std::cout << m_workspace_it->count() << std::endl;
-#endif
-      ::SetForegroundWindow(m_workspace_it->at(m_workspace_it->count() - 1));
-      for(auto it = m_workspace_it->rbegin(); it < m_workspace_it->rend(); it++){
-        if(foreground_hwnd == *it){
-          is_next_focus = true;
-        }
-        else{
+    auto const classnames = m_config->get_ignore_classnames_arranged().value;
+    std::deque<HWND> const hwnds = m_workspace_it->get_managed_hwnds();
+    if(0 < hwnds.size()){
+      bool is_next_focus = false;
+      if(std::find(std::begin(hwnds), std::end(hwnds), foreground_hwnd) != std::end(hwnds)){
+        for(auto it = hwnds.rbegin(); it < hwnds.rend(); it++){
+          if(std::find(std::begin(classnames), std::end(classnames), get_classname(*it)) != std::end(classnames)){
+            continue;
+          }
           if(is_next_focus){
+            ::SetForegroundWindow(*it);
+            is_next_focus = false;
+            break;
+          }
+          else if(foreground_hwnd == *it){
+            is_next_focus = true;
+          }
+        }
+      }
+      else{
+        is_next_focus = true;
+      }
+      if(is_next_focus){
+        for(auto it = hwnds.rbegin(); it < hwnds.rend(); it++){
+          if(std::find(std::begin(classnames), std::end(classnames), get_classname(*it)) == std::end(classnames)){
             ::SetForegroundWindow(*it);
             break;
           }
