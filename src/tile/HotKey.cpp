@@ -1,9 +1,8 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-
-#include "./HotKey.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/HotKey.h>
 
 namespace Tile{
   HotKey::HotKey(unsigned int const vk_, bool const shift_, bool const control_, bool const alt_, bool const win_){

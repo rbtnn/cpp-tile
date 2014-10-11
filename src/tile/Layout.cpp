@@ -1,8 +1,8 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-#include "./Layout.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/Layout.h>
 
 namespace Tile{
   Layout::Layout(std::string layout_name_, ArrangeFunctionSTL f_)

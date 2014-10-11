@@ -2,7 +2,7 @@
 #ifndef TILE_WORKSPACE_H
 #define TILE_WORKSPACE_H
 
-#include "../common_headers.h"
+#include "./common_headers.h"
 #include "./Layout.h"
 #include "./IgnoreClassNamesArranged.h"
 #include "./NotApplyStyleToClassNames.h"

@@ -1,8 +1,8 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-#include "./Key.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/Key.h>
 
 namespace Tile{
   Key::Key(HWND const& hwnd_, UINT const& mod_, UINT const& k_, std::function<void(void)> const& f_)

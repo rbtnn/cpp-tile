@@ -2,7 +2,7 @@
 #ifndef TILE_TILINGWINDOWMANAGER_H
 #define TILE_TILINGWINDOWMANAGER_H
 
-#include "../common_headers.h"
+#include "./common_headers.h"
 
 #include "./ConfigReader.h"
 #include "./Key.h"

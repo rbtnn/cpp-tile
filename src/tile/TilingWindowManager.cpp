@@ -1,12 +1,11 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-
-#include "./TilingWindowManager.h"
-#include "./ConfigReader.h"
-#include "./Workspace.h"
-#include "./HotKey.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/TilingWindowManager.h>
+#include <tile/ConfigReader.h>
+#include <tile/Workspace.h>
+#include <tile/HotKey.h>
 
 namespace Tile{
   void TilingWindowManager::init_main(){

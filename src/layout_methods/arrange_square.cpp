@@ -1,5 +1,5 @@
 
-#include "../layout_method.h"
+#include <tile/layout_method.h>
 
 EXPORT void arrange_square(std::deque<HWND> const& hwnds_, long const& width_, long const& height_){
   unsigned long nw = 1;

@@ -2,7 +2,7 @@
 #ifndef TILE_KEY_H
 #define TILE_KEY_H
 
-#include "../common_headers.h"
+#include "./common_headers.h"
 
 namespace Tile{
   class Key{

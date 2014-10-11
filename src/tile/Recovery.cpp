@@ -1,8 +1,8 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-#include "./Recovery.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/Recovery.h>
 
 namespace Tile{
   void Recovery::save(HWND const& hwnd_){

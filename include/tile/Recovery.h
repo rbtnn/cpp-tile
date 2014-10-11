@@ -2,7 +2,7 @@
 #ifndef TILE_RECOVERY_H
 #define TILE_RECOVERY_H
 
-#include "../common_headers.h"
+#include "./common_headers.h"
 
 namespace Tile{
   class Recovery{

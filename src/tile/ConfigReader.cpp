@@ -1,11 +1,11 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-#include "./ConfigReader.h"
-#include "./NotApplyStyleToClassNames.h"
-#include "./IgnoreClassNamesArranged.h"
-#include "./HotKey.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/ConfigReader.h>
+#include <tile/NotApplyStyleToClassNames.h>
+#include <tile/IgnoreClassNamesArranged.h>
+#include <tile/HotKey.h>
 
 namespace Tile{
   ConfigReader::ConfigReader(char const * const path_){

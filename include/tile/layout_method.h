@@ -4,7 +4,7 @@
 
 #include "./common_headers.h"
 #include "./common_functions.h"
-#include "./tile/Layout.h"
+#include "./Layout.h"
 
 #define EXPORT extern "C" __declspec(dllexport)
 

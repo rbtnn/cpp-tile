@@ -1,10 +1,10 @@
 
-#include "../common_headers.h"
-#include "../common_functions.h"
-#include "../wndproc_functions.h"
-#include "./Workspace.h"
-#include "./IgnoreClassNamesArranged.h"
-#include "./NotApplyStyleToClassNames.h"
+#include <tile/common_headers.h>
+#include <tile/common_functions.h>
+#include <tile/wndproc_functions.h>
+#include <tile/Workspace.h>
+#include <tile/IgnoreClassNamesArranged.h>
+#include <tile/NotApplyStyleToClassNames.h>
 
 namespace Tile{
   void Workspace::set_style(HWND const& hwnd_, Tile::NotApplyStyleToClassNames const& classnames_){

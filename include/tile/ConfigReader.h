@@ -2,7 +2,7 @@
 #ifndef TILE_CONFIGREADER_H
 #define TILE_CONFIGREADER_H
 
-#include "../common_headers.h"
+#include "./common_headers.h"
 #include "./NotApplyStyleToClassNames.h"
 #include "./IgnoreClassNamesArranged.h"
 #include "./LayoutMethodNames.h"
