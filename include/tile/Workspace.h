@@ -23,10 +23,8 @@ namespace Tile{
       HWND at(unsigned int const&);
       std::deque<HWND>::reverse_iterator const rbegin();
       std::deque<HWND>::reverse_iterator const rend();
-      bool is_managed(HWND const&);
-      void remanage_back(HWND const&);
-      void remanage_front(HWND const&);
-      void manage(HWND const&, Tile::NotApplyStyleToClassNames const&);
+      void manage_back(HWND const&, Tile::NotApplyStyleToClassNames const&);
+      void manage_front(HWND const&, Tile::NotApplyStyleToClassNames const&);
       void unmanage(HWND const&);
       std::deque<HWND> const& get_managed_hwnds() const;
       std::string get_workspace_name() const;

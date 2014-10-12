@@ -47,32 +47,16 @@ namespace Tile{
       void next_layout();
       void next_focus();
       void previous_focus();
-      void move_to_workspace_1();
-      void move_to_workspace_2();
-      void move_to_workspace_3();
-      void move_to_workspace_4();
-      void move_to_workspace_5();
-      void move_to_workspace_6();
-      void move_to_workspace_7();
-      void move_to_workspace_8();
-      void move_to_workspace_9();
-      void workspace_1();
-      void workspace_2();
-      void workspace_3();
-      void workspace_4();
-      void workspace_5();
-      void workspace_6();
-      void workspace_7();
-      void workspace_8();
-      void workspace_9();
+      template <unsigned int>
+      void move_to_workspace();
+      template <unsigned int>
+      void workspace();
       void scrollwheel_up();
       void scrollwheel_down();
       void focus_window_to_master();
       void try_focus_managed_window();
       void swap_next();
       void swap_previous();
-      void move_to_workspace_of(unsigned int const&);
-      void workspace_of(unsigned int const&);
 
     public:
       TilingWindowManager(HINSTANCE const&, std::string const&, std::shared_ptr<std::vector<Tile::Layout>> const&, std::shared_ptr<ConfigReader> const&);

@@ -122,16 +122,21 @@ namespace Tile{
           it++;
           if(it == std::end(hwnds)){
             auto const top = hwnds.at(0);
-            m_workspace_it->remanage_front(foreground_hwnd);
-            m_workspace_it->remanage_back(top);
+            m_workspace_it->unmanage(foreground_hwnd);
+            m_workspace_it->manage_front(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
+            m_workspace_it->unmanage(top);
+            m_workspace_it->manage_back(top, m_config->get_not_apply_style_to_classnames());
           }
           else{
-            m_workspace_it->remanage_back(*it);
-            m_workspace_it->remanage_back(foreground_hwnd);
+            m_workspace_it->unmanage(*it);
+            m_workspace_it->manage_back(*it, m_config->get_not_apply_style_to_classnames());
+            m_workspace_it->unmanage(foreground_hwnd);
+            m_workspace_it->manage_back(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
           }
         }
         else{
-          m_workspace_it->remanage_back(*it);
+          m_workspace_it->unmanage(*it);
+          m_workspace_it->manage_back(*it, m_config->get_not_apply_style_to_classnames());
         }
       }
     }
@@ -144,19 +149,24 @@ namespace Tile{
         if(*it == foreground_hwnd){
           if(it == std::begin(hwnds)){
             auto const tail = hwnds.at(hwnds.size() - 1);
-            m_workspace_it->remanage_back(foreground_hwnd);
-            m_workspace_it->remanage_front(tail);
+            m_workspace_it->unmanage(foreground_hwnd);
+            m_workspace_it->manage_back(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
+            m_workspace_it->unmanage(tail);
+            m_workspace_it->manage_front(tail, m_config->get_not_apply_style_to_classnames());
             break;
           }
           else{
             it--;
-            m_workspace_it->remanage_back(foreground_hwnd);
-            m_workspace_it->remanage_back(*it);
+            m_workspace_it->unmanage(foreground_hwnd);
+            m_workspace_it->manage_back(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
+            m_workspace_it->unmanage(*it);
+            m_workspace_it->manage_back(*it, m_config->get_not_apply_style_to_classnames());
             it++;
           }
         }
         else{
-          m_workspace_it->remanage_back(*it);
+          m_workspace_it->unmanage(*it);
+          m_workspace_it->manage_back(*it, m_config->get_not_apply_style_to_classnames());
         }
       }
     }
@@ -247,60 +257,52 @@ namespace Tile{
       }
     }
   }
-  void TilingWindowManager::move_to_workspace_1(){
-    move_to_workspace_of(0);
+
+  template <unsigned int i>
+  void TilingWindowManager::move_to_workspace(){
+    HWND const hwnd = ::GetForegroundWindow();
+    unsigned int n = 0;
+    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+      if(n == i && it != m_workspace_it){
+        m_workspace_it->unmanage(hwnd);
+        it->manage_front(hwnd, m_config->get_not_apply_style_to_classnames());
+        arrange();
+        try_focus_managed_window();
+        ::ShowWindow(hwnd, SW_HIDE);
+        break;
+      }
+      n++;
+    }
   }
-  void TilingWindowManager::move_to_workspace_2(){
-    move_to_workspace_of(1);
+  template <unsigned int i>
+  void TilingWindowManager::workspace(){
+    unsigned int n = 0;
+    if(i < m_workspaces.size()){
+      for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+        if(n == i){
+          if(m_workspace_it != it){
+            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+              ::ShowWindow(hwnd, SW_HIDE);
+            }
+            m_workspace_it = it;
+            auto const hwnds = m_workspace_it->get_managed_hwnds();
+            for(auto hwnd : hwnds){
+              m_workspace_it->unmanage(hwnd);
+              m_workspace_it->manage_back(hwnd, m_config->get_not_apply_style_to_classnames());
+            }
+            arrange();
+            try_focus_managed_window();
+            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+              ::ShowWindow(hwnd, SW_SHOWNORMAL);
+            }
+          }
+          break;
+        }
+        n++;
+      }
+    }
   }
-  void TilingWindowManager::move_to_workspace_3(){
-    move_to_workspace_of(2);
-  }
-  void TilingWindowManager::move_to_workspace_4(){
-    move_to_workspace_of(3);
-  }
-  void TilingWindowManager::move_to_workspace_5(){
-    move_to_workspace_of(4);
-  }
-  void TilingWindowManager::move_to_workspace_6(){
-    move_to_workspace_of(5);
-  }
-  void TilingWindowManager::move_to_workspace_7(){
-    move_to_workspace_of(6);
-  }
-  void TilingWindowManager::move_to_workspace_8(){
-    move_to_workspace_of(7);
-  }
-  void TilingWindowManager::move_to_workspace_9(){
-    move_to_workspace_of(8);
-  }
-  void TilingWindowManager::workspace_1(){
-    workspace_of(0);
-  }
-  void TilingWindowManager::workspace_2(){
-    workspace_of(1);
-  }
-  void TilingWindowManager::workspace_3(){
-    workspace_of(2);
-  }
-  void TilingWindowManager::workspace_4(){
-    workspace_of(3);
-  }
-  void TilingWindowManager::workspace_5(){
-    workspace_of(4);
-  }
-  void TilingWindowManager::workspace_6(){
-    workspace_of(5);
-  }
-  void TilingWindowManager::workspace_7(){
-    workspace_of(6);
-  }
-  void TilingWindowManager::workspace_8(){
-    workspace_of(7);
-  }
-  void TilingWindowManager::workspace_9(){
-    workspace_of(8);
-  }
+
   void TilingWindowManager::scrollwheel_up(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     RECT r;
@@ -320,7 +322,8 @@ namespace Tile{
   void TilingWindowManager::focus_window_to_master(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     if(0 < m_workspace_it->count()){
-      m_workspace_it->remanage_front(foreground_hwnd);
+      m_workspace_it->unmanage(foreground_hwnd);
+      m_workspace_it->manage_front(foreground_hwnd, m_config->get_not_apply_style_to_classnames());
       arrange();
       try_focus_managed_window();
     }
@@ -337,47 +340,6 @@ namespace Tile{
       return;
     }
     ::SetForegroundWindow(::FindWindow("Progman", NULL));
-  }
-  void TilingWindowManager::move_to_workspace_of(unsigned int const& i){
-    HWND const hwnd = ::GetForegroundWindow();
-    unsigned int n = 0;
-    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-      if(n == i && it != m_workspace_it){
-        m_workspace_it->unmanage(hwnd);
-        it->manage(hwnd, m_config->get_not_apply_style_to_classnames());
-        arrange();
-        try_focus_managed_window();
-        ::ShowWindow(hwnd, SW_HIDE);
-        break;
-      }
-      n++;
-    }
-  }
-  void TilingWindowManager::workspace_of(unsigned int const& i){
-    unsigned int n = 0;
-    if(i < m_workspaces.size()){
-      for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-        if(n == i){
-          if(m_workspace_it != it){
-            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              ::ShowWindow(hwnd, SW_HIDE);
-            }
-            m_workspace_it = it;
-            auto const hwnds = m_workspace_it->get_managed_hwnds();
-            for(auto hwnd : hwnds){
-              m_workspace_it->remanage_back(hwnd);
-            }
-            arrange();
-            try_focus_managed_window();
-            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              ::ShowWindow(hwnd, SW_SHOWNORMAL);
-            }
-          }
-          break;
-        }
-        n++;
-      }
-    }
   }
   TilingWindowManager::TilingWindowManager(HINSTANCE const& hInstance_, std::string const& main_classname_, std::shared_ptr<std::vector<Tile::Layout>> const& layouts_, std::shared_ptr<ConfigReader> const& config_) : m_hInstance(hInstance_), m_config(config_){
 
@@ -396,8 +358,6 @@ namespace Tile{
 
     m_main_class_name = main_classname_;
     init_main();
-    // m_statusline_class_name = "TileStatusLine";
-    // init_statusline();
     m_border_class_name = "TileBorder";
     init_border();
 
@@ -431,7 +391,6 @@ namespace Tile{
     }
     if (!m_hInstance){
       ::UnregisterClass(m_main_class_name.c_str(), m_hInstance);
-      // ::UnregisterClass(m_statusline_class_name.c_str(), m_hInstance);
       ::UnregisterClass(m_border_class_name.c_str(), m_hInstance);
     }
   }
@@ -448,15 +407,15 @@ namespace Tile{
     regist_key("exit_tile", &TilingWindowManager::exit_tile);
     regist_key("focus_window_to_master", &TilingWindowManager::focus_window_to_master);
     regist_key("kill_client", &TilingWindowManager::kill_client);
-    regist_key("move_to_workspace_1", &TilingWindowManager::move_to_workspace_1);
-    regist_key("move_to_workspace_2", &TilingWindowManager::move_to_workspace_2);
-    regist_key("move_to_workspace_3", &TilingWindowManager::move_to_workspace_3);
-    regist_key("move_to_workspace_4", &TilingWindowManager::move_to_workspace_4);
-    regist_key("move_to_workspace_5", &TilingWindowManager::move_to_workspace_5);
-    regist_key("move_to_workspace_6", &TilingWindowManager::move_to_workspace_6);
-    regist_key("move_to_workspace_7", &TilingWindowManager::move_to_workspace_7);
-    regist_key("move_to_workspace_8", &TilingWindowManager::move_to_workspace_8);
-    regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace_9);
+    regist_key("move_to_workspace_1", &TilingWindowManager::move_to_workspace<0>);
+    regist_key("move_to_workspace_2", &TilingWindowManager::move_to_workspace<1>);
+    regist_key("move_to_workspace_3", &TilingWindowManager::move_to_workspace<2>);
+    regist_key("move_to_workspace_4", &TilingWindowManager::move_to_workspace<3>);
+    regist_key("move_to_workspace_5", &TilingWindowManager::move_to_workspace<4>);
+    regist_key("move_to_workspace_6", &TilingWindowManager::move_to_workspace<5>);
+    regist_key("move_to_workspace_7", &TilingWindowManager::move_to_workspace<6>);
+    regist_key("move_to_workspace_8", &TilingWindowManager::move_to_workspace<7>);
+    regist_key("move_to_workspace_9", &TilingWindowManager::move_to_workspace<8>);
     regist_key("next_focus", &TilingWindowManager::next_focus);
     regist_key("next_layout", &TilingWindowManager::next_layout);
     regist_key("previous_focus", &TilingWindowManager::previous_focus);
@@ -467,15 +426,15 @@ namespace Tile{
     regist_key("swap_next", &TilingWindowManager::swap_next);
     regist_key("swap_previous", &TilingWindowManager::swap_previous);
     regist_key("run_process", &TilingWindowManager::run_process);
-    regist_key("workspace_1", &TilingWindowManager::workspace_1);
-    regist_key("workspace_2", &TilingWindowManager::workspace_2);
-    regist_key("workspace_3", &TilingWindowManager::workspace_3);
-    regist_key("workspace_4", &TilingWindowManager::workspace_4);
-    regist_key("workspace_5", &TilingWindowManager::workspace_5);
-    regist_key("workspace_6", &TilingWindowManager::workspace_6);
-    regist_key("workspace_7", &TilingWindowManager::workspace_7);
-    regist_key("workspace_8", &TilingWindowManager::workspace_8);
-    regist_key("workspace_9", &TilingWindowManager::workspace_9);
+    regist_key("workspace_1", &TilingWindowManager::workspace<0>);
+    regist_key("workspace_2", &TilingWindowManager::workspace<1>);
+    regist_key("workspace_3", &TilingWindowManager::workspace<2>);
+    regist_key("workspace_4", &TilingWindowManager::workspace<3>);
+    regist_key("workspace_5", &TilingWindowManager::workspace<4>);
+    regist_key("workspace_6", &TilingWindowManager::workspace<5>);
+    regist_key("workspace_7", &TilingWindowManager::workspace<6>);
+    regist_key("workspace_8", &TilingWindowManager::workspace<7>);
+    regist_key("workspace_9", &TilingWindowManager::workspace<8>);
     regist_key("scrollwheel_up", &TilingWindowManager::scrollwheel_up);
     regist_key("scrollwheel_down", &TilingWindowManager::scrollwheel_down);
 
@@ -519,7 +478,8 @@ namespace Tile{
       std::cout << std::endl;
 #endif
       recovery.save(hwnd_);
-      m_workspace_it->manage(hwnd_, m_config->get_not_apply_style_to_classnames());
+      m_workspace_it->manage_front(hwnd_, m_config->get_not_apply_style_to_classnames());
+      arrange();
     }
   }
   void TilingWindowManager::unmanage(HWND const& hwnd_){
