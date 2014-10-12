@@ -8,16 +8,9 @@
 
 namespace Tile{
   void Workspace::set_style(HWND const& hwnd_, Tile::NotApplyStyleToClassNames const& classnames_){
-    std::string const classname = get_classname(hwnd_);
-    LONG const style = ::GetWindowLong(hwnd_, GWL_STYLE);
-    bool b = true;
-    for(auto c : classnames_.value){
-      if(classname == c){
-        b = false;
-      }
-    }
-    if(b){
-      ::SetWindowLong(hwnd_, GWL_STYLE, style ^ WS_CAPTION ^ WS_THICKFRAME);
+    auto const classnames = classnames_.value;
+    if(std::find(std::begin(classnames), std::end(classnames), get_classname(hwnd_)) == std::end(classnames)){
+      ::SetWindowLong(hwnd_, GWL_STYLE, ::GetWindowLong(hwnd_, GWL_STYLE) ^ WS_CAPTION ^ WS_THICKFRAME);
     }
   }
   Workspace::Workspace(std::string const& workspace_name_, std::shared_ptr<std::vector<Tile::Layout>> const& layouts_): m_workspace_name(workspace_name_){
