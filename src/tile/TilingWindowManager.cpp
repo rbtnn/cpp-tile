@@ -23,6 +23,29 @@ namespace Tile{
       die("Error creating window(main)");
     }
   }
+  void TilingWindowManager::init_toast(){
+    WNDCLASSEX winClass = make_wndclassex(m_hInstance, ToastWndProc, "TileToast");
+    ATOM atom = ::RegisterClassEx(&winClass);
+    if (!atom){
+      die("Error registering window class(toast)");
+    }
+    // RECT rect;
+    // ::GetWindowRect(::GetForegroundWindow(), &rect);
+    m_toast_hwnd = make_toolwindow(m_hInstance, "TileToast");
+    unsigned int width = 240;
+    unsigned int height = 60;
+    RECT const rect = get_window_area();
+    ::SetWindowPos(m_toast_hwnd, HWND_TOPMOST,
+        (rect.left + (rect.right - width) / 2),
+        (rect.top + (rect.bottom - height) / 2),
+        (width),
+        (height),
+        SWP_NOACTIVATE);
+    LONG const exstyle = ::GetWindowLong(m_toast_hwnd, GWL_EXSTYLE);
+    ::SetWindowLong(m_toast_hwnd, GWL_EXSTYLE, exstyle | WS_EX_LAYERED);
+    ::SetLayeredWindowAttributes(m_toast_hwnd, 0, 200, LWA_ALPHA);
+    ::ShowWindow(m_toast_hwnd, SW_HIDE);
+  }
   void TilingWindowManager::init_border(){
     WNDCLASSEX winClass = make_wndclassex(m_hInstance, BorderWndProc, m_border_class_name);
     ATOM atom = ::RegisterClassEx(&winClass);
@@ -44,7 +67,9 @@ namespace Tile{
     if(it != std::end(m)){
       unsigned int const vk = it->second.get_vk();
       unsigned int const mod = it->second.get_fsModifiers();
-      m_keys.push_back(std::shared_ptr<Key>(new Key(m_main_hwnd, mod, vk, std::bind(f_, this))));
+      m_keys.push_back(std::shared_ptr<Key>(
+            new Key(m_main_hwnd, key, mod, vk, std::bind(f_, this))
+            ));
     }
   }
   void TilingWindowManager::unmanage_all(){
@@ -257,52 +282,57 @@ namespace Tile{
       }
     }
   }
-
-  template <unsigned int i>
-  void TilingWindowManager::move_to_workspace(){
-    HWND const hwnd = ::GetForegroundWindow();
-    unsigned int n = 0;
-    for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-      if(n == i && it != m_workspace_it){
-        m_workspace_it->unmanage(hwnd);
-        it->manage_front(hwnd, m_config->get_not_apply_style_to_classnames());
-        arrange();
-        try_focus_managed_window();
-        ::ShowWindow(hwnd, SW_HIDE);
-        break;
-      }
-      n++;
-    }
+  std::string TilingWindowManager::get_toast_text() const{
+    return m_toast_text;
+  }
+  void TilingWindowManager::set_toast_text(std::string const& text){
+    m_toast_text = text;
+    ::SendMessage(m_toast_hwnd, WM_TOAST, 0, 0);
   }
   template <unsigned int i>
-  void TilingWindowManager::workspace(){
-    unsigned int n = 0;
-    if(i < m_workspaces.size()){
+    void TilingWindowManager::move_to_workspace(){
+      HWND const hwnd = ::GetForegroundWindow();
+      unsigned int n = 0;
       for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
-        if(n == i){
-          if(m_workspace_it != it){
-            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              ::ShowWindow(hwnd, SW_HIDE);
-            }
-            m_workspace_it = it;
-            auto const hwnds = m_workspace_it->get_managed_hwnds();
-            for(auto hwnd : hwnds){
-              m_workspace_it->unmanage(hwnd);
-              m_workspace_it->manage_back(hwnd, m_config->get_not_apply_style_to_classnames());
-            }
-            arrange();
-            try_focus_managed_window();
-            for(auto hwnd : m_workspace_it->get_managed_hwnds()){
-              ::ShowWindow(hwnd, SW_SHOWNORMAL);
-            }
-          }
+        if(n == i && it != m_workspace_it){
+          m_workspace_it->unmanage(hwnd);
+          it->manage_front(hwnd, m_config->get_not_apply_style_to_classnames());
+          arrange();
+          try_focus_managed_window();
+          ::ShowWindow(hwnd, SW_HIDE);
           break;
         }
         n++;
       }
     }
-  }
-
+  template <unsigned int i>
+    void TilingWindowManager::workspace(){
+      unsigned int n = 0;
+      if(i < m_workspaces.size()){
+        for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
+          if(n == i){
+            if(m_workspace_it != it){
+              for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+                ::ShowWindow(hwnd, SW_HIDE);
+              }
+              m_workspace_it = it;
+              auto const hwnds = m_workspace_it->get_managed_hwnds();
+              for(auto hwnd : hwnds){
+                m_workspace_it->unmanage(hwnd);
+                m_workspace_it->manage_back(hwnd, m_config->get_not_apply_style_to_classnames());
+              }
+              arrange();
+              try_focus_managed_window();
+              for(auto hwnd : m_workspace_it->get_managed_hwnds()){
+                ::ShowWindow(hwnd, SW_SHOWNORMAL);
+              }
+            }
+            break;
+          }
+          n++;
+        }
+      }
+    }
   void TilingWindowManager::scrollwheel_up(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     RECT r;
@@ -359,6 +389,7 @@ namespace Tile{
     m_main_class_name = main_classname_;
     init_main();
     m_border_class_name = "TileBorder";
+    init_toast();
     init_border();
 
     m_nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -376,6 +407,9 @@ namespace Tile{
     unmanage_all();
     if (!m_main_hwnd){
       ::DestroyWindow(m_main_hwnd);
+    }
+    if (!m_toast_hwnd){
+      ::DestroyWindow(m_toast_hwnd);
     }
     if (!m_border_left_hwnd){
       ::DestroyWindow(m_border_left_hwnd);
@@ -489,6 +523,7 @@ namespace Tile{
     try{
       for(auto key : m_keys){
         if(key->hash() == i_){
+          set_toast_text(key->name());
           key->call();
         }
       }

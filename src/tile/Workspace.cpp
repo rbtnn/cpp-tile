@@ -30,15 +30,13 @@ namespace Tile{
     return m_managed_hwnds.rend();
   }
   void Workspace::manage_back(HWND const& hwnd_, Tile::NotApplyStyleToClassNames const& classnames_){
-    auto const it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-    if(it == std::end(m_managed_hwnds)){
+    if(std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_) == std::end(m_managed_hwnds)){
       m_managed_hwnds.push_back(hwnd_);
       set_style(hwnd_, classnames_);
     }
   }
   void Workspace::manage_front(HWND const& hwnd_, Tile::NotApplyStyleToClassNames const& classnames_){
-    auto const it = std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_);
-    if(it == std::end(m_managed_hwnds)){
+    if(std::find(std::begin(m_managed_hwnds), std::end(m_managed_hwnds), hwnd_) == std::end(m_managed_hwnds)){
       m_managed_hwnds.push_front(hwnd_);
       set_style(hwnd_, classnames_);
     }

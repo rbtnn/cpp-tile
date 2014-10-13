@@ -36,9 +36,8 @@
       ],
     "run_process_path" : "C:/vim/src/gvim.exe",
     "layout_method_names" : [
-      "arrange_manual",
-      "arrange_maximal",
       "arrange",
+      "arrange_maximal",
       "arrange_square"
       ]
   },

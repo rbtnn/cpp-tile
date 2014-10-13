@@ -10,6 +10,8 @@
 #include "./Layout.h"
 #include "./Recovery.h"
 
+#define WM_TOAST  WM_APP
+
 namespace Tile{
   class TilingWindowManager{
     private:
@@ -18,6 +20,8 @@ namespace Tile{
       UINT m_shellhookid;
       HWND m_main_hwnd;
       std::string m_main_class_name;
+      HWND m_toast_hwnd;
+      std::string m_toast_text;
       HWND m_border_left_hwnd;
       HWND m_border_right_hwnd;
       HWND m_border_top_hwnd;
@@ -34,6 +38,7 @@ namespace Tile{
       Tile::Recovery recovery;
 
       void init_main();
+      void init_toast();
       void init_border();
       void regist_key(std::string const&, void (Tile::TilingWindowManager::*)());
       void unmanage_all();
@@ -63,6 +68,8 @@ namespace Tile{
       ~TilingWindowManager();
       UINT const start();
       void arrange();
+      std::string get_toast_text() const;
+      void set_toast_text(std::string const&);
       void manage(HWND const& hwnd_);
       void unmanage(HWND const& hwnd_);
       void call_key_method(UINT const&);

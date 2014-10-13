@@ -9,14 +9,16 @@ namespace Tile{
     private:
       UINT const m_mod;
       UINT const m_k;
+      std::string m_name;
       UINT const m_hash_value;
       std::function<void(void)> const m_f;
       HWND const m_main_hwnd;
 
     public:
-      Key(HWND const& hwnd_, UINT const& mod_, UINT const& k_, std::function<void(void)> const& f_);
+      Key(HWND const&, std::string const&, UINT const&, UINT const&, std::function<void(void)> const&);
       ~Key();
       UINT hash() const;
+      std::string name() const;
       void call() const;
   };
 }

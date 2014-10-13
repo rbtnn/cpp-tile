@@ -13,7 +13,6 @@ RECT get_window_area(){
     wa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
     wa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
   }
-  // wa.top += get_statusline_height();
   return wa;
 }
 void die(std::string const& msg){

@@ -113,6 +113,53 @@ LRESULT CALLBACK MainWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lPara
   }
   return ::DefWindowProc(hwnd_,msg_, wParam_, lParam_);
 }
+LRESULT CALLBACK ToastWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
+  static UINT_PTR timer = 0;
+  switch (msg_) {
+    case WM_CREATE:
+      break;
+
+    case WM_TOAST:
+      if(timer != 0){
+        ::KillTimer(hwnd_, timer);
+      }
+      timer = ::SetTimer(hwnd_, 1, 2000, NULL);
+      ::ShowWindow(hwnd_, SW_SHOWNORMAL);
+      ::InvalidateRect(hwnd_, NULL, TRUE);
+      break;
+
+    case WM_TIMER:
+      if(timer != 0){
+        ::KillTimer(hwnd_, timer);
+      }
+      ::ShowWindow(hwnd_, SW_HIDE);
+      break;
+
+    case WM_DESTROY:
+      ::PostQuitMessage(0);
+      break;
+
+    case WM_PAINT:
+      PAINTSTRUCT ps;
+      ::BeginPaint(hwnd_, &ps);
+      RECT rect;
+      ::GetClientRect(hwnd_, &rect);
+      HDC hdc = ::GetWindowDC(hwnd_);
+      HBRUSH hbrush = ::CreateSolidBrush(RGB(0, 0, 0));
+      ::FillRect(hdc, &rect, hbrush);
+      ::SetBkMode(hdc, TRANSPARENT);
+      ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
+      ::SetTextColor(hdc, RGB(0xff, 0xff, 0xff));
+      if(g_p_tile_window_manager != nullptr){
+        ::DrawText(hdc, g_p_tile_window_manager->get_toast_text().c_str(),
+            -1, &rect, DT_CENTER | DT_WORDBREAK);
+      }
+      ::ReleaseDC(hwnd_, hdc);
+      ::EndPaint(hwnd_, &ps);
+      break;
+  }
+  return ::DefWindowProc(hwnd_, msg_, wParam_, lParam_);
+}
 LRESULT CALLBACK BorderWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lParam_){
   switch (msg_) {
     case WM_DESTROY:
