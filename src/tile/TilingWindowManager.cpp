@@ -29,18 +29,7 @@ namespace Tile{
     if (!atom){
       die("Error registering window class(toast)");
     }
-    // RECT rect;
-    // ::GetWindowRect(::GetForegroundWindow(), &rect);
     m_toast_hwnd = make_toolwindow(m_hInstance, "TileToast");
-    unsigned int width = 240;
-    unsigned int height = 60;
-    RECT const rect = get_window_area();
-    ::SetWindowPos(m_toast_hwnd, HWND_TOPMOST,
-        (rect.left + (rect.right - width) / 2),
-        (rect.top + (rect.bottom - height) / 2),
-        (width),
-        (height),
-        SWP_NOACTIVATE);
     LONG const exstyle = ::GetWindowLong(m_toast_hwnd, GWL_EXSTYLE);
     ::SetWindowLong(m_toast_hwnd, GWL_EXSTYLE, exstyle | WS_EX_LAYERED);
     ::SetLayeredWindowAttributes(m_toast_hwnd, 0, 200, LWA_ALPHA);
@@ -81,6 +70,7 @@ namespace Tile{
       }
     }
   }
+
   void TilingWindowManager::rescan(){
     unmanage_all();
     ::EnumWindows(scan, 0);
@@ -109,7 +99,7 @@ namespace Tile{
     ss << "WS_EX_APPWINDOW:" << (exstyle & WS_EX_APPWINDOW) << "\n";
     ss << "-------------------------------" << "\n";
 
-    ::MessageBox(m_main_hwnd, ss.str().c_str(), "Tile", MB_OK | MB_SYSTEMMODAL);
+    set_toast_text(ss.str().c_str(), 360, 240);
   }
   void TilingWindowManager::toggle_border(){
     int const showCmd = (::IsWindowVisible(m_border_left_hwnd) == true) ? SW_HIDE : SW_SHOWNORMAL;
@@ -213,6 +203,10 @@ namespace Tile{
     m_workspace_it->next_layout();
     arrange();
     try_focus_managed_window();
+
+    std::stringstream ss;
+    ss << "<next_layout>" << std::endl << m_workspace_it->get_layout_name();
+    set_toast_text(ss.str(), 240, 100);
   }
   void TilingWindowManager::next_focus(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
@@ -285,9 +279,16 @@ namespace Tile{
   std::string TilingWindowManager::get_toast_text() const{
     return m_toast_text;
   }
-  void TilingWindowManager::set_toast_text(std::string const& text){
+  void TilingWindowManager::set_toast_text(std::string const& text, unsigned int const width, unsigned int const height){
     m_toast_text = text;
     ::SendMessage(m_toast_hwnd, WM_TOAST, 0, 0);
+    RECT const rect = get_window_area();
+    ::SetWindowPos(m_toast_hwnd, HWND_TOPMOST,
+        (rect.left + (rect.right - width) / 2),
+        (rect.top + (rect.bottom - height) / 2),
+        (width),
+        (height),
+        SWP_NOACTIVATE);
   }
   template <unsigned int i>
     void TilingWindowManager::move_to_workspace(){
@@ -304,9 +305,16 @@ namespace Tile{
         }
         n++;
       }
+
+      std::stringstream ss;
+      ss << "<move_to_workspace>" << std::endl << (i + 1);
+      set_toast_text(ss.str(), 240, 100);
     }
   template <unsigned int i>
     void TilingWindowManager::workspace(){
+      std::stringstream ss;
+      ss << "<workspace>" << std::endl << (i + 1);
+      set_toast_text(ss.str(), 240, 100);
       unsigned int n = 0;
       if(i < m_workspaces.size()){
         for(auto it = std::begin(m_workspaces); it < std::end(m_workspaces); it++){
@@ -357,7 +365,10 @@ namespace Tile{
       arrange();
       try_focus_managed_window();
     }
+
+    set_toast_text("<focus_window_to_master>", 240, 100);
   }
+
   void TilingWindowManager::try_focus_managed_window(){
     HWND const foreground_hwnd = ::GetForegroundWindow();
     for(auto hwnd : m_workspace_it->get_managed_hwnds()){
@@ -523,7 +534,6 @@ namespace Tile{
     try{
       for(auto key : m_keys){
         if(key->hash() == i_){
-          set_toast_text(key->name());
           key->call();
         }
       }

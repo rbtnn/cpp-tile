@@ -69,7 +69,7 @@ namespace Tile{
       UINT const start();
       void arrange();
       std::string get_toast_text() const;
-      void set_toast_text(std::string const&);
+      void set_toast_text(std::string const&, unsigned int const, unsigned int const);
       void manage(HWND const& hwnd_);
       void unmanage(HWND const& hwnd_);
       void call_key_method(UINT const&);

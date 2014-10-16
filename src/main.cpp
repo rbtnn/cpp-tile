@@ -141,19 +141,28 @@ LRESULT CALLBACK ToastWndProc(HWND hwnd_, UINT msg_, WPARAM wParam_, LPARAM lPar
 
     case WM_PAINT:
       PAINTSTRUCT ps;
-      ::BeginPaint(hwnd_, &ps);
+
       RECT rect;
       ::GetClientRect(hwnd_, &rect);
+
+      ::BeginPaint(hwnd_, &ps);
       HDC hdc = ::GetWindowDC(hwnd_);
-      HBRUSH hbrush = ::CreateSolidBrush(RGB(0, 0, 0));
-      ::FillRect(hdc, &rect, hbrush);
+
+      ::FillRect(hdc, &rect, ::CreateSolidBrush(RGB(0, 0, 0)));
+
       ::SetBkMode(hdc, TRANSPARENT);
       ::SetBkColor(hdc, RGB(0x00, 0x00, 0x00));
       ::SetTextColor(hdc, RGB(0xff, 0xff, 0xff));
+
+      ::SelectObject(hdc, ::GetStockObject(NULL_BRUSH));
+      ::SelectObject(hdc, CreatePen(PS_SOLID, 1, RGB(0x88, 0x88, 0x88)));
+      ::Rectangle(hdc, rect.left + 1, rect.top + 1, rect.right - 1, rect.bottom - 1);
+
       if(g_p_tile_window_manager != nullptr){
         ::DrawText(hdc, g_p_tile_window_manager->get_toast_text().c_str(),
             -1, &rect, DT_CENTER | DT_WORDBREAK);
       }
+
       ::ReleaseDC(hwnd_, hdc);
       ::EndPaint(hwnd_, &ps);
       break;
